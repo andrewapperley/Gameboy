@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		0F1696682271D065009C7949 /* MMU.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F1696672271D065009C7949 /* MMU.swift */; };
+		0F1696AF227327BA009C7949 /* dmg_boot.bin in Resources */ = {isa = PBXBuildFile; fileRef = 0F1696AE227327BA009C7949 /* dmg_boot.bin */; };
+		0F1696B322732B69009C7949 /* Instructions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F1696B222732B69009C7949 /* Instructions.swift */; };
+		0F1696D722738CC4009C7949 /* game.gb in Resources */ = {isa = PBXBuildFile; fileRef = 0F1696D622738CC4009C7949 /* game.gb */; };
 		0FEA3AA0226F319000AD96EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FEA3A9F226F319000AD96EE /* AppDelegate.swift */; };
 		0FEA3AA7226F319100AD96EE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0FEA3AA6226F319100AD96EE /* Assets.xcassets */; };
 		0FEA3AB5226F319100AD96EE /* GameboyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FEA3AB4226F319100AD96EE /* GameboyTests.swift */; };
@@ -29,6 +32,9 @@
 /* Begin PBXFileReference section */
 		0F169666227119CA009C7949 /* DevelopmentPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = DevelopmentPlayground.playground; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		0F1696672271D065009C7949 /* MMU.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MMU.swift; sourceTree = "<group>"; };
+		0F1696AE227327BA009C7949 /* dmg_boot.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = dmg_boot.bin; sourceTree = "<group>"; };
+		0F1696B222732B69009C7949 /* Instructions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Instructions.swift; sourceTree = "<group>"; };
+		0F1696D622738CC4009C7949 /* game.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = game.gb; sourceTree = "<group>"; };
 		0FEA3A9C226F319000AD96EE /* Gameboy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Gameboy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0FEA3A9F226F319000AD96EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0FEA3AA6226F319100AD96EE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -59,6 +65,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0F1696AD22732791009C7949 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				0F1696D622738CC4009C7949 /* game.gb */,
+				0F1696AE227327BA009C7949 /* dmg_boot.bin */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		0FEA3A93226F319000AD96EE = {
 			isa = PBXGroup;
 			children = (
@@ -80,6 +95,7 @@
 		0FEA3A9E226F319000AD96EE /* Gameboy */ = {
 			isa = PBXGroup;
 			children = (
+				0F1696AD22732791009C7949 /* Resources */,
 				0F169666227119CA009C7949 /* DevelopmentPlayground.playground */,
 				0FEA3AC1226F334400AD96EE /* System */,
 				0FEA3A9F226F319000AD96EE /* AppDelegate.swift */,
@@ -113,6 +129,7 @@
 			children = (
 				0FEA3AC5226F352800AD96EE /* CPU.swift */,
 				0F1696672271D065009C7949 /* MMU.swift */,
+				0F1696B222732B69009C7949 /* Instructions.swift */,
 			);
 			path = Subsystems;
 			sourceTree = "<group>";
@@ -198,6 +215,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0F1696D722738CC4009C7949 /* game.gb in Resources */,
+				0F1696AF227327BA009C7949 /* dmg_boot.bin in Resources */,
 				0FEA3AA7226F319100AD96EE /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -220,6 +239,7 @@
 				0FEA3AC6226F352800AD96EE /* CPU.swift in Sources */,
 				0FEA3AA0226F319000AD96EE /* AppDelegate.swift in Sources */,
 				0FEA3AC3226F339700AD96EE /* Gameboy.swift in Sources */,
+				0F1696B322732B69009C7949 /* Instructions.swift in Sources */,
 				0FEA3AC0226F320500AD96EE /* GameboyViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

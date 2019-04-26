@@ -10,4 +10,8 @@ import Foundation
 
 class Gameboy {
 	let cpu = CPU()
+	
+	init() {
+		cpu.start()
+	}
 }
