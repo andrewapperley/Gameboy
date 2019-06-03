@@ -8,50 +8,57 @@
 
 import Foundation
 
-struct MemoryMap {
-	static let ROM_0 = Range<Data.Index>(0x0...0x3FFF)
-	static let ROM_n = Range<Data.Index>(0x4000...0x7FFF)
-	static let VRAM = Range<Data.Index>(0x8000...0x9FFF)
-	static let ERAM = Range<Data.Index>(0xA000...0xBFFF)
-	static let WRAM_0 = Range<Data.Index>(0xC000...0xCFFF)
-	static let WRAM_n = Range<Data.Index>(0xD000...0xDFFF)
-	static let ECHO = Range<Data.Index>(0xE000...0xFDFF)
-	static let OAM = Range<Data.Index>(0xFE00...0xFE9F)
-	static let IO = Range<Data.Index>(0xFF00...0xFF7F)
-	static let HRAM = Range<Data.Index>(0xFF80...0xFFFE)
+enum MemoryMap {
+	static let ROM_0 = Range<UInt16>(0x0...0x3FFF)
+	static let ROM_n = Range<UInt16>(0x4000...0x7FFF)
+	static let VRAM = Range<UInt16>(0x8000...0x9FFF)
+	static let ERAM = Range<UInt16>(0xA000...0xBFFF)
+	static let WRAM_0 = Range<UInt16>(0xC000...0xCFFF)
+	static let WRAM_n = Range<UInt16>(0xD000...0xDFFF)
+	static let ECHO = Range<UInt16>(0xE000...0xFDFF)
+	static let OAM = Range<UInt16>(0xFE00...0xFE9F)
+	static let IO = Range<UInt16>(0xFF00...0xFF7F)
+	static let HRAM = Range<UInt16>(0xFF80...0xFFFE)
+	static let IER = 0xFFFF // Interrupt Enable Register
 }
 
 class MMU {
-	var rom: Data = Data()
-	private var memory: Data = Data(bytes: [0x0], count: 0xFFFF)
+	private var bios: [UInt8] = Array<UInt8>(repeating: 0x0, count: 0x100)
+	private var biosActive = false
 	
-	func read(location: Range<Data.Index>) -> Data {
-		return memory.subdata(in: location)
+	func loadBios(_ bios: [UInt8]) {
+		self.bios = bios
+		self.biosActive = true
 	}
 	
-//	This probably needs to change to a function that accepts a start address and the data
-	func write(location: Range<Data.Index>, data: Data) {
-		memory.replaceSubrange(location, with: data)
+	private var memory: [UInt8] = Array<UInt8>(repeating: 0x0, count: 0xFFFF)
+	
+	func read(address: UInt16) -> UInt8 {
+		return memory[Int(address)]
+	}
+	
+	func read(address: UInt16) -> UInt16 {
+		return UInt16(memory[Int(address)]) + UInt16(memory[Int(address+1)]) << 8
+	}
+	
+	func write(address: UInt16, data: UInt8) {
+		memory[Int(address)] = data
+	}
+	
+	func write(address: UInt16, data: [UInt8]) {
+		var ii: UInt16 = 0
+		for i in data {
+			memory[Int(address+ii)] = i
+			ii += 1
+		}
+	}
+	
+	func write(address: UInt16, data: UInt16) {
+		write(address: address, data: UInt8(data & 0xFF))
+		write(address: address+1, data: UInt8(data >> 8))
 	}
 	
 	func reset() {
-		memory = Data(bytes: [0x0], count: 0xFFFF)
+		memory = Array<UInt8>(repeating: 0x0, count: 0xFFFF)
 	}
 }
-
-/*
-
-rom_0: 0000 - 3FFF
-rom_n: 4000 - 7FFF
-VRAM: 8000 - 9FFF
-External Ram: A000 - BFFF
-WRAM_0: C000 - CFFF
-WRAM_n: D000 - DFFF
-Mirror of WRAM_0 (echo ram): E000 - FDFF
-OAM: FE00 - FE9F
-Not used: FEA0 - FEFF
-I/O Registers: FF00 - FF7F
-HRAM: FF80 - FFFE
-Interupts: FFFF - FFFF (Figure this out)
-
-*/

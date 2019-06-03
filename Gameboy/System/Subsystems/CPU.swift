@@ -8,24 +8,6 @@
 
 import Foundation
 
-class Registers {
-	var A: UInt8 = 0x0
-	var F: UInt8 = 0x0
-	var B: UInt8 = 0x0
-	var C: UInt8 = 0x0
-	var D: UInt8 = 0x0
-	var E: UInt8 = 0x0
-	var H: UInt8 = 0x0
-	var L: UInt8 = 0x0
-	var SP: UInt16 = 0xFFFE
-	var PC: UInt16 = 0x0100
-	
-	var AF: UInt16 { return UInt16((A << 8) | F) }
-	var BC: UInt16 { return UInt16((B << 8) | C) }
-	var DE: UInt16 { return UInt16((D << 8) | E) }
-	var HL: UInt16 { return UInt16((H << 8) | L) }
-}
-
 class CPU {
 	var registers: Registers = Registers()
 	var memory: MMU = MMU()
@@ -36,8 +18,8 @@ class CPU {
 			let boot = readBootROM(),
 			let rom = readROM(name: "game") else { return }
 
-		memory.rom = boot
-		memory.write(location: MemoryMap.ROM_0, data: rom)
+		memory.loadBios(Array<UInt8>(boot))
+		memory.write(address: MemoryMap.ROM_0.lowerBound, data: Array<UInt8>(rom))
 	}
 	
 	func readBootROM() -> Data? {
@@ -59,7 +41,157 @@ class CPU {
 	}
 	
 	private func reset() {
-		registers = Registers()
+		registers.reset()
 		memory.reset()
+	}
+}
+
+extension CPU: Load {
+	func LD_nn_n(nn: UInt8, n: inout UInt8) {
+		n = nn
+	}
+	
+	func LD(r1: inout UInt8, r2: UInt8) {
+		r1 = r2
+	}
+	
+	func LD(r1: inout UInt8, r2: UInt16) {
+		r1 = UInt8(r2)
+	}
+	
+	func LD(r1: inout UInt16, r2: UInt8) {
+		r1 = UInt16(r2)
+	}
+	
+	func LD_A_n(n: UInt8) {
+		registers.A = n
+	}
+	
+	func LD_A_n(n: UInt16) {
+		registers.A = UInt8(n)
+	}
+	
+	func LD_n_A(n: inout UInt8) {
+		n = registers.A
+	}
+	
+	func LD_n_A(n: inout UInt16) {
+		n = UInt16(registers.A)
+	}
+	
+	func LD_A_C() {
+		registers.A = memory.read(address: 0xFF00) + registers.C
+	}
+	
+	func LD_C_A() {
+		memory.write(address: 0xFF00 + UInt16(registers.C), data: registers.A)
+	}
+	
+	func LDD_A_HL() {
+		registers.A = memory.read(address: registers.HL)
+		registers.HL -= 1
+	}
+	
+	func LDD_HL_A() {
+		memory.write(address: registers.HL, data: registers.A)
+		registers.HL -= 1
+	}
+	
+	func LDI_A_HL() {
+		registers.A = memory.read(address: registers.HL)
+		registers.HL += 1
+	}
+	
+	func LDI_HL_A() {
+		memory.write(address: registers.HL, data: registers.A)
+		registers.HL += 1
+	}
+	
+	func LDH_n_A(n: UInt8) {
+		memory.write(address: 0xFF00 + UInt16(n), data: registers.A)
+	}
+	
+	func LDH_A_n(n: UInt8) {
+		registers.A = UInt8(0xFF00 + UInt16(n))
+	}
+	
+	func LD_n_nn(n: RegisterMap, nn: UInt16) {
+		switch n {
+			case .BC:
+				registers.BC = nn
+				break
+			case .DE:
+				registers.DE = nn
+				break
+			case .HL:
+				registers.HL = nn
+				break
+			case .SP:
+				registers.SP = nn
+				break
+			default: break
+		}
+	}
+	
+	func LD_SP_HL() {
+		
+	}
+	
+	func LDHL_SP_n(n: Int8) {
+		
+	}
+	
+	func LD_nn_SP(nn: UInt16) {
+		
+	}
+	
+	func PUSH_nn(nn: UInt16) {
+		
+	}
+	
+	func POP_nn(nn: UInt16) {
+		
+	}
+}
+
+extension CPU: ALU {
+	func ADD_A_n(n: UInt8) {
+		
+	}
+	
+	func ADDC_A_n(n: UInt8) {
+		
+	}
+	
+	func SUB_n(n: UInt8) {
+		
+	}
+	
+	func SBC_A_n(n: UInt8) {
+		
+	}
+	
+	func AND_n(n: UInt8) {
+		
+	}
+	
+	func OR_n(n: UInt8) {
+		
+	}
+	
+	func XOR_n(n: UInt8) {
+		
+	}
+	
+	func CP_n(n: UInt8) {
+		
+	}
+	
+	func INC_n(n: UInt8) {
+		
+	}
+	
+	func DEC_n(n: UInt8) {
+		
 	}
 }
