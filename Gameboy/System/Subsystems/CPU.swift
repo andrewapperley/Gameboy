@@ -9,8 +9,8 @@
 import Foundation
 
 class CPU {
-	var registers: Registers = Registers()
-	var memory: MMU = MMU()
+	private var registers: Registers = Registers()
+	private var memory: MMU = MMU()
 	
 	func start() {
 		reset()
@@ -47,20 +47,20 @@ class CPU {
 }
 
 extension CPU: Load {
-	func LD_nn_n(nn: UInt8, n: inout UInt8) {
-		n = nn
+	func LD_nn_n(nn: UInt8, n: RegisterMap.single) {
+		registers.load(register: n, with: nn)
 	}
 	
-	func LD(r1: inout UInt8, r2: UInt8) {
-		r1 = r2
+	func LD(r1: RegisterMap.single, r2: RegisterMap.single) {
+		registers.load(register: r1, with: r2)
 	}
 	
-	func LD(r1: inout UInt8, r2: UInt16) {
-		r1 = UInt8(r2)
+	func LD(r1: RegisterMap.single, r2: RegisterMap.combined) {
+		registers.load(register: r1, with: r2)
 	}
 	
-	func LD(r1: inout UInt16, r2: UInt8) {
-		r1 = UInt16(r2)
+	func LD(r1: RegisterMap.combined, r2: RegisterMap.single) {
+		registers.load(register: r1, with: r2)
 	}
 	
 	func LD_A_n(n: UInt8) {
@@ -71,8 +71,8 @@ extension CPU: Load {
 		registers.A = UInt8(n)
 	}
 	
-	func LD_n_A(n: inout UInt8) {
-		n = registers.A
+	func LD_n_A(n: RegisterMap.single) {
+		registers.load(register: n, with: .A)
 	}
 	
 	func LD_n_A(n: inout UInt16) {
@@ -112,45 +112,34 @@ extension CPU: Load {
 	}
 	
 	func LDH_A_n(n: UInt8) {
-		registers.A = UInt8(0xFF00 + UInt16(n))
+		registers.load(register: .A, with: UInt8(0xFF00 + UInt16(n)))
 	}
 	
-	func LD_n_nn(n: RegisterMap, nn: UInt16) {
-		switch n {
-			case .BC:
-				registers.BC = nn
-				break
-			case .DE:
-				registers.DE = nn
-				break
-			case .HL:
-				registers.HL = nn
-				break
-			case .SP:
-				registers.SP = nn
-				break
-			default: break
-		}
+	func LD_n_nn(n: RegisterMap.combined, nn: UInt16) {
+		registers.load(register: n, with: nn)
 	}
 	
 	func LD_SP_HL() {
-		
+		registers.load(register: .SP, with: .HL)
 	}
 	
 	func LDHL_SP_n(n: Int8) {
-		
+		registers.HL = (registers.SP + UInt16(n))
+		// Flags affected
 	}
 	
 	func LD_nn_SP(nn: UInt16) {
-		
+		registers.SP = nn
 	}
 	
 	func PUSH_nn(nn: UInt16) {
-		
+		// Figure out what the stack is. Where in RAM is this.
+		registers.SP -= 2
 	}
 	
 	func POP_nn(nn: UInt16) {
-		
+		// Figure out what the stack is. Where in RAM is this.
+		registers.SP += 2
 	}
 }
 

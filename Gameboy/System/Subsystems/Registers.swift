@@ -9,20 +9,24 @@
 import Foundation
 
 enum RegisterMap {
-	case A
-	case F
-	case B
-	case C
-	case D
-	case E
-	case H
-	case L
+	enum single {
+		case A
+		case F
+		case B
+		case C
+		case D
+		case E
+		case H
+		case L
+	}
 	
-	case AF
-	case BC
-	case DE
-	case HL
-	case SP
+	enum combined {
+		case AF
+		case BC
+		case DE
+		case HL
+		case SP
+	}
 }
 
 class Registers {
@@ -80,5 +84,91 @@ class Registers {
 		L = 0x0
 		SP = 0xFFFE
 		PC = 0x0100
+	}
+	
+	private func mapRegister(register single: RegisterMap.single) -> UInt8 {
+		switch single {
+		case .A:
+			return A
+		case .F:
+			return F
+		case .B:
+			return B
+		case .C:
+			return C
+		case .D:
+			return D
+		case .E:
+			return E
+		case .H:
+			return H
+		case .L:
+			return L
+		}
+	}
+	
+	private func mapRegister(register combined: RegisterMap.combined) -> UInt16 {
+		switch combined {
+		case .AF:
+			return AF
+		case .BC:
+			return BC
+		case .DE:
+			return DE
+		case .HL:
+			return HL
+		case .SP:
+			return SP
+		}
+	}
+	
+	private func load(ls: inout UInt8, rs: UInt8) {
+		ls = rs
+	}
+	
+	private func load(ls: inout UInt16, rs: UInt16) {
+		ls = rs
+	}
+	
+	private func load(ls: inout UInt8, rs: UInt16) {
+		ls = UInt8(rs)
+	}
+	
+	private func load(ls: inout UInt16, rs: UInt8) {
+		ls = UInt16(rs)
+	}
+	
+	func load(register: RegisterMap.single, with value: UInt8) {
+		var mappedRegister = mapRegister(register: register)
+		load(ls: &mappedRegister, rs: value)
+	}
+	
+	func load(register: RegisterMap.single, with value: RegisterMap.single) {
+		var r1 = mapRegister(register: register)
+		let r2 = mapRegister(register: value)
+		load(ls: &r1, rs: r2)
+	}
+	
+	func load(register: RegisterMap.single, with value: RegisterMap.combined) {
+		var r1 = mapRegister(register: register)
+		let r2 = mapRegister(register: value)
+		load(ls: &r1, rs: r2)
+	}
+	
+	func load(register: RegisterMap.combined, with value: UInt16) {
+		var mappedRegister = mapRegister(register: register)
+		load(ls: &mappedRegister, rs: value)
+	}
+	
+	func load(register: RegisterMap.combined, with value: RegisterMap.combined) {
+		var r1 = mapRegister(register: register)
+		let r2 = mapRegister(register: value)
+		load(ls: &r1, rs: r2)
+	}
+	
+	func load(register: RegisterMap.combined, with value: RegisterMap.single) {
+		var r1 = mapRegister(register: register)
+		let r2 = mapRegister(register: value)
+		load(ls: &r1, rs: r2)
 	}
 }
