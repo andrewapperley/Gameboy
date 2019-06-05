@@ -14,6 +14,8 @@ class GameboyViewController: UIViewController {
 	
 	init() {
 		self.gameboy = Gameboy()
+		let cartridge = Cartridge(romName: "game")
+		gameboy.load(cartridge: cartridge)
 		
 		super.init(nibName: nil, bundle: nil)
 	}

@@ -8,6 +8,14 @@
 
 import Foundation
 
+protocol InstructionInvoker {
+	func fetchAndInvokeInstruction(with code: UInt8)
+}
+
+protocol Misc {
+	func NOP()
+}
+
 protocol Load {	
 	// - MARK: 8-Bit LOADS
 	func LD_nn_n(nn: UInt8, n: RegisterMap.single)
@@ -15,7 +23,7 @@ protocol Load {
 	func LD(r1: RegisterMap.single, r2: RegisterMap.combined)
 	func LD(r1: RegisterMap.combined, r2: RegisterMap.single)
 	func LD_A_n(n: UInt8)
-	func LD_A_n(n: UInt16)
+	func LD_A_n(nn: UInt16)
 	func LD_n_A(n: RegisterMap.single)
 	func LD_C_A()
 	func LDD_A_HL()
@@ -31,21 +39,37 @@ protocol Load {
 	func LDHL_SP_n(n: Int8)
 	func LD_nn_SP(nn: UInt16)
 	func PUSH_nn(nn: UInt16)
-	func POP_nn(nn: UInt16)
+	func POP_nn(nn: RegisterMap.combined)
 }
 
 protocol ALU {
 	// - MARK: 8-Bit ALU
-	func ADD_A_n(n: UInt8)
-	func ADDC_A_n(n: UInt8)
-	func SUB_n(n: UInt8)
-	func SBC_A_n(n: UInt8)
-	func AND_n(n: UInt8)
-	func OR_n(n: UInt8)
-	func XOR_n(n: UInt8)
-	func CP_n(n: UInt8)
-	func INC_n(n: UInt8)
-	func DEC_n(n: UInt8)
+	func ADD_A_n(n: RegisterMap.single)
+	func ADD_A_n(n: RegisterMap.combined) // For adding HL register
+	func ADDC_A_n(n: RegisterMap.single)
+	func SUB_n(n: RegisterMap.single)
+	func SUB_n(n: RegisterMap.combined) // For subtracting HL register
+	func SBC_A_n(n: RegisterMap.single)
+	func AND_n(n: RegisterMap.single)
+	func AND_n(n: RegisterMap.combined)
+	func OR_n(n: RegisterMap.single)
+	func OR_n(n: RegisterMap.combined)
+	func XOR_n(n: RegisterMap.single)
+	func XOR_n(n: RegisterMap.combined)
+	func CP_n(n: RegisterMap.single)
+	func CP_n(n: RegisterMap.combined)
+	func INC_n(n: RegisterMap.single)
+	func INC_n(n: RegisterMap.combined)
+	func DEC_n(n: RegisterMap.single)
+	func DEC_n(n: RegisterMap.combined)
 	
 	// - MARK: 16-Bit ALU
+}
+
+protocol Jumps {
+	func JP_nn(nn: UInt16)
+}
+
+protocol Restarts {
+	func RST_n(n: UInt8)
 }

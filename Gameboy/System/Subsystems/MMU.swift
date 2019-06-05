@@ -37,7 +37,7 @@ class MMU {
 		return memory[Int(address)]
 	}
 	
-	func read(address: UInt16) -> UInt16 {
+	func readByte(address: UInt16) -> UInt16 {
 		return UInt16(memory[Int(address)]) + UInt16(memory[Int(address+1)]) << 8
 	}
 	

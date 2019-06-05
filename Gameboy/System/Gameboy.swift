@@ -11,7 +11,7 @@ import Foundation
 class Gameboy {
 	let cpu = CPU()
 	
-	init() {
-		cpu.start()
+	func load(cartridge: Cartridge) {
+		cpu.start(cartridge: cartridge)
 	}
 }

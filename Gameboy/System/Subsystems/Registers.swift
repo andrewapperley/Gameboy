@@ -85,90 +85,100 @@ class Registers {
 		SP = 0xFFFE
 		PC = 0x0100
 	}
+}
+
+protocol RegisterLoading {
+	func mapRegister(register single: RegisterMap.single) -> UnsafeMutablePointer<UInt8>
+	func mapRegister(register combined: RegisterMap.combined) -> UnsafeMutablePointer<UInt16>
 	
-	private func mapRegister(register single: RegisterMap.single) -> UInt8 {
+	func load(ls: UnsafeMutablePointer<UInt8>, rs: UInt8)
+	func load(ls: UnsafeMutablePointer<UInt16>, rs: UInt16)
+	func load(ls: UnsafeMutablePointer<UInt8>, rs: UInt16)
+	func load(ls: UnsafeMutablePointer<UInt16>, rs: UInt8)
+	
+	func load(register: RegisterMap.single, with value: UInt8)
+	func load(register: RegisterMap.single, with value: RegisterMap.single)
+	func load(register: RegisterMap.single, with value: RegisterMap.combined)
+	func load(register: RegisterMap.combined, with value: UInt16)
+	func load(register: RegisterMap.combined, with value: RegisterMap.combined)
+	func load(register: RegisterMap.combined, with value: RegisterMap.single)
+}
+
+extension Registers: RegisterLoading {
+	
+	func mapRegister(register single: RegisterMap.single) -> UnsafeMutablePointer<UInt8> {
 		switch single {
 		case .A:
-			return A
+			return UnsafeMutablePointer<UInt8>(&A)
 		case .F:
-			return F
+			return UnsafeMutablePointer<UInt8>(&F)
 		case .B:
-			return B
+			return UnsafeMutablePointer<UInt8>(&B)
 		case .C:
-			return C
+			return UnsafeMutablePointer<UInt8>(&C)
 		case .D:
-			return D
+			return UnsafeMutablePointer<UInt8>(&D)
 		case .E:
-			return E
+			return UnsafeMutablePointer<UInt8>(&E)
 		case .H:
-			return H
+			return UnsafeMutablePointer<UInt8>(&H)
 		case .L:
-			return L
+			return UnsafeMutablePointer<UInt8>(&L)
 		}
 	}
 	
-	private func mapRegister(register combined: RegisterMap.combined) -> UInt16 {
+	func mapRegister(register combined: RegisterMap.combined) -> UnsafeMutablePointer<UInt16> {
 		switch combined {
 		case .AF:
-			return AF
+			return UnsafeMutablePointer<UInt16>(&AF)
 		case .BC:
-			return BC
+			return UnsafeMutablePointer<UInt16>(&BC)
 		case .DE:
-			return DE
+			return UnsafeMutablePointer<UInt16>(&AF)
 		case .HL:
-			return HL
+			return UnsafeMutablePointer<UInt16>(&AF)
 		case .SP:
-			return SP
+			return UnsafeMutablePointer<UInt16>(&AF)
 		}
 	}
 	
-	private func load(ls: inout UInt8, rs: UInt8) {
-		ls = rs
+	internal func load(ls: UnsafeMutablePointer<UInt8>, rs: UInt8) {
+		ls.pointee = rs
 	}
 	
-	private func load(ls: inout UInt16, rs: UInt16) {
-		ls = rs
+	internal func load(ls: UnsafeMutablePointer<UInt16>, rs: UInt16) {
+		ls.pointee = rs
 	}
 	
-	private func load(ls: inout UInt8, rs: UInt16) {
-		ls = UInt8(rs)
+	internal func load(ls: UnsafeMutablePointer<UInt8>, rs: UInt16) {
+		ls.pointee = UInt8(rs)
 	}
 	
-	private func load(ls: inout UInt16, rs: UInt8) {
-		ls = UInt16(rs)
+	internal func load(ls: UnsafeMutablePointer<UInt16>, rs: UInt8) {
+		ls.pointee = UInt16(rs)
 	}
 	
 	func load(register: RegisterMap.single, with value: UInt8) {
-		var mappedRegister = mapRegister(register: register)
-		load(ls: &mappedRegister, rs: value)
+		load(ls: mapRegister(register: register), rs: value)
 	}
 	
 	func load(register: RegisterMap.single, with value: RegisterMap.single) {
-		var r1 = mapRegister(register: register)
-		let r2 = mapRegister(register: value)
-		load(ls: &r1, rs: r2)
+		load(ls: mapRegister(register: register), rs: mapRegister(register: value).pointee)
 	}
 	
 	func load(register: RegisterMap.single, with value: RegisterMap.combined) {
-		var r1 = mapRegister(register: register)
-		let r2 = mapRegister(register: value)
-		load(ls: &r1, rs: r2)
+		load(ls: mapRegister(register: register), rs: mapRegister(register: value).pointee)
 	}
 	
 	func load(register: RegisterMap.combined, with value: UInt16) {
-		var mappedRegister = mapRegister(register: register)
-		load(ls: &mappedRegister, rs: value)
+		load(ls: mapRegister(register: register), rs: value)
 	}
 	
 	func load(register: RegisterMap.combined, with value: RegisterMap.combined) {
-		var r1 = mapRegister(register: register)
-		let r2 = mapRegister(register: value)
-		load(ls: &r1, rs: r2)
+		load(ls: mapRegister(register: register), rs: mapRegister(register: value).pointee)
 	}
 	
 	func load(register: RegisterMap.combined, with value: RegisterMap.single) {
-		var r1 = mapRegister(register: register)
-		let r2 = mapRegister(register: value)
-		load(ls: &r1, rs: r2)
+		load(ls: mapRegister(register: register), rs: mapRegister(register: value).pointee)
 	}
 }

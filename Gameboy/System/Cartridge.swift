@@ -75,4 +75,18 @@ struct Cartridge {
 	let romSize: RomSize
 	let ramSize: RamSize
 	let destinationCode: DestinationCode
+	let memoryController: MemoryController
+	
+	init(romName: String) {
+		guard let rom = FileSystem.readROM(name: romName) else {
+			fatalError("Cartridge data failed to load")
+		}
+		self.rom = Array<UInt8>(rom)
+//		This needs to be configured by reading the rom data
+		type = .ROM
+		romSize = .kBit_256
+		ramSize = .kBit_256
+		destinationCode = .Non_Japanese
+		memoryController = MBC1()
+	}
 }
