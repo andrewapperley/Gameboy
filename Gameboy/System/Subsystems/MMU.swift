@@ -33,12 +33,16 @@ class MMU {
 	
 	private var memory: [UInt8] = Array<UInt8>(repeating: 0x0, count: 0xFFFF)
 	
-	func read(address: UInt16) -> UInt8 {
-		return memory[Int(address)]
+	private func getMemory() -> [UInt8] {
+		return biosActive ? bios : memory
 	}
 	
-	func readByte(address: UInt16) -> UInt16 {
-		return UInt16(memory[Int(address)]) + UInt16(memory[Int(address+1)]) << 8
+	func readHalf(address: UInt16) -> UInt8 {
+		return getMemory()[Int(address)]
+	}
+	
+	func readFull(address: UInt16) -> UInt16 {
+		return UInt16((getMemory()[Int(address)] << 8) | getMemory()[Int(address+1)])
 	}
 	
 	func write(address: UInt16, data: UInt8) {
@@ -60,5 +64,6 @@ class MMU {
 	
 	func reset() {
 		memory = Array<UInt8>(repeating: 0x0, count: 0xFFFF)
+		bios = Array<UInt8>(repeating: 0x0, count: 0x100)
 	}
 }

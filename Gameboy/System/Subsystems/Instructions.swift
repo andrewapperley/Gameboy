@@ -24,7 +24,7 @@ protocol Load {
 	func LD(r1: RegisterMap.combined, r2: RegisterMap.single)
 	func LD_A_n(n: UInt8)
 	func LD_A_n(nn: UInt16)
-	func LD_n_A(n: RegisterMap.single)
+	func LD_n_A(n: UInt16)
 	func LD_C_A()
 	func LDD_A_HL()
 	func LDD_HL_A()

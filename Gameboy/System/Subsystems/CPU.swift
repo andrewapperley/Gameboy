@@ -27,9 +27,9 @@ class CPU {
 	private func run() {
 		running = true
 		var count = 0
-		while(running && count < 500) {
+		while(running && count < 10) {
 			// fetch OPCode
-			let code = memory.read(address: registers.PC)
+			let code = memory.readHalf(address: registers.PC)
 			// fetch and execute instruction
 			fetchAndInvokeInstruction(with: code)
 			// check for I/O ?
@@ -49,34 +49,91 @@ extension CPU: InstructionInvoker {
 		print("Calling OPCode:: \(String(format:"%02X", code))")
 		switch code {
 //			Misc
-		case 0x0:
+		case 0x00:
 			self.NOP()
 //			8-bit Loads
 		case 0x06:
-			self.LD_nn_n(nn: 0, n: .B)
+			let param = memory.readHalf(address: registers.PC+1)
+			self.LD_nn_n(nn: param, n: .B)
 		case 0x0E:
-			self.LD_nn_n(nn: 0, n: .C)
+			let param = memory.readHalf(address: registers.PC+1)
+			self.LD_nn_n(nn: param, n: .C)
 		case 0x16:
-			self.LD_nn_n(nn: 0, n: .D)
+			let param = memory.readHalf(address: registers.PC+1)
+			self.LD_nn_n(nn: param, n: .D)
 		case 0x1E:
-			self.LD_nn_n(nn: 0, n: .E)
+			let param = memory.readHalf(address: registers.PC+1)
+			self.LD_nn_n(nn: param, n: .E)
 		case 0x26:
-			self.LD_nn_n(nn: 0, n: .H)
+			let param = memory.readHalf(address: registers.PC+1)
+			self.LD_nn_n(nn: param, n: .H)
 		case 0x2E:
-			self.LD_nn_n(nn: 0, n: .L)
+			let param = memory.readHalf(address: registers.PC+1)
+			self.LD_nn_n(nn: param, n: .L)
+		case 0x47:
+			self.LD(r1: .B, r2: .A)
+		case 0x4F:
+			self.LD(r1: .C, r2: .A)
+		case 0x57:
+			self.LD(r1: .D, r2: .A)
+		case 0x5F:
+			self.LD(r1: .E, r2: .A)
 		case 0x60:
 			self.LD(r1: .H, r2: .B)
+		case 0x67:
+			self.LD(r1: .H, r2: .A)
+		case 0x6F:
+			self.LD(r1: .L, r2: .A)
+		case 0x7F:
+			self.LD(r1: .A, r2: .A)
+		case 0x02:
+			self.LD_n_A(n: registers.BC)
+		case 0x12:
+			self.LD_n_A(n: registers.DE)
+		case 0x77:
+			self.LD_n_A(n: registers.HL)
+		case 0xEA:
+			let param = memory.readFull(address: registers.PC+1)
+			self.LD_n_A(n: param)
+		case 0xF0:
+			let param = memory.readHalf(address: registers.PC+1)
+			self.LDH_A_n(n: param)
 //			16-bit Loads
+		case 0x08:
+			let param = memory.readFull(address: registers.PC+1)
+			self.LD_nn_SP(nn: param)
 		case 0x21:
-			let param = memory.readByte(address: registers.PC+1)
+			let param = memory.readFull(address: registers.PC+1)
 			self.LD_n_nn(n: .HL, nn: param)
+		case 0x31:
+			let param = memory.readFull(address: registers.PC+1)
+			self.LD_n_nn(n: .SP, nn: param)
 //			Jumps
 		case 0xC3:
-			let param = memory.readByte(address: registers.PC+1)
+			let param = memory.readFull(address: registers.PC+1)
 			self.JP_nn(nn: param)
-//		ALU
+//			ALU
 		case 0xAF:
 			self.XOR_n(n: .A)
+		case 0x3C:
+			self.INC_n(n: .A)
+		case 0x04:
+			self.INC_n(n: .B)
+		case 0x0C:
+			self.INC_n(n: .C)
+		case 0x14:
+			self.INC_n(n: .D)
+		case 0x1C:
+			self.INC_n(n: .E)
+		case 0x24:
+			self.INC_n(n: .H)
+		case 0x2C:
+			self.INC_n(n: .L)
+		case 0x34:
+			self.INC_n(n: .HL)
+		case 0xFE:
+//			What does # mean? CP_n()
+			registers.PC += 1
 //			Restarts
 		case 0xFF:
 			self.RST_n(n: 0x38)
@@ -123,18 +180,13 @@ extension CPU: Load {
 		registers.PC += 1
 	}
 	
-	func LD_n_A(n: RegisterMap.single) {
-		registers.load(register: n, with: .A)
-		registers.PC += 1
-	}
-	
-	func LD_n_A(n: inout UInt16) {
-		n = UInt16(registers.A)
+	func LD_n_A(n: UInt16) {
+		memory.write(address: n, data: registers.A)
 		registers.PC += 1
 	}
 	
 	func LD_A_C() {
-		registers.A = memory.read(address: 0xFF00) + registers.C
+		registers.A = memory.readHalf(address: 0xFF00) + registers.C
 		registers.PC += 1
 	}
 	
@@ -144,7 +196,7 @@ extension CPU: Load {
 	}
 	
 	func LDD_A_HL() {
-		registers.A = memory.read(address: registers.HL)
+		registers.A = memory.readHalf(address: registers.HL)
 		registers.HL -= 1
 		registers.PC += 1
 	}
@@ -156,7 +208,7 @@ extension CPU: Load {
 	}
 	
 	func LDI_A_HL() {
-		registers.A = memory.read(address: registers.HL)
+		registers.A = memory.readHalf(address: registers.HL)
 		registers.HL += 1
 		registers.PC += 1
 	}
@@ -173,7 +225,8 @@ extension CPU: Load {
 	}
 	
 	func LDH_A_n(n: UInt8) {
-		registers.load(register: .A, with: UInt8(0xFF00 + UInt16(n)))
+		let data = memory.readHalf(address: 0xFF00 + UInt16(n))
+		registers.load(register: .A, with: data)
 		registers.PC += 1
 	}
 	
@@ -205,7 +258,7 @@ extension CPU: Load {
 	}
 	
 	func POP_nn(nn: RegisterMap.combined) {
-		let n = memory.readByte(address: registers.SP)
+		let n = memory.readFull(address: registers.SP)
 		registers.load(register: nn, with: n)
 		registers.SP += 2
 		registers.PC += 1

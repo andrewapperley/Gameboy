@@ -39,7 +39,7 @@ class Registers {
 	var H: UInt8 = 0x0
 	var L: UInt8 = 0x0
 	var SP: UInt16 = 0xFFFE
-	var PC: UInt16 = 0x0100
+	var PC: UInt16 = 0x0
 	
 	var AF: UInt16 {
 		get {
@@ -83,7 +83,7 @@ class Registers {
 		H = 0x0
 		L = 0x0
 		SP = 0xFFFE
-		PC = 0x0100
+		PC = 0x0
 	}
 }
 
