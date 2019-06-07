@@ -1,4 +1,13 @@
+//
+//  Int+Additions.swift
+//  Gameboy
+//
+//  Created by Andrew Apperley on 2019-06-07.
+//  Copyright © 2019 Andrew Apperley. All rights reserved.
+//
+
 import Foundation
+
 extension UInt8 {
 	
 	func bit(at index: Int) -> Int {
@@ -21,9 +30,3 @@ extension UInt8 {
 		return bit == 1 ? true : false
 	}
 }
-
-var A: UInt8 = 0b10010010
-var n: UInt8 = 0b10010010
-var r: UInt8 = A ^ n
-
-r.bits()

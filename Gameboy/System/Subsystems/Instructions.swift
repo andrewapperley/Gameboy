@@ -45,29 +45,30 @@ protocol Load {
 protocol ALU {
 	// - MARK: 8-Bit ALU
 	func ADD_A_n(n: RegisterMap.single)
-	func ADD_A_n(n: RegisterMap.combined) // For adding HL register
 	func ADDC_A_n(n: RegisterMap.single)
 	func SUB_n(n: RegisterMap.single)
-	func SUB_n(n: RegisterMap.combined) // For subtracting HL register
 	func SBC_A_n(n: RegisterMap.single)
 	func AND_n(n: RegisterMap.single)
-	func AND_n(n: RegisterMap.combined)
 	func OR_n(n: RegisterMap.single)
-	func OR_n(n: RegisterMap.combined)
 	func XOR_n(n: RegisterMap.single)
-	func XOR_n(n: RegisterMap.combined)
 	func CP_n(n: RegisterMap.single)
-	func CP_n(n: RegisterMap.combined)
 	func INC_n(n: RegisterMap.single)
-	func INC_n(n: RegisterMap.combined)
 	func DEC_n(n: RegisterMap.single)
-	func DEC_n(n: RegisterMap.combined)
 	
 	// - MARK: 16-Bit ALU
+	func ADD_A_n(n: RegisterMap.combined)
+	func SUB_n(n: RegisterMap.combined)
+	func AND_n(n: RegisterMap.combined)
+	func OR_n(n: RegisterMap.combined)
+	func XOR_n(n: RegisterMap.combined)
+	func CP_n(n: RegisterMap.combined)
+	func INC_n(n: RegisterMap.combined)
+	func DEC_n(n: RegisterMap.combined)
 }
 
 protocol Jumps {
 	func JP_nn(nn: UInt16)
+	func JR_cc_n(flag: Flag, n: UInt8)
 }
 
 protocol Restarts {

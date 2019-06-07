@@ -29,6 +29,13 @@ enum RegisterMap {
 	}
 }
 
+enum Flag: Int {
+	case Z = 7 // Zero Flag
+	case N = 6 // Subtract Flag
+	case H = 5 // Half Carry Flag
+	case C = 4 // Carry Flag
+}
+
 class Registers {
 	var A: UInt8 = 0x0
 	var F: UInt8 = 0x0
@@ -38,8 +45,16 @@ class Registers {
 	var E: UInt8 = 0x0
 	var H: UInt8 = 0x0
 	var L: UInt8 = 0x0
-	var SP: UInt16 = 0xFFFE
+	var SP: UInt16 = 0x0
 	var PC: UInt16 = 0x0
+	
+	func getFlag(_ flag: Flag) -> Bool {
+		return self.F.isSet(flag.rawValue)
+	}
+
+	func setFlag(_ flag: Flag, state: Bool) {
+		self.F.setBit(at: flag.rawValue, to: state ? 1 : 0)
+	}
 	
 	var AF: UInt16 {
 		get {
@@ -76,6 +91,7 @@ class Registers {
 	
 	func reset() {
 		A = 0x0
+		F = 0x0
 		B = 0x0
 		C = 0x0
 		D = 0x0
@@ -83,7 +99,7 @@ class Registers {
 		H = 0x0
 		L = 0x0
 		SP = 0xFFFE
-		PC = 0x0
+		PC = 0x000
 	}
 }
 

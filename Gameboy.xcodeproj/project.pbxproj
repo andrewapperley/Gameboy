@@ -22,6 +22,7 @@
 		0FEA3AC0226F320500AD96EE /* GameboyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FEA3ABF226F320500AD96EE /* GameboyViewController.swift */; };
 		0FEA3AC3226F339700AD96EE /* Gameboy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FEA3AC2226F339700AD96EE /* Gameboy.swift */; };
 		0FEA3AC6226F352800AD96EE /* CPU.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FEA3AC5226F352800AD96EE /* CPU.swift */; };
+		0FEB93FD22AA7D94002B8D57 /* Int+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FEB93FC22AA7D94002B8D57 /* Int+Additions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +56,7 @@
 		0FEA3ABF226F320500AD96EE /* GameboyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameboyViewController.swift; sourceTree = "<group>"; };
 		0FEA3AC2226F339700AD96EE /* Gameboy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gameboy.swift; sourceTree = "<group>"; };
 		0FEA3AC5226F352800AD96EE /* CPU.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPU.swift; sourceTree = "<group>"; };
+		0FEB93FC22AA7D94002B8D57 /* Int+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Int+Additions.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,6 +107,7 @@
 		0FEA3A9E226F319000AD96EE /* Gameboy */ = {
 			isa = PBXGroup;
 			children = (
+				0FEB93FB22AA7D73002B8D57 /* Additions */,
 				0F1696AD22732791009C7949 /* Resources */,
 				0F169666227119CA009C7949 /* DevelopmentPlayground.playground */,
 				0FEA3AC1226F334400AD96EE /* System */,
@@ -147,6 +150,14 @@
 				0FC11EC522A72F570060F7E0 /* MemoryController.swift */,
 			);
 			path = Subsystems;
+			sourceTree = "<group>";
+		};
+		0FEB93FB22AA7D73002B8D57 /* Additions */ = {
+			isa = PBXGroup;
+			children = (
+				0FEB93FC22AA7D94002B8D57 /* Int+Additions.swift */,
+			);
+			path = Additions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -259,6 +270,7 @@
 				0FEA3AC3226F339700AD96EE /* Gameboy.swift in Sources */,
 				0F16973622771B09009C7949 /* Registers.swift in Sources */,
 				0F1696B322732B69009C7949 /* Instructions.swift in Sources */,
+				0FEB93FD22AA7D94002B8D57 /* Int+Additions.swift in Sources */,
 				0FEA3AC0226F320500AD96EE /* GameboyViewController.swift in Sources */,
 				0FE4C74222A53C4800E927BA /* Cartridge.swift in Sources */,
 			);

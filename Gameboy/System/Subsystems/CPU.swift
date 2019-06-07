@@ -27,7 +27,7 @@ class CPU {
 	private func run() {
 		running = true
 		var count = 0
-		while(running && count < 10) {
+		while(running && count < 244) {
 			// fetch OPCode
 			let code = memory.readHalf(address: registers.PC)
 			// fetch and execute instruction
@@ -61,9 +61,13 @@ extension CPU: InstructionInvoker {
 		case 0x16:
 			let param = memory.readHalf(address: registers.PC+1)
 			self.LD_nn_n(nn: param, n: .D)
+		case 0x1A:
+			self.LD_n_A(n: registers.DE)
 		case 0x1E:
 			let param = memory.readHalf(address: registers.PC+1)
 			self.LD_nn_n(nn: param, n: .E)
+		case 0x22:
+			self.LDI_A_HL()
 		case 0x26:
 			let param = memory.readHalf(address: registers.PC+1)
 			self.LD_nn_n(nn: param, n: .H)
@@ -108,29 +112,58 @@ extension CPU: InstructionInvoker {
 		case 0x31:
 			let param = memory.readFull(address: registers.PC+1)
 			self.LD_n_nn(n: .SP, nn: param)
+		case 0xF9:
+			self.LD_SP_HL()
 //			Jumps
 		case 0xC3:
 			let param = memory.readFull(address: registers.PC+1)
 			self.JP_nn(nn: param)
+		case 0x20:
+			let param = memory.readHalf(address: registers.PC+1)
+			self.JR_cc_n(flag: .Z, n: param)
 //			ALU
 		case 0xAF:
 			self.XOR_n(n: .A)
 		case 0x3C:
 			self.INC_n(n: .A)
+		case 0x03:
+			self.INC_n(n: .BC)
 		case 0x04:
 			self.INC_n(n: .B)
 		case 0x0C:
 			self.INC_n(n: .C)
+		case 0x13:
+			self.INC_n(n: .DE)
 		case 0x14:
 			self.INC_n(n: .D)
 		case 0x1C:
 			self.INC_n(n: .E)
+		case 0x23:
+			self.INC_n(n: .HL)
 		case 0x24:
 			self.INC_n(n: .H)
 		case 0x2C:
 			self.INC_n(n: .L)
+		case 0x33:
+			self.INC_n(n: .SP)
 		case 0x34:
 			self.INC_n(n: .HL)
+		case 0x3D:
+			self.DEC_n(n: .A)
+		case 0x05:
+			self.DEC_n(n: .B)
+		case 0x0D:
+			self.DEC_n(n: .C)
+		case 0x15:
+			self.DEC_n(n: .D)
+		case 0x1D:
+			self.DEC_n(n: .E)
+		case 0x25:
+			self.DEC_n(n: .H)
+		case 0x2D:
+			self.DEC_n(n: .L)
+		case 0x35:
+			self.DEC_n(n: .HL)
 		case 0xFE:
 //			What does # mean? CP_n()
 			registers.PC += 1
@@ -139,6 +172,7 @@ extension CPU: InstructionInvoker {
 			self.RST_n(n: 0x38)
 		default:
 			print("OPCode not implemented yet:: \(String(format:"%02X", code))")
+			self.NOP()
 		}
 	}
 }
@@ -266,13 +300,11 @@ extension CPU: Load {
 }
 
 extension CPU: ALU { //	Flags affected
+	
+//	8-bit ALU
+	
 	func ADD_A_n(n: RegisterMap.single) {
 		registers.A += registers.mapRegister(register: n).pointee
-		registers.PC += 1
-	}
-	
-	func ADD_A_n(n: RegisterMap.combined) {
-		registers.A += UInt8(registers.mapRegister(register: n).pointee)
 		registers.PC += 1
 	}
 	
@@ -285,11 +317,6 @@ extension CPU: ALU { //	Flags affected
 		registers.PC += 1
 	}
 	
-	func SUB_n(n: RegisterMap.combined) {
-		registers.A -= UInt8(registers.mapRegister(register: n).pointee)
-		registers.PC += 1
-	}
-	
 	func SBC_A_n(n: RegisterMap.single) {
 		registers.PC += 1
 	}
@@ -299,18 +326,8 @@ extension CPU: ALU { //	Flags affected
 		registers.PC += 1
 	}
 	
-	func AND_n(n: RegisterMap.combined) {
-		registers.A &= UInt8(registers.mapRegister(register: n).pointee)
-		registers.PC += 1
-	}
-	
 	func OR_n(n: RegisterMap.single) {
 		registers.A |= registers.mapRegister(register: n).pointee
-		registers.PC += 1
-	}
-	
-	func OR_n(n: RegisterMap.combined) {
-		registers.A |= UInt8(registers.mapRegister(register: n).pointee)
 		registers.PC += 1
 	}
 	
@@ -319,24 +336,19 @@ extension CPU: ALU { //	Flags affected
 		registers.PC += 1
 	}
 	
-	func XOR_n(n: RegisterMap.combined) {
-		registers.A ^= UInt8(registers.mapRegister(register: n).pointee)
-		registers.PC += 1
-	}
-	
 	func CP_n(n: RegisterMap.single) {
-		let res = registers.A - registers.mapRegister(register: n).pointee
+		let nValue = registers.mapRegister(register: n).pointee
+		let res = registers.A - nValue
+		
 		if res == 0 {
-			
-		} // Other flag conditions
-		registers.PC += 1
-	}
-	
-	func CP_n(n: RegisterMap.combined) {
-		let res = registers.A - UInt8(registers.mapRegister(register: n).pointee)
-		if res == 0 {
-			
-		} // Other flag conditions
+			registers.setFlag(.Z, state: true)
+		}
+		registers.setFlag(.N, state: true)
+//		H - Set if no borrow from bit 4. NEED TO FIGURE OUT HOW TO DETECT BORROWING
+		if registers.A < nValue {
+			registers.setFlag(.C, state: true)
+		}
+
 		registers.PC += 1
 	}
 	
@@ -351,6 +363,53 @@ extension CPU: ALU { //	Flags affected
 		registers.PC += 1
 	}
 	
+	func DEC_n(n: RegisterMap.single) {
+		let current = registers.mapRegister(register: n).pointee
+		
+		if current != 0 {
+			let new: UInt8 = UInt8(current - 1)
+			// flags affected
+			registers.load(register: n, with: new)
+		}
+		
+		registers.PC += 1
+	}
+	
+//	16-bit ALU
+	
+	func ADD_A_n(n: RegisterMap.combined) {
+		registers.A += UInt8(registers.mapRegister(register: n).pointee)
+		registers.PC += 1
+	}
+	
+	func SUB_n(n: RegisterMap.combined) {
+		registers.A -= UInt8(registers.mapRegister(register: n).pointee)
+		registers.PC += 1
+	}
+	
+	func AND_n(n: RegisterMap.combined) {
+		registers.A &= UInt8(registers.mapRegister(register: n).pointee)
+		registers.PC += 1
+	}
+	
+	func OR_n(n: RegisterMap.combined) {
+		registers.A |= UInt8(registers.mapRegister(register: n).pointee)
+		registers.PC += 1
+	}
+	
+	func XOR_n(n: RegisterMap.combined) {
+		registers.A ^= UInt8(registers.mapRegister(register: n).pointee)
+		registers.PC += 1
+	}
+	
+	func CP_n(n: RegisterMap.combined) {
+		let res = registers.A - UInt8(registers.mapRegister(register: n).pointee)
+		if res == 0 {
+			
+		} // Other flag conditions
+		registers.PC += 1
+	}
+	
 	func INC_n(n: RegisterMap.combined) {
 		let current = registers.mapRegister(register: n).pointee
 		var new = current + 1
@@ -359,17 +418,6 @@ extension CPU: ALU { //	Flags affected
 		}
 		// flags affected
 		registers.load(register: n, with: UInt16(new))
-		registers.PC += 1
-	}
-	
-	func DEC_n(n: RegisterMap.single) {
-		let current = registers.mapRegister(register: n).pointee
-		var new = current - 1
-		if new <= 0 {
-			new = 0
-		}
-		// flags affected
-		registers.load(register: n, with: UInt8(new))
 		registers.PC += 1
 	}
 	
@@ -388,6 +436,16 @@ extension CPU: ALU { //	Flags affected
 extension CPU: Jumps {
 	func JP_nn(nn: UInt16) {
 		registers.PC = nn
+	}
+	
+	func JR_cc_n(flag: Flag, n: UInt8) { // Need to explore other docs about this command
+		var address = registers.PC
+		if registers.getFlag(flag) {
+			address += UInt16(n)
+			registers.PC = address
+		} else {
+			registers.PC += 1
+		}
 	}
 }
 
