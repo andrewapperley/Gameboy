@@ -8,6 +8,10 @@
 
 import Foundation
 
+enum DeviceType: Int {
+	case DMG = 0x0
+}
+
 enum CartridgeType: Int {
 	case ROM = 0x0
 	case ROM_MBC1 = 0x1
@@ -69,11 +73,29 @@ enum LicenseeCode: Int {
 	case Konami = 0xA4
 }
 
+enum CartridgeMemoryMap: Int {
+	case TitleStart = 0x0134
+	case TitleEnd = 0x0142
+	case DeviceType = 0x0143
+	case LicenseeCode = 0x0144
+	case SGB = 0x0146
+	case CartridgeType = 0x0147
+	case RomSize = 0x0148
+	case Ramize = 0x0149
+	case DestinationCode = 0x014A
+	case MaskROMVersion = 0x014B
+	case HeaderCheck = 0x014D
+	case GlobalCheck = 0x014E
+}
+
 struct Cartridge {
 	let rom: [UInt8]
+	let title: String
 	let type: CartridgeType
+	let deviceType: DeviceType
 	let romSize: RomSize
 	let ramSize: RamSize
+	let maskROMVersion: Bool
 	let destinationCode: DestinationCode
 	let memoryController: MemoryController
 	
@@ -83,10 +105,28 @@ struct Cartridge {
 		}
 		self.rom = Array<UInt8>(rom)
 //		This needs to be configured by reading the rom data
-		type = .ROM
+		title = Cartridge.getTitle(from: self.rom)
+		deviceType = Cartridge.getDeviceType(from: self.rom)
+		type = Cartridge.getCartridgeType(from: self.rom)
 		romSize = .kBit_256
 		ramSize = .kBit_256
 		destinationCode = .Non_Japanese
+		maskROMVersion = true
 		memoryController = MBC1()
+	}
+	
+	private static func getTitle(from rom: [UInt8]) -> String {
+		let data = rom[CartridgeMemoryMap.TitleStart.rawValue...CartridgeMemoryMap.TitleEnd.rawValue].filter { (byte) -> Bool in
+			return byte != 0
+		}
+		return String(bytes: data, encoding: .utf8) ?? ""
+	}
+	
+	private static func getDeviceType(from rom: [UInt8]) -> DeviceType {
+		return DeviceType(rawValue: Int(rom[CartridgeMemoryMap.DeviceType.rawValue])) ?? DeviceType.DMG
+	}
+	
+	private static func getCartridgeType(from rom: [UInt8]) -> CartridgeType {
+		return CartridgeType(rawValue: Int(rom[CartridgeMemoryMap.CartridgeType.rawValue])) ?? CartridgeType.ROM
 	}
 }

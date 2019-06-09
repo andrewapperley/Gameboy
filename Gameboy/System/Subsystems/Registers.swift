@@ -48,7 +48,11 @@ class Registers {
 	var SP: UInt16 = 0x0
 	var PC: UInt16 = 0x0
 	
-	func getFlag(_ flag: Flag) -> Bool {
+	func getFlag(_ flag: Flag) -> Int {
+		return self.F.bit(at: flag.rawValue)
+	}
+	
+	func getFlagState(_ flag: Flag) -> Bool {
 		return self.F.isSet(flag.rawValue)
 	}
 
@@ -58,34 +62,38 @@ class Registers {
 	
 	var AF: UInt16 {
 		get {
-			return UInt16((A << 8) | F)
+			return UInt16(A) << 8 | UInt16(F)
 		}
 		set {
-			
+			A = UInt8(newValue >> 8)
+			F = UInt8(newValue & 0xFF)
 		}
 	}
 	var BC: UInt16 {
 		get {
-			return UInt16((B << 8) | C)
+			return UInt16(B) << 8 | UInt16(C)
 		}
 		set {
-			
+			B = UInt8(newValue >> 8)
+			C = UInt8(newValue & 0xFF)
 		}
 	}
 	var DE: UInt16 {
 		get {
-			return UInt16((D << 8) | E)
+			return UInt16(D) << 8 | UInt16(E)
 		}
 		set {
-			
+			D = UInt8(newValue >> 8)
+			E = UInt8(newValue & 0xFF)
 		}
 	}
 	var HL: UInt16 {
 		get {
-			return UInt16((H << 8) | L)
+			return UInt16(H) << 8 | UInt16(L)
 		}
 		set {
-			
+			H = UInt8(newValue >> 8)
+			L = UInt8(newValue & 0xFF)
 		}
 	}
 	
@@ -98,8 +106,8 @@ class Registers {
 		E = 0x0
 		H = 0x0
 		L = 0x0
-		SP = 0xFFFE
-		PC = 0x000
+		SP = 0x0
+		PC = 0x0
 	}
 }
 
@@ -150,11 +158,11 @@ extension Registers: RegisterLoading {
 		case .BC:
 			return UnsafeMutablePointer<UInt16>(&BC)
 		case .DE:
-			return UnsafeMutablePointer<UInt16>(&AF)
+			return UnsafeMutablePointer<UInt16>(&DE)
 		case .HL:
-			return UnsafeMutablePointer<UInt16>(&AF)
+			return UnsafeMutablePointer<UInt16>(&HL)
 		case .SP:
-			return UnsafeMutablePointer<UInt16>(&AF)
+			return UnsafeMutablePointer<UInt16>(&SP)
 		}
 	}
 	
@@ -175,26 +183,54 @@ extension Registers: RegisterLoading {
 	}
 	
 	func load(register: RegisterMap.single, with value: UInt8) {
-		load(ls: mapRegister(register: register), rs: value)
+		switch register {
+		case .A:
+			A = value
+		case .B:
+			B = value
+		case .C:
+			C = value
+		case .D:
+			D = value
+		case .E:
+			E = value
+		case .F:
+			F = value
+		case .H:
+			H = value
+		case .L:
+			L = value
+		}
 	}
 	
 	func load(register: RegisterMap.single, with value: RegisterMap.single) {
-		load(ls: mapRegister(register: register), rs: mapRegister(register: value).pointee)
+		load(register: register, with: mapRegister(register: value).pointee)
 	}
 	
 	func load(register: RegisterMap.single, with value: RegisterMap.combined) {
-		load(ls: mapRegister(register: register), rs: mapRegister(register: value).pointee)
+		load(register: register, with: UInt8(mapRegister(register: value).pointee))
 	}
 	
 	func load(register: RegisterMap.combined, with value: UInt16) {
-		load(ls: mapRegister(register: register), rs: value)
+		switch register {
+			case .AF:
+				AF = value
+			case .BC:
+				BC = value
+			case .DE:
+				DE = value
+			case .HL:
+				HL = value
+			case .SP:
+				SP = value
+		}
 	}
 	
 	func load(register: RegisterMap.combined, with value: RegisterMap.combined) {
-		load(ls: mapRegister(register: register), rs: mapRegister(register: value).pointee)
+		load(register: register, with: mapRegister(register: value).pointee)
 	}
 	
 	func load(register: RegisterMap.combined, with value: RegisterMap.single) {
-		load(ls: mapRegister(register: register), rs: mapRegister(register: value).pointee)
+		load(register: register, with: UInt16(mapRegister(register: value).pointee))
 	}
 }

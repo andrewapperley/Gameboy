@@ -12,6 +12,7 @@
 		0F1696B322732B69009C7949 /* Instructions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F1696B222732B69009C7949 /* Instructions.swift */; };
 		0F1696D722738CC4009C7949 /* game.gb in Resources */ = {isa = PBXBuildFile; fileRef = 0F1696D622738CC4009C7949 /* game.gb */; };
 		0F16973622771B09009C7949 /* Registers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F16973522771B09009C7949 /* Registers.swift */; };
+		0F88A26222AD62E500EC5AE2 /* CPU+Debugging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F88A26122AD62E500EC5AE2 /* CPU+Debugging.swift */; };
 		0FC11E9A22A697D30060F7E0 /* FileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FC11E9922A697D30060F7E0 /* FileSystem.swift */; };
 		0FC11EC422A72B100060F7E0 /* CPUTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FC11EC322A72B100060F7E0 /* CPUTimer.swift */; };
 		0FC11EC622A72F570060F7E0 /* MemoryController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FC11EC522A72F570060F7E0 /* MemoryController.swift */; };
@@ -42,6 +43,7 @@
 		0F1696B222732B69009C7949 /* Instructions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Instructions.swift; sourceTree = "<group>"; };
 		0F1696D622738CC4009C7949 /* game.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = game.gb; sourceTree = "<group>"; };
 		0F16973522771B09009C7949 /* Registers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Registers.swift; sourceTree = "<group>"; };
+		0F88A26122AD62E500EC5AE2 /* CPU+Debugging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CPU+Debugging.swift"; sourceTree = "<group>"; };
 		0FC11E9922A697D30060F7E0 /* FileSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileSystem.swift; sourceTree = "<group>"; };
 		0FC11EC322A72B100060F7E0 /* CPUTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPUTimer.swift; sourceTree = "<group>"; };
 		0FC11EC522A72F570060F7E0 /* MemoryController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryController.swift; sourceTree = "<group>"; };
@@ -156,6 +158,7 @@
 			isa = PBXGroup;
 			children = (
 				0FEB93FC22AA7D94002B8D57 /* Int+Additions.swift */,
+				0F88A26122AD62E500EC5AE2 /* CPU+Debugging.swift */,
 			);
 			path = Additions;
 			sourceTree = "<group>";
@@ -273,6 +276,7 @@
 				0FEB93FD22AA7D94002B8D57 /* Int+Additions.swift in Sources */,
 				0FEA3AC0226F320500AD96EE /* GameboyViewController.swift in Sources */,
 				0FE4C74222A53C4800E927BA /* Cartridge.swift in Sources */,
+				0F88A26222AD62E500EC5AE2 /* CPU+Debugging.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

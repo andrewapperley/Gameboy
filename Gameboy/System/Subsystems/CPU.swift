@@ -18,23 +18,22 @@ class CPU {
 		guard let boot = FileSystem.readBootROM() else { return }
 
 		memory.loadBios(Array<UInt8>(boot))
-		memory.write(address: MemoryMap.ROM_0.lowerBound, data: Array<UInt8>(cartridge.rom))
+		memory.loadRom(Array<UInt8>(cartridge.rom))
 		run()
 	}
 	
 	private var running = false // This needs to be determined by reading the Registers
 	
+	
 	private func run() {
 		running = true
-		var count = 0
-		while(running && count < 244) {
+ 		while(running) {
 			// fetch OPCode
 			let code = memory.readHalf(address: registers.PC)
 			// fetch and execute instruction
 			fetchAndInvokeInstruction(with: code)
 			// check for I/O ?
 			// render
-			count += 1
 		}
 	}
 	
@@ -46,133 +45,467 @@ class CPU {
 
 extension CPU: InstructionInvoker {
 	func fetchAndInvokeInstruction(with code: UInt8) {
-		print("Calling OPCode:: \(String(format:"%02X", code))")
+		print("Fetching OPCode:: \(String(format:"0x%02X", code))")
+		
+		if (registers.PC == 0x000C) {
+			
+		}
+		
 		switch code {
 //			Misc
 		case 0x00:
+			self.opCodePrint(code: code, func: "NOP")
 			self.NOP()
+		case 0x10:
+			self.opCodePrint(code: code, func: "STOP")
+			self.STOP()
+		case 0x2F:
+			self.opCodePrint(code: code, func: "CPL")
+			self.CPL()
 //			8-bit Loads
 		case 0x06:
+			self.opCodePrint(code: code, func: "LD_nn_n")
 			let param = memory.readHalf(address: registers.PC+1)
 			self.LD_nn_n(nn: param, n: .B)
 		case 0x0E:
+			self.opCodePrint(code: code, func: "LD_nn_n")
 			let param = memory.readHalf(address: registers.PC+1)
 			self.LD_nn_n(nn: param, n: .C)
 		case 0x16:
+			self.opCodePrint(code: code, func: "LD_nn_n")
 			let param = memory.readHalf(address: registers.PC+1)
 			self.LD_nn_n(nn: param, n: .D)
 		case 0x1A:
+			self.opCodePrint(code: code, func: "LD_n_A")
 			self.LD_n_A(n: registers.DE)
 		case 0x1E:
+			self.opCodePrint(code: code, func: "LD_nn_n")
 			let param = memory.readHalf(address: registers.PC+1)
 			self.LD_nn_n(nn: param, n: .E)
 		case 0x22:
+			self.opCodePrint(code: code, func: "LDI_A_HL")
 			self.LDI_A_HL()
 		case 0x26:
+			self.opCodePrint(code: code, func: "LD_nn_n")
 			let param = memory.readHalf(address: registers.PC+1)
 			self.LD_nn_n(nn: param, n: .H)
 		case 0x2E:
+			self.opCodePrint(code: code, func: "LD_nn_n")
 			let param = memory.readHalf(address: registers.PC+1)
 			self.LD_nn_n(nn: param, n: .L)
 		case 0x47:
+			self.opCodePrint(code: code, func: "LD_B_A")
 			self.LD(r1: .B, r2: .A)
 		case 0x4F:
+			self.opCodePrint(code: code, func: "LD_C_A")
 			self.LD(r1: .C, r2: .A)
 		case 0x57:
+			self.opCodePrint(code: code, func: "LD_D_A")
 			self.LD(r1: .D, r2: .A)
 		case 0x5F:
+			self.opCodePrint(code: code, func: "LD_E_A")
 			self.LD(r1: .E, r2: .A)
 		case 0x60:
+			self.opCodePrint(code: code, func: "LD_H_B")
 			self.LD(r1: .H, r2: .B)
 		case 0x67:
+			self.opCodePrint(code: code, func: "LD_H_A")
 			self.LD(r1: .H, r2: .A)
 		case 0x6F:
+			self.opCodePrint(code: code, func: "LD_L_A")
 			self.LD(r1: .L, r2: .A)
 		case 0x7F:
+			self.opCodePrint(code: code, func: "LD_A_A")
 			self.LD(r1: .A, r2: .A)
 		case 0x02:
+			self.opCodePrint(code: code, func: "LD_n_A")
 			self.LD_n_A(n: registers.BC)
 		case 0x12:
+			self.opCodePrint(code: code, func: "LD_n_A")
 			self.LD_n_A(n: registers.DE)
 		case 0x77:
+			self.opCodePrint(code: code, func: "LD_n_A")
 			self.LD_n_A(n: registers.HL)
 		case 0xEA:
+			self.opCodePrint(code: code, func: "LD_n_A")
 			let param = memory.readFull(address: registers.PC+1)
 			self.LD_n_A(n: param)
+		case 0x32:
+			self.opCodePrint(code: code, func: "LDD_HL_A")
+			self.LDD_HL_A()
+		case 0x3E:
+			self.opCodePrint(code: code, func: "LD_A_n")
+			let param = memory.readHalf(address: registers.PC+1)
+			self.LD_A_n(n: param)
+		case 0xE2:
+			self.opCodePrint(code: code, func: "LD_A_C")
+			self.LD_A_C()
 		case 0xF0:
+			self.opCodePrint(code: code, func: "LDH_A_n")
 			let param = memory.readHalf(address: registers.PC+1)
 			self.LDH_A_n(n: param)
 //			16-bit Loads
 		case 0x08:
+			self.opCodePrint(code: code, func: "LD_nn_SP")
 			let param = memory.readFull(address: registers.PC+1)
 			self.LD_nn_SP(nn: param)
 		case 0x21:
+			self.opCodePrint(code: code, func: "LD_n_nn")
 			let param = memory.readFull(address: registers.PC+1)
 			self.LD_n_nn(n: .HL, nn: param)
 		case 0x31:
+			self.opCodePrint(code: code, func: "LD_n_nn")
 			let param = memory.readFull(address: registers.PC+1)
 			self.LD_n_nn(n: .SP, nn: param)
 		case 0xF9:
+			self.opCodePrint(code: code, func: "LD_SP_HL")
 			self.LD_SP_HL()
 //			Jumps
 		case 0xC3:
+			self.opCodePrint(code: code, func: "JP_nn")
 			let param = memory.readFull(address: registers.PC+1)
 			self.JP_nn(nn: param)
-		case 0x20:
+		case 0x18:
+			self.opCodePrint(code: code, func: "JP_n")
 			let param = memory.readHalf(address: registers.PC+1)
-			self.JR_cc_n(flag: .Z, n: param)
+			self.JR_n(n: param)
+		case 0x20:
+			self.opCodePrint(code: code, func: "JR_cc_n")
+			let param = memory.readHalf(address: registers.PC+1)
+			self.JR_cc_n(flag: .Z, n: param, state: false)
+		case 0x28:
+			self.opCodePrint(code: code, func: "JR_cc_n")
+			let param = memory.readHalf(address: registers.PC+1)
+			self.JR_cc_n(flag: .Z, n: param, state: true)
+		case 0x30:
+			self.opCodePrint(code: code, func: "JR_cc_n")
+			let param = memory.readHalf(address: registers.PC+1)
+			self.JR_cc_n(flag: .C, n: param, state: false)
+		case 0x38:
+			self.opCodePrint(code: code, func: "JR_cc_n")
+			let param = memory.readHalf(address: registers.PC+1)
+			self.JR_cc_n(flag: .C, n: param, state: true)
 //			ALU
+		case 0x9F:
+			self.opCodePrint(code: code, func: "SBC_A_A")
+			self.SBC_A_n(n: .A)
+		case 0x98:
+			self.opCodePrint(code: code, func: "SBC_A_B")
+			self.SBC_A_n(n: .B)
+		case 0x99:
+			self.opCodePrint(code: code, func: "SBC_A_C")
+			self.SBC_A_n(n: .C)
+		case 0x9A:
+			self.opCodePrint(code: code, func: "SBC_A_D")
+			self.SBC_A_n(n: .D)
+		case 0x9B:
+			self.opCodePrint(code: code, func: "SBC_A_E")
+			self.SBC_A_n(n: .E)
+		case 0x9C:
+			self.opCodePrint(code: code, func: "SBC_A_H")
+			self.SBC_A_n(n: .H)
+		case 0x9D:
+			self.opCodePrint(code: code, func: "SBC_A_L")
+			self.SBC_A_n(n: .L)
+		case 0x9E:
+			self.opCodePrint(code: code, func: "SBC_A_HL")
+			self.SBC_A_n(n: .HL)
 		case 0xAF:
+			self.opCodePrint(code: code, func: "XOR_A")
 			self.XOR_n(n: .A)
 		case 0x3C:
+			self.opCodePrint(code: code, func: "INC_A")
 			self.INC_n(n: .A)
 		case 0x03:
+			self.opCodePrint(code: code, func: "INC_BC")
 			self.INC_n(n: .BC)
 		case 0x04:
+			self.opCodePrint(code: code, func: "INC_B")
 			self.INC_n(n: .B)
 		case 0x0C:
+			self.opCodePrint(code: code, func: "INC_C")
 			self.INC_n(n: .C)
 		case 0x13:
+			self.opCodePrint(code: code, func: "INC_DE")
 			self.INC_n(n: .DE)
 		case 0x14:
+			self.opCodePrint(code: code, func: "INC_D")
 			self.INC_n(n: .D)
 		case 0x1C:
+			self.opCodePrint(code: code, func: "INC_E")
 			self.INC_n(n: .E)
 		case 0x23:
+			self.opCodePrint(code: code, func: "INC_HL")
 			self.INC_n(n: .HL)
 		case 0x24:
+			self.opCodePrint(code: code, func: "INC_H")
 			self.INC_n(n: .H)
 		case 0x2C:
+			self.opCodePrint(code: code, func: "INC_L")
 			self.INC_n(n: .L)
 		case 0x33:
+			self.opCodePrint(code: code, func: "INC_SP")
 			self.INC_n(n: .SP)
 		case 0x34:
+			self.opCodePrint(code: code, func: "INC_HL")
 			self.INC_n(n: .HL)
 		case 0x3D:
+			self.opCodePrint(code: code, func: "DEC_A")
 			self.DEC_n(n: .A)
 		case 0x05:
+			self.opCodePrint(code: code, func: "DEC_B")
 			self.DEC_n(n: .B)
 		case 0x0D:
+			self.opCodePrint(code: code, func: "DEC_C")
 			self.DEC_n(n: .C)
 		case 0x15:
+			self.opCodePrint(code: code, func: "DEC_D")
 			self.DEC_n(n: .D)
 		case 0x1D:
+			self.opCodePrint(code: code, func: "DEC_E")
 			self.DEC_n(n: .E)
 		case 0x25:
+			self.opCodePrint(code: code, func: "DEC_H")
 			self.DEC_n(n: .H)
 		case 0x2D:
+			self.opCodePrint(code: code, func: "DEC_L")
 			self.DEC_n(n: .L)
 		case 0x35:
+			self.opCodePrint(code: code, func: "DEC_HL")
 			self.DEC_n(n: .HL)
 		case 0xFE:
+			self.opCodePrint(code: code, func: "NOTHING. CONFUSED. CP_n")
 //			What does # mean? CP_n()
 			registers.PC += 1
+		case 0x09:
+			self.opCodePrint(code: code, func: "ADD_HL_BC")
+			self.ADD_HL_n(n: registers.BC)
+		case 0x19:
+			self.opCodePrint(code: code, func: "ADD_HL_DE")
+			self.ADD_HL_n(n: registers.DE)
+		case 0x29:
+			self.opCodePrint(code: code, func: "ADD_HL_HL")
+			self.ADD_HL_n(n: registers.HL)
+		case 0x39:
+			self.opCodePrint(code: code, func: "ADD_HL_SP")
+			self.ADD_HL_n(n: registers.SP)
+//			Bits
+		case 0xCB:
+			let innerCode = memory.readHalf(address: registers.PC+1)
+			switch(innerCode) {
+			case 0x40:
+				self.opCodePrint(code: code, func: "BIT_0_B", innerCode: innerCode)
+				self.BIT_b_r(b: 0, r: registers.B)
+			case 0x41:
+				self.opCodePrint(code: code, func: "BIT_0_C", innerCode: innerCode)
+				self.BIT_b_r(b: 0, r: registers.C)
+			case 0x42:
+				self.opCodePrint(code: code, func: "BIT_0_D", innerCode: innerCode)
+				self.BIT_b_r(b: 0, r: registers.D)
+			case 0x43:
+				self.opCodePrint(code: code, func: "BIT_0_E", innerCode: innerCode)
+				self.BIT_b_r(b: 0, r: registers.E)
+			case 0x44:
+				self.opCodePrint(code: code, func: "BIT_0_H", innerCode: innerCode)
+				self.BIT_b_r(b: 0, r: registers.H)
+			case 0x45:
+				self.opCodePrint(code: code, func: "BIT_0_L", innerCode: innerCode)
+				self.BIT_b_r(b: 0, r: registers.L)
+			case 0x46:
+				self.opCodePrint(code: code, func: "BIT_0_HL", innerCode: innerCode)
+				self.BIT_b_r(b: 0, r: registers.HL)
+			case 0x47:
+				self.opCodePrint(code: code, func: "BIT_0_A", innerCode: innerCode)
+				self.BIT_b_r(b: 0, r: registers.A)
+				
+			case 0x48:
+				self.opCodePrint(code: code, func: "BIT_1_B", innerCode: innerCode)
+				self.BIT_b_r(b: 1, r: registers.B)
+			case 0x49:
+				self.opCodePrint(code: code, func: "BIT_1_C", innerCode: innerCode)
+				self.BIT_b_r(b: 1, r: registers.C)
+			case 0x4A:
+				self.opCodePrint(code: code, func: "BIT_1_D", innerCode: innerCode)
+				self.BIT_b_r(b: 1, r: registers.D)
+			case 0x4B:
+				self.opCodePrint(code: code, func: "BIT_1_E", innerCode: innerCode)
+				self.BIT_b_r(b: 1, r: registers.E)
+			case 0x4C:
+				self.opCodePrint(code: code, func: "BIT_1_H", innerCode: innerCode)
+				self.BIT_b_r(b: 1, r: registers.H)
+			case 0x4D:
+				self.opCodePrint(code: code, func: "BIT_1_L", innerCode: innerCode)
+				self.BIT_b_r(b: 1, r: registers.L)
+			case 0x4E:
+				self.opCodePrint(code: code, func: "BIT_1_HL", innerCode: innerCode)
+				self.BIT_b_r(b: 1, r: registers.HL)
+			case 0x4F:
+				self.opCodePrint(code: code, func: "BIT_1_A", innerCode: innerCode)
+				self.BIT_b_r(b: 1, r: registers.A)
+				
+			case 0x50:
+				self.opCodePrint(code: code, func: "BIT_2_B", innerCode: innerCode)
+				self.BIT_b_r(b: 2, r: registers.B)
+			case 0x51:
+				self.opCodePrint(code: code, func: "BIT_2_C", innerCode: innerCode)
+				self.BIT_b_r(b: 2, r: registers.C)
+			case 0x52:
+				self.opCodePrint(code: code, func: "BIT_2_D", innerCode: innerCode)
+				self.BIT_b_r(b: 2, r: registers.D)
+			case 0x53:
+				self.opCodePrint(code: code, func: "BIT_2_E", innerCode: innerCode)
+				self.BIT_b_r(b: 2, r: registers.E)
+			case 0x54:
+				self.opCodePrint(code: code, func: "BIT_2_H", innerCode: innerCode)
+				self.BIT_b_r(b: 2, r: registers.H)
+			case 0x55:
+				self.opCodePrint(code: code, func: "BIT_2_L", innerCode: innerCode)
+				self.BIT_b_r(b: 2, r: registers.L)
+			case 0x56:
+				self.opCodePrint(code: code, func: "BIT_2_HL", innerCode: innerCode)
+				self.BIT_b_r(b: 2, r: registers.HL)
+			case 0x57:
+				self.opCodePrint(code: code, func: "BIT_2_A", innerCode: innerCode)
+				self.BIT_b_r(b: 2, r: registers.A)
+				
+			case 0x58:
+				self.opCodePrint(code: code, func: "BIT_3_B", innerCode: innerCode)
+				self.BIT_b_r(b: 3, r: registers.B)
+			case 0x59:
+				self.opCodePrint(code: code, func: "BIT_3_C", innerCode: innerCode)
+				self.BIT_b_r(b: 3, r: registers.C)
+			case 0x5A:
+				self.opCodePrint(code: code, func: "BIT_3_D", innerCode: innerCode)
+				self.BIT_b_r(b: 3, r: registers.D)
+			case 0x5B:
+				self.opCodePrint(code: code, func: "BIT_3_E", innerCode: innerCode)
+				self.BIT_b_r(b: 3, r: registers.E)
+			case 0x5C:
+				self.opCodePrint(code: code, func: "BIT_3_H", innerCode: innerCode)
+				self.BIT_b_r(b: 3, r: registers.H)
+			case 0x5D:
+				self.opCodePrint(code: code, func: "BIT_3_L", innerCode: innerCode)
+				self.BIT_b_r(b: 3, r: registers.L)
+			case 0x5E:
+				self.opCodePrint(code: code, func: "BIT_3_HL", innerCode: innerCode)
+				self.BIT_b_r(b: 3, r: registers.HL)
+			case 0x5F:
+				self.opCodePrint(code: code, func: "BIT_3_A", innerCode: innerCode)
+				self.BIT_b_r(b: 3, r: registers.A)
+				
+			case 0x60:
+				self.opCodePrint(code: code, func: "BIT_4_B", innerCode: innerCode)
+				self.BIT_b_r(b: 4, r: registers.B)
+			case 0x61:
+				self.opCodePrint(code: code, func: "BIT_4_C", innerCode: innerCode)
+				self.BIT_b_r(b: 4, r: registers.C)
+			case 0x62:
+				self.opCodePrint(code: code, func: "BIT_4_D", innerCode: innerCode)
+				self.BIT_b_r(b: 4, r: registers.D)
+			case 0x63:
+				self.opCodePrint(code: code, func: "BIT_4_E", innerCode: innerCode)
+				self.BIT_b_r(b: 4, r: registers.E)
+			case 0x64:
+				self.opCodePrint(code: code, func: "BIT_4_H", innerCode: innerCode)
+				self.BIT_b_r(b: 4, r: registers.H)
+			case 0x65:
+				self.opCodePrint(code: code, func: "BIT_4_L", innerCode: innerCode)
+				self.BIT_b_r(b: 4, r: registers.L)
+			case 0x66:
+				self.opCodePrint(code: code, func: "BIT_4_HL", innerCode: innerCode)
+				self.BIT_b_r(b: 4, r: registers.HL)
+			case 0x67:
+				self.opCodePrint(code: code, func: "BIT_4_A", innerCode: innerCode)
+				self.BIT_b_r(b: 4, r: registers.A)
+				
+			case 0x68:
+				self.opCodePrint(code: code, func: "BIT_5_B", innerCode: innerCode)
+				self.BIT_b_r(b: 5, r: registers.B)
+			case 0x69:
+				self.opCodePrint(code: code, func: "BIT_5_C", innerCode: innerCode)
+				self.BIT_b_r(b: 5, r: registers.C)
+			case 0x6A:
+				self.opCodePrint(code: code, func: "BIT_5_D", innerCode: innerCode)
+				self.BIT_b_r(b: 5, r: registers.D)
+			case 0x6B:
+				self.opCodePrint(code: code, func: "BIT_5_E", innerCode: innerCode)
+				self.BIT_b_r(b: 5, r: registers.E)
+			case 0x6C:
+				self.opCodePrint(code: code, func: "BIT_5_H", innerCode: innerCode)
+				self.BIT_b_r(b: 5, r: registers.H)
+			case 0x6D:
+				self.opCodePrint(code: code, func: "BIT_5_L", innerCode: innerCode)
+				self.BIT_b_r(b: 5, r: registers.L)
+			case 0x6E:
+				self.opCodePrint(code: code, func: "BIT_5_HL", innerCode: innerCode)
+				self.BIT_b_r(b: 5, r: registers.HL)
+			case 0x6F:
+				self.opCodePrint(code: code, func: "BIT_5_A", innerCode: innerCode)
+				self.BIT_b_r(b: 5, r: registers.A)
+				
+			case 0x70:
+				self.opCodePrint(code: code, func: "BIT_6_B", innerCode: innerCode)
+				self.BIT_b_r(b: 6, r: registers.B)
+			case 0x71:
+				self.opCodePrint(code: code, func: "BIT_6_C", innerCode: innerCode)
+				self.BIT_b_r(b: 6, r: registers.C)
+			case 0x72:
+				self.opCodePrint(code: code, func: "BIT_6_D", innerCode: innerCode)
+				self.BIT_b_r(b: 6, r: registers.D)
+			case 0x73:
+				self.opCodePrint(code: code, func: "BIT_6_E", innerCode: innerCode)
+				self.BIT_b_r(b: 6, r: registers.E)
+			case 0x74:
+				self.opCodePrint(code: code, func: "BIT_6_H", innerCode: innerCode)
+				self.BIT_b_r(b: 6, r: registers.H)
+			case 0x75:
+				self.opCodePrint(code: code, func: "BIT_6_L", innerCode: innerCode)
+				self.BIT_b_r(b: 6, r: registers.L)
+			case 0x76:
+				self.opCodePrint(code: code, func: "BIT_6_HL", innerCode: innerCode)
+				self.BIT_b_r(b: 6, r: registers.HL)
+			case 0x77:
+				self.opCodePrint(code: code, func: "BIT_6_A", innerCode: innerCode)
+				self.BIT_b_r(b: 6, r: registers.A)
+				
+			case 0x78:
+				self.opCodePrint(code: code, func: "BIT_7_B", innerCode: innerCode)
+				self.BIT_b_r(b: 7, r: registers.B)
+			case 0x79:
+				self.opCodePrint(code: code, func: "BIT_7_C", innerCode: innerCode)
+				self.BIT_b_r(b: 7, r: registers.C)
+			case 0x7A:
+				self.opCodePrint(code: code, func: "BIT_7_D", innerCode: innerCode)
+				self.BIT_b_r(b: 7, r: registers.D)
+			case 0x7B:
+				self.opCodePrint(code: code, func: "BIT_7_E", innerCode: innerCode)
+				self.BIT_b_r(b: 7, r: registers.E)
+			case 0x7C:
+				self.opCodePrint(code: code, func: "BIT_7_H", innerCode: innerCode)
+				self.BIT_b_r(b: 7, r: registers.H)
+			case 0x7D:
+				self.opCodePrint(code: code, func: "BIT_7_L", innerCode: innerCode)
+				self.BIT_b_r(b: 7, r: registers.L)
+			case 0x7E:
+				self.opCodePrint(code: code, func: "BIT_7_HL", innerCode: innerCode)
+				self.BIT_b_r(b: 7, r: registers.HL)
+			case 0x7F:
+				self.opCodePrint(code: code, func: "BIT_7_A", innerCode: innerCode)
+				self.BIT_b_r(b: 7, r: registers.A)
+			default:
+				print("OPCode not implemented yet:: \(String(format:"%02X %02X", code, innerCode))")
+				self.NOP()
+			}
 //			Restarts
 		case 0xFF:
+			self.opCodePrint(code: code, func: "RST_n")
 			self.RST_n(n: 0x38)
+//			Rotates
+		case 0x0F:
+			self.opCodePrint(code: code, func: "RRCA")
+			self.RRCA()
 		default:
-			print("OPCode not implemented yet:: \(String(format:"%02X", code))")
-			self.NOP()
+ 			print("OPCode not implemented yet:: \(String(format:"%02X", code))")
 		}
 	}
 }
@@ -181,12 +514,24 @@ extension CPU: Misc {
 	func NOP() {
 		registers.PC += 1
 	}
+	
+	func STOP() {
+//		self.running = false
+		registers.PC += 1
+	}
+	
+	func CPL() {
+		registers.setFlag(.N, state: true)
+		registers.setFlag(.H, state: true)
+		registers.A ^= UInt8(UINT8_MAX)
+		registers.PC += 1
+	}
 }
 
 extension CPU: Load {
 	func LD_nn_n(nn: UInt8, n: RegisterMap.single) {
 		registers.load(register: n, with: nn)
-		registers.PC += 1
+		registers.PC += 2
 	}
 	
 	func LD(r1: RegisterMap.single, r2: RegisterMap.single) {
@@ -206,17 +551,17 @@ extension CPU: Load {
 	
 	func LD_A_n(n: UInt8) {
 		registers.A = n
-		registers.PC += 1
+		registers.PC += 2
 	}
 	
 	func LD_A_n(nn: UInt16) {
 		registers.A = UInt8(nn)
-		registers.PC += 1
+		registers.PC += 2
 	}
 	
 	func LD_n_A(n: UInt16) {
 		memory.write(address: n, data: registers.A)
-		registers.PC += 1
+		registers.PC += 2
 	}
 	
 	func LD_A_C() {
@@ -255,18 +600,18 @@ extension CPU: Load {
 	
 	func LDH_n_A(n: UInt8) {
 		memory.write(address: 0xFF00 + UInt16(n), data: registers.A)
-		registers.PC += 1
+		registers.PC += 2
 	}
 	
 	func LDH_A_n(n: UInt8) {
 		let data = memory.readHalf(address: 0xFF00 + UInt16(n))
 		registers.load(register: .A, with: data)
-		registers.PC += 1
+		registers.PC += 2
 	}
 	
 	func LD_n_nn(n: RegisterMap.combined, nn: UInt16) {
 		registers.load(register: n, with: nn)
-		registers.PC += 1
+		registers.PC += 3
 	}
 	
 	func LD_SP_HL() {
@@ -274,15 +619,16 @@ extension CPU: Load {
 		registers.PC += 1
 	}
 	
-	func LDHL_SP_n(n: Int8) {
-		registers.HL = (registers.SP + UInt16(n))
+	func LDHL_SP_n(n: UInt8) {
+		let val = Int(Int8(bitPattern: n))
+		registers.HL =  UInt16(truncatingIfNeeded: Int(registers.SP) + val)
 		// Flags affected
-		registers.PC += 1
+		registers.PC += 2
 	}
 	
 	func LD_nn_SP(nn: UInt16) {
 		registers.SP = nn
-		registers.PC += 1
+		registers.PC += 3
 	}
 	
 	func PUSH_nn(nn: UInt16) {
@@ -318,6 +664,7 @@ extension CPU: ALU { //	Flags affected
 	}
 	
 	func SBC_A_n(n: RegisterMap.single) {
+		registers.A -= registers.mapRegister(register: n).pointee + UInt8(registers.getFlag(.C))
 		registers.PC += 1
 	}
 	
@@ -387,6 +734,11 @@ extension CPU: ALU { //	Flags affected
 		registers.PC += 1
 	}
 	
+	func SBC_A_n(n: RegisterMap.combined) {
+		registers.A -= UInt8(registers.mapRegister(register: n).pointee) + UInt8(registers.getFlag(.C))
+		registers.PC += 1
+	}
+	
 	func AND_n(n: RegisterMap.combined) {
 		registers.A &= UInt8(registers.mapRegister(register: n).pointee)
 		registers.PC += 1
@@ -431,6 +783,65 @@ extension CPU: ALU { //	Flags affected
 		registers.load(register: n, with: UInt16(new))
 		registers.PC += 1
 	}
+	
+	func ADD_HL_n(n: UInt16) {
+		self.registers.HL += n
+		// flags affected
+		registers.PC += 1
+	}
+}
+
+extension CPU: Bit {
+	func SET_b_r(b: Int, r: RegisterMap.single) {
+		registers.mapRegister(register: r).pointee.setBit(at: b, to: 1)
+		registers.PC += 2
+	}
+	
+	func SET_b_r(b: Int, r: RegisterMap.combined) {
+		var pointer: UInt8 = UInt8(registers.mapRegister(register: r).pointee)
+		pointer.setBit(at: b, to: 1)
+		registers.PC += 2
+	}
+	
+	func BIT_b_r(b: Int, r: UInt8) {
+		let bit = r.bit(at: b)
+		if bit == 0 && !registers.getFlagState(.Z) { registers.setFlag(.Z, state: true) }
+		registers.setFlag(.N, state: false)
+		registers.setFlag(.H, state: true)
+		registers.PC += 2
+	}
+	
+	func BIT_b_r(b: Int, r: UInt16) {
+		let bit = UInt8(r).bit(at: b)
+		if bit == 0 && !registers.getFlagState(.Z) { registers.setFlag(.Z, state: true) }
+		registers.setFlag(.N, state: false)
+		registers.setFlag(.H, state: true)
+		registers.PC += 2
+	}
+	
+	func RES_b_r(b: Int, r: RegisterMap.single) {
+		registers.mapRegister(register: r).pointee.setBit(at: b, to: 0)
+		registers.PC += 2
+	}
+	
+	func RES_b_r(b: Int, r: RegisterMap.combined) {
+		var pointer: UInt8 = UInt8(registers.mapRegister(register: r).pointee)
+		pointer.setBit(at: b, to: 0)
+		registers.PC += 2
+	}
+}
+
+extension CPU: Rotates {
+	func RRCA() {
+		// Save old bit 0 of Register A in Carry Flag
+		let oldBit0 = registers.A.isSet(0)
+		registers.setFlag(.C, state: oldBit0)
+		
+		// Shift A to the right
+		registers.A = registers.A.rotateRight()
+		
+		registers.PC += 1
+	}
 }
 
 extension CPU: Jumps {
@@ -438,13 +849,19 @@ extension CPU: Jumps {
 		registers.PC = nn
 	}
 	
-	func JR_cc_n(flag: Flag, n: UInt8) { // Need to explore other docs about this command
-		var address = registers.PC
-		if registers.getFlag(flag) {
-			address += UInt16(n)
-			registers.PC = address
+	func JR_n(n: UInt8) {
+		// signed immediate
+		let val = Int(Int8(bitPattern: n))
+		registers.PC += UInt16(truncatingIfNeeded: Int(registers.PC) + val)
+	}
+	
+	func JR_cc_n(flag: Flag, n: UInt8, state: Bool) {
+		if registers.getFlagState(flag) == state {
+			let val = Int(Int8(bitPattern: n))
+			registers.PC = UInt16(truncatingIfNeeded: Int(registers.PC) + val)
+			registers.PC += 2
 		} else {
-			registers.PC += 1
+			registers.PC += 2
 		}
 	}
 }

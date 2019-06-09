@@ -27,6 +27,24 @@ extension UInt8 {
 	}
 	
 	func isSet(_ bit: Int) -> Bool {
-		return bit == 1 ? true : false
+		return self.bit(at: bit) == 1 ? true : false
+	}
+	
+	func rotateleft() -> UInt8 {
+		var count: Int = 1
+		let mask: Int = 1 * bitWidth - count
+		
+		count &= mask
+		
+		return (self << count) | (self >> (-count & mask))
+	}
+	
+	func rotateRight() -> UInt8 {
+		var count: Int = 1
+		let mask: Int = 1 * bitWidth - count
+		
+		count &= mask
+		
+		return (self >> count) | (self << (-count & mask))
 	}
 }

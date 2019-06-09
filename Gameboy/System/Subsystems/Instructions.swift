@@ -14,6 +14,8 @@ protocol InstructionInvoker {
 
 protocol Misc {
 	func NOP()
+	func STOP()
+	func CPL()
 }
 
 protocol Load {	
@@ -36,7 +38,7 @@ protocol Load {
 	// - MARK: 16-Bit LOADS
 	func LD_n_nn(n: RegisterMap.combined, nn: UInt16)
 	func LD_SP_HL()
-	func LDHL_SP_n(n: Int8)
+	func LDHL_SP_n(n: UInt8)
 	func LD_nn_SP(nn: UInt16)
 	func PUSH_nn(nn: UInt16)
 	func POP_nn(nn: RegisterMap.combined)
@@ -58,17 +60,35 @@ protocol ALU {
 	// - MARK: 16-Bit ALU
 	func ADD_A_n(n: RegisterMap.combined)
 	func SUB_n(n: RegisterMap.combined)
+	func SBC_A_n(n: RegisterMap.combined)
 	func AND_n(n: RegisterMap.combined)
 	func OR_n(n: RegisterMap.combined)
 	func XOR_n(n: RegisterMap.combined)
 	func CP_n(n: RegisterMap.combined)
 	func INC_n(n: RegisterMap.combined)
 	func DEC_n(n: RegisterMap.combined)
+	
+	func ADD_HL_n(n: UInt16)
+}
+
+protocol Bit {
+	func SET_b_r(b: Int, r: RegisterMap.single)
+	func SET_b_r(b: Int, r: RegisterMap.combined)
+	
+	func BIT_b_r(b: Int, r: UInt8)
+	func BIT_b_r(b: Int, r: UInt16)
+	
+	func RES_b_r(b: Int, r: RegisterMap.single)
+	func RES_b_r(b: Int, r: RegisterMap.combined)
+}
+
+protocol Rotates {
+	func RRCA()
 }
 
 protocol Jumps {
 	func JP_nn(nn: UInt16)
-	func JR_cc_n(flag: Flag, n: UInt8)
+	func JR_cc_n(flag: Flag, n: UInt8, state: Bool)
 }
 
 protocol Restarts {
