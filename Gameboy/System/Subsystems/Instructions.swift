@@ -91,6 +91,11 @@ protocol Jumps {
 	func JR_cc_n(flag: Flag, n: UInt8, state: Bool)
 }
 
+protocol Calls {
+	func CALL_nn(nn: UInt16)
+	func CALL_cc_nn(flag: Flag, nn: UInt16, state: Bool)
+}
+
 protocol Restarts {
 	func RST_n(n: UInt8)
 }

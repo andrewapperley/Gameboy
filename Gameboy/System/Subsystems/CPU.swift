@@ -47,10 +47,6 @@ extension CPU: InstructionInvoker {
 	func fetchAndInvokeInstruction(with code: UInt8) {
 		print("Fetching OPCode:: \(String(format:"0x%02X", code))")
 		
-		if (registers.PC == 0x000C) {
-			
-		}
-		
 		switch code {
 //			Misc
 		case 0x00:
@@ -127,9 +123,9 @@ extension CPU: InstructionInvoker {
 			self.opCodePrint(code: code, func: "LD_n_A")
 			self.LD_n_A(n: registers.HL)
 		case 0xEA:
-			self.opCodePrint(code: code, func: "LD_n_A")
+			self.opCodePrint(code: code, func: "LD_nn_A")
 			let param = memory.readFull(address: registers.PC+1)
-			self.LD_n_A(n: param)
+			self.LD_nn_A(nn: param)
 		case 0x32:
 			self.opCodePrint(code: code, func: "LDD_HL_A")
 			self.LDD_HL_A()
@@ -137,6 +133,10 @@ extension CPU: InstructionInvoker {
 			self.opCodePrint(code: code, func: "LD_A_n")
 			let param = memory.readHalf(address: registers.PC+1)
 			self.LD_A_n(n: param)
+		case 0xE0:
+			self.opCodePrint(code: code, func: "LDH_n_A")
+			let param = memory.readHalf(address: registers.PC+1)
+			self.LDH_n_A(n: param)
 		case 0xE2:
 			self.opCodePrint(code: code, func: "LD_A_C")
 			self.LD_A_C()
@@ -149,6 +149,14 @@ extension CPU: InstructionInvoker {
 			self.opCodePrint(code: code, func: "LD_nn_SP")
 			let param = memory.readFull(address: registers.PC+1)
 			self.LD_nn_SP(nn: param)
+		case 0x01:
+			self.opCodePrint(code: code, func: "LD_n_nn")
+			let param = memory.readFull(address: registers.PC+1)
+			self.LD_n_nn(n: .BC, nn: param)
+		case 0x11:
+			self.opCodePrint(code: code, func: "LD_n_nn")
+			let param = memory.readFull(address: registers.PC+1)
+			self.LD_n_nn(n: .DE, nn: param)
 		case 0x21:
 			self.opCodePrint(code: code, func: "LD_n_nn")
 			let param = memory.readFull(address: registers.PC+1)
@@ -289,6 +297,14 @@ extension CPU: InstructionInvoker {
 		case 0x39:
 			self.opCodePrint(code: code, func: "ADD_HL_SP")
 			self.ADD_HL_n(n: registers.SP)
+		case 0xF5:
+			self.PUSH_nn(nn: registers.AF)
+		case 0xC5:
+			self.PUSH_nn(nn: registers.BC)
+		case 0xD5:
+			self.PUSH_nn(nn: registers.DE)
+		case 0xE5:
+			self.PUSH_nn(nn: registers.HL)
 //			Bits
 		case 0xCB:
 			let innerCode = memory.readHalf(address: registers.PC+1)
@@ -494,8 +510,27 @@ extension CPU: InstructionInvoker {
 				self.BIT_b_r(b: 7, r: registers.A)
 			default:
 				print("OPCode not implemented yet:: \(String(format:"%02X %02X", code, innerCode))")
-				self.NOP()
 			}
+//			Calls
+		case 0xCD:
+			let param = memory.readFull(address: registers.PC+1)
+			self.CALL_nn(nn: param)
+		case 0xC4:
+			self.opCodePrint(code: code, func: "CALL_cc_nn")
+			let param = memory.readFull(address: registers.PC+1)
+			self.CALL_cc_nn(flag: .Z, nn: param, state: false)
+		case 0xCC:
+			self.opCodePrint(code: code, func: "CALL_cc_nn")
+			let param = memory.readFull(address: registers.PC+1)
+			self.CALL_cc_nn(flag: .Z, nn: param, state: true)
+		case 0xD4:
+			self.opCodePrint(code: code, func: "CALL_cc_nn")
+			let param = memory.readFull(address: registers.PC+1)
+			self.CALL_cc_nn(flag: .C, nn: param, state: false)
+		case 0xDC:
+			self.opCodePrint(code: code, func: "CALL_cc_nn")
+			let param = memory.readFull(address: registers.PC+1)
+			self.CALL_cc_nn(flag: .C, nn: param, state: true)
 //			Restarts
 		case 0xFF:
 			self.opCodePrint(code: code, func: "RST_n")
@@ -561,6 +596,11 @@ extension CPU: Load {
 	
 	func LD_n_A(n: UInt16) {
 		memory.write(address: n, data: registers.A)
+		registers.PC += 1
+	}
+	
+	func LD_nn_A(nn: UInt16) {
+		memory.write(address: nn, data: registers.A)
 		registers.PC += 2
 	}
 	
@@ -862,6 +902,22 @@ extension CPU: Jumps {
 			registers.PC += 2
 		} else {
 			registers.PC += 2
+		}
+	}
+}
+
+extension CPU: Calls {
+	func CALL_nn(nn: UInt16) {
+		registers.SP -= 2
+		memory.write(address: registers.SP, data: registers.PC+3)
+		registers.PC = nn
+	}
+	
+	func CALL_cc_nn(flag: Flag, nn: UInt16, state: Bool) {
+		if registers.getFlagState(flag) == state {
+			self.CALL_nn(nn: nn)
+		} else {
+			registers.PC += 3
 		}
 	}
 }
