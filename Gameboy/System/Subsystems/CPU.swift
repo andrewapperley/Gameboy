@@ -8,10 +8,24 @@
 
 import Foundation
 
+protocol CPUDelegate {
+	func onCompletedFrame()
+}
+
 class CPU {
 	private var registers: Registers = Registers()
 	private var memory: MMU = MMU()
 	private var clock: CPUTimer = CPUTimer()
+	var cpuDelegate: CPUDelegate?
+	
+	func pause() -> CPUState {
+		running = false
+		return CPUState(registers: registers.toState(), memory: memory.toState())
+	}
+	
+	func resume() {
+		self.run()
+	}
 	
 	func start(cartridge: Cartridge) {
 		reset()
@@ -27,6 +41,7 @@ class CPU {
 	
 	private func run() {
 		running = true
+
  		while(running) {
 			// fetch OPCode
 			let code = memory.readHalf(address: registers.PC)
@@ -34,6 +49,7 @@ class CPU {
 			fetchAndInvokeInstruction(with: code)
 			// check for I/O ?
 			// render
+			self.cpuDelegate?.onCompletedFrame()
 		}
 	}
 	
@@ -45,7 +61,7 @@ class CPU {
 
 extension CPU: InstructionInvoker {
 	func fetchAndInvokeInstruction(with code: UInt8) {
-		print("Fetching OPCode:: \(String(format:"0x%02X", code))")
+		self.opCodeFetchPrint(code: code)
 		
 		switch code {
 //			Misc
@@ -509,7 +525,7 @@ extension CPU: InstructionInvoker {
 				self.opCodePrint(code: code, func: "BIT_7_A", innerCode: innerCode)
 				self.BIT_b_r(b: 7, r: registers.A)
 			default:
-				print("OPCode not implemented yet:: \(String(format:"%02X %02X", code, innerCode))")
+				self.opCodeNotImplementedPrint(code: code, innerCode: innerCode)
 			}
 //			Calls
 		case 0xCD:
@@ -540,7 +556,7 @@ extension CPU: InstructionInvoker {
 			self.opCodePrint(code: code, func: "RRCA")
 			self.RRCA()
 		default:
- 			print("OPCode not implemented yet:: \(String(format:"%02X", code))")
+ 			self.opCodeNotImplementedPrint(code: code)
 		}
 	}
 }

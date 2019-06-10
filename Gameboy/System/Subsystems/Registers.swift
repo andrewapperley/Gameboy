@@ -233,4 +233,8 @@ extension Registers: RegisterLoading {
 	func load(register: RegisterMap.combined, with value: RegisterMap.single) {
 		load(register: register, with: UInt16(mapRegister(register: value).pointee))
 	}
+	
+	func toState() -> StateRegisters {
+		return StateRegisters(A: A, F: F, B: B, C: C, D: D, E: E, H: H, L: L, SP: SP, PC: PC, flags: StateFlags(Z: getFlag(.Z), N: getFlag(.N), H: getFlag(.H), C: getFlag(.C)))
+	}
 }

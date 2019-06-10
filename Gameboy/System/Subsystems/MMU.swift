@@ -64,4 +64,8 @@ class MMU {
 	func reset() {
 		memory = Array<UInt8>(repeating: 0x0, count: 0xFFFF)
 	}
+	
+	func toState() -> [UInt8] {
+		return memory
+	}
 }

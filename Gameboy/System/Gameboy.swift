@@ -8,8 +8,21 @@
 
 import Foundation
 
-class Gameboy {
+class Gameboy: CPUDelegate {
 	let cpu = CPU()
+	var debugger: Debugger? = nil
+	
+	init() {
+		cpu.cpuDelegate = self
+	}
+	
+	func nextFrame() {
+		self.cpu.resume()
+	}
+	
+	func onCompletedFrame() {
+		self.debugger?.onReceiveState(state: cpu.pause())
+	}
 	
 	func load(cartridge: Cartridge) {
 		cpu.start(cartridge: cartridge)
