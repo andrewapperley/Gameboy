@@ -84,6 +84,8 @@ protocol Bit {
 
 protocol Rotates {
 	func RRCA()
+	func RL_n(n: RegisterMap.single)
+	func RL_HL()
 }
 
 protocol Jumps {

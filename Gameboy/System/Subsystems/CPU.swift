@@ -58,7 +58,7 @@ class CPU {
 		memory.reset()
 	}
 }
-
+// MARK: Instruction Invoker
 extension CPU: InstructionInvoker {
 	func fetchAndInvokeInstruction(with code: UInt8) {
 		self.opCodeFetchPrint(code: code)
@@ -560,7 +560,7 @@ extension CPU: InstructionInvoker {
 		}
 	}
 }
-
+// MARK: Misc
 extension CPU: Misc {
 	func NOP() {
 		registers.PC += 1
@@ -578,7 +578,7 @@ extension CPU: Misc {
 		registers.PC += 1
 	}
 }
-
+// MARK: Load
 extension CPU: Load {
 	func LD_nn_n(nn: UInt8, n: RegisterMap.single) {
 		registers.load(register: n, with: nn)
@@ -700,7 +700,7 @@ extension CPU: Load {
 		registers.PC += 1
 	}
 }
-
+// MARK: ALU
 extension CPU: ALU { //	Flags affected
 	
 //	8-bit ALU
@@ -846,7 +846,7 @@ extension CPU: ALU { //	Flags affected
 		registers.PC += 1
 	}
 }
-
+// MARK: Bit
 extension CPU: Bit {
 	func SET_b_r(b: Int, r: RegisterMap.single) {
 		registers.mapRegister(register: r).pointee.setBit(at: b, to: 1)
@@ -886,7 +886,7 @@ extension CPU: Bit {
 		registers.PC += 2
 	}
 }
-
+// MARK: Rotates
 extension CPU: Rotates {
 	func RRCA() {
 		// Save old bit 0 of Register A in Carry Flag
@@ -898,8 +898,29 @@ extension CPU: Rotates {
 		
 		registers.PC += 1
 	}
+	
+	func RL_n(n: RegisterMap.single) {
+		var r = registers.mapRegister(register: n).pointee
+		let carry = r & 0x80
+		r = (r << 1)
+		if registers.F & UInt8(registers.getFlag(.C)) > 0 { r += 0x01 }
+		registers.F = 0
+		if(r == 0) { registers.F |= UInt8(registers.getFlag(.Z)) }
+		if(carry > 0) { registers.F |= UInt8(registers.getFlag(.C)) }
+	}
+	
+	func RL_HL() {
+		var r = memory.readHalf(address: registers.HL)
+		let carry = r & 0x80
+		r = (r << 1)
+		if registers.F & UInt8(registers.getFlag(.C)) > 0 { r += 0x01 }
+		memory.write(address: registers.HL, data: [r])
+		registers.F = 0
+		if(r == 0) { registers.F |= UInt8(registers.getFlag(.Z)) }
+		if(carry > 0) { registers.F |= UInt8(registers.getFlag(.C)) }
+	}
 }
-
+// MARK: Jumps
 extension CPU: Jumps {
 	func JP_nn(nn: UInt16) {
 		registers.PC = nn
@@ -921,7 +942,7 @@ extension CPU: Jumps {
 		}
 	}
 }
-
+// MARK: Calls
 extension CPU: Calls {
 	func CALL_nn(nn: UInt16) {
 		registers.SP -= 2
@@ -937,7 +958,7 @@ extension CPU: Calls {
 		}
 	}
 }
-
+// MARK: Restarts
 extension CPU: Restarts {
 	func RST_n(n: UInt8) {
 		self.PUSH_nn(nn: registers.PC)
