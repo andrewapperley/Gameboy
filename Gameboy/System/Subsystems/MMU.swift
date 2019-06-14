@@ -69,3 +69,13 @@ class MMU {
 		return memory
 	}
 }
+
+protocol VMMU {
+	func vram() -> [UInt8]
+}
+
+extension MMU: VMMU {
+	func vram() -> [UInt8] {
+		return Array<UInt8>(memory[Int(MemoryMap.VRAM.lowerBound)...Int(MemoryMap.VRAM.upperBound)])
+	}
+}

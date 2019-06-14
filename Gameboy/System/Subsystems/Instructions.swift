@@ -20,14 +20,24 @@ protocol Misc {
 
 protocol Load {	
 	// - MARK: 8-Bit LOADS
-	func LD_nn_n(nn: UInt8, n: RegisterMap.single)
+	func LD_nn_n(n: UInt8, nn: RegisterMap.single)
 	func LD(r1: RegisterMap.single, r2: RegisterMap.single)
-	func LD(r1: RegisterMap.single, r2: RegisterMap.combined)
-	func LD(r1: RegisterMap.combined, r2: RegisterMap.single)
+	
+	func LDHL(r1: RegisterMap.single)
+	func LDHL(r2: UInt8)
+	func LDHL(n: UInt8)
+	
+	func LD_A_n(n: RegisterMap.single)
 	func LD_A_n(n: UInt8)
-	func LD_A_n(nn: UInt16)
+	func LD_A_r(r: UInt8)
+	func LD_A_n(nn: UInt8)
+	
+	func LD_n_A(n: RegisterMap.single)
 	func LD_n_A(n: UInt16)
+	
+	func LD_A_C()
 	func LD_C_A()
+	
 	func LDD_A_HL()
 	func LDD_HL_A()
 	func LDI_A_HL()
@@ -46,25 +56,19 @@ protocol Load {
 
 protocol ALU {
 	// - MARK: 8-Bit ALU
-	func ADD_A_n(n: RegisterMap.single)
-	func ADDC_A_n(n: RegisterMap.single)
-	func SUB_n(n: RegisterMap.single)
-	func SBC_A_n(n: RegisterMap.single)
-	func AND_n(n: RegisterMap.single)
-	func OR_n(n: RegisterMap.single)
-	func XOR_n(n: RegisterMap.single)
-	func CP_n(n: RegisterMap.single)
+	func ADD_A_n(n: UInt8)
+	func ADDC_A_n(n: UInt8)
+	func SUB_n(n: UInt8)
+	func SBC_A_n(n: UInt8)
+	func AND_n(n: UInt8)
+	func OR_n(n: UInt8)
+	func XOR_n(n: UInt8)
+	func CP_n(n: UInt8)
+	func CP_nn(nn: UInt8)
 	func INC_n(n: RegisterMap.single)
 	func DEC_n(n: RegisterMap.single)
 	
 	// - MARK: 16-Bit ALU
-	func ADD_A_n(n: RegisterMap.combined)
-	func SUB_n(n: RegisterMap.combined)
-	func SBC_A_n(n: RegisterMap.combined)
-	func AND_n(n: RegisterMap.combined)
-	func OR_n(n: RegisterMap.combined)
-	func XOR_n(n: RegisterMap.combined)
-	func CP_n(n: RegisterMap.combined)
 	func INC_n(n: RegisterMap.combined)
 	func DEC_n(n: RegisterMap.combined)
 	
@@ -73,23 +77,27 @@ protocol ALU {
 
 protocol Bit {
 	func SET_b_r(b: Int, r: RegisterMap.single)
-	func SET_b_r(b: Int, r: RegisterMap.combined)
+	func SET_b_HL(b: Int)
 	
 	func BIT_b_r(b: Int, r: UInt8)
-	func BIT_b_r(b: Int, r: UInt16)
 	
 	func RES_b_r(b: Int, r: RegisterMap.single)
-	func RES_b_r(b: Int, r: RegisterMap.combined)
+	func RES_b_HL(b: Int)
 }
 
 protocol Rotates {
 	func RRCA()
+	func RLCA()
+	func RLA()
+	func RRA()
 	func RL_n(n: RegisterMap.single)
 	func RL_HL()
 }
 
 protocol Jumps {
 	func JP_nn(nn: UInt16)
+	func JR_n(n: UInt8)
+	func JP_HL()
 	func JR_cc_n(flag: Flag, n: UInt8, state: Bool)
 }
 
@@ -100,4 +108,8 @@ protocol Calls {
 
 protocol Restarts {
 	func RST_n(n: UInt8)
+}
+
+protocol Returns {
+	func RET()
 }

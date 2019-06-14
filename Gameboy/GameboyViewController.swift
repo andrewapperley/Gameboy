@@ -10,20 +10,14 @@ import UIKit
 
 class GameboyViewController: UIViewController {
 
-	let gameboy: Gameboy
-	
-	init() {
-		self.gameboy = Gameboy()
-		
-		super.init(nibName: nil, bundle: nil)
-	}
-	
-	required init?(coder aDecoder: NSCoder) {
-		fatalError("init(coder:) has not been implemented")
-	}
+	var gameboy: Gameboy!
 	
     override func viewDidLoad() {
         super.viewDidLoad()
+		
+		self.view.backgroundColor = .white
+		self.gameboy = Gameboy(screen: self.view.layer)
+		
 		if (ProcessInfo.processInfo.environment["DEBUGGER"] != nil) {
 			setupDebugger()
 		}

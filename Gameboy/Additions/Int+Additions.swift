@@ -30,7 +30,7 @@ extension UInt8 {
 		return self.bit(at: bit) == 1 ? true : false
 	}
 	
-	func rotateleft() -> UInt8 {
+	func rotateLeft() -> UInt8 {
 		var count: Int = 1
 		let mask: Int = 1 * bitWidth - count
 		
