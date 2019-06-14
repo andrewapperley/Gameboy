@@ -19,6 +19,7 @@ enum MemoryMap {
 	static let ECHO = Range<UInt16>(0xE000...0xFDFF)
 	static let OAM = Range<UInt16>(0xFE00...0xFE9F)
 	static let IO = Range<UInt16>(0xFF00...0xFF7F)
+	static let IF: UInt16 = 0xFF0F // IF – Interrupt Flag (R/W)
 	static let HRAM = Range<UInt16>(0xFF80...0xFFFE)
 	static let IER = 0xFFFF // Interrupt Enable Register
 }
@@ -72,6 +73,7 @@ class MMU {
 
 protocol VMMU {
 	func vram() -> [UInt8]
+	func onFinishedRenderingFrame()
 }
 
 extension MMU: VMMU {

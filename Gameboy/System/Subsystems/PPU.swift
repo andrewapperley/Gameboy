@@ -16,23 +16,22 @@ class PPU {
 
 	let WIDTH = 160
 	let HEIGHT = 144
-	let MULTIPLIER = 1
 	
 	init(memory: VMMU, screen: CALayer) {
 		self.memory = memory
 		self.screen = screen
 	}
 	
-	func render() {
-//		self.screen.sublayers = []
-//		let vram = self.memory.vram()
-//		for (i, data) in vram.enumerated() {
+	func render() { // Quick and dirty way of rendering pixels. This is obviously super wrong but I wanted to see what would happen. I don't actually want to render the vram as if its a pixelBuffer. I should have read more documentation ;)
+		self.screen.sublayers = []
+		let vram = self.memory.vram()
+		for (i, data) in vram.enumerated() {
 //			let pixel = CALayer()
 //			pixel.backgroundColor = data <= 0 ? UIColor.black.cgColor : UIColor.white.cgColor
 //			let x = i % WIDTH
 //			let y = (i - x) / WIDTH
-//			pixel.frame = CGRect(x: x*MULTIPLIER, y: y*MULTIPLIER , width: MULTIPLIER, height: MULTIPLIER)
+//			pixel.frame = CGRect(x: x, y: y , width: 1, height: 1)
 //			self.screen.addSublayer(pixel)
-//		}
+		}
 	}
 }
