@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import QuartzCore
+import UIKit
 
 class Gameboy {
 	var ticker: CADisplayLink!
@@ -18,7 +18,7 @@ class Gameboy {
 	
 	var debugger: Debugger? = nil
 	
-	init(screen: CALayer) {
+	init(screen: UIView) {
 		self.memory = MMU()
 		self.cpu = CPU(memory: memory)
 		self.ppu = PPU(memory: memory, screen: screen)

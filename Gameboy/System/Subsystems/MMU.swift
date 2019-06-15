@@ -73,7 +73,6 @@ class MMU {
 
 protocol VMMU {
 	func vram() -> [UInt8]
-	func onFinishedRenderingFrame()
 }
 
 extension MMU: VMMU {

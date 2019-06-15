@@ -8,30 +8,33 @@
 
 import Foundation
 import UIKit
-import QuartzCore
 
 class PPU {
 	let memory: VMMU
-	let screen: CALayer
+	let screen: UIView
 
-	let WIDTH = 160
-	let HEIGHT = 144
+	let WIDTH: CGFloat = 160
+	let HEIGHT: CGFloat = 144
 	
-	init(memory: VMMU, screen: CALayer) {
+	init(memory: VMMU, screen: UIView) {
 		self.memory = memory
 		self.screen = screen
+		self.screen.addSubview(UIImageView(frame: CGRect(x: (screen.bounds.width - WIDTH)/2, y: 50, width: WIDTH, height: HEIGHT)))
 	}
 	
 	func render() { // Quick and dirty way of rendering pixels. This is obviously super wrong but I wanted to see what would happen. I don't actually want to render the vram as if its a pixelBuffer. I should have read more documentation ;)
-		self.screen.sublayers = []
 		let vram = self.memory.vram()
+		UIGraphicsBeginImageContextWithOptions(CGSize(width: WIDTH, height: HEIGHT), true, 1.5)
+		guard let context = UIGraphicsGetCurrentContext() else {return}
 		for (i, data) in vram.enumerated() {
-//			let pixel = CALayer()
-//			pixel.backgroundColor = data <= 0 ? UIColor.black.cgColor : UIColor.white.cgColor
-//			let x = i % WIDTH
-//			let y = (i - x) / WIDTH
-//			pixel.frame = CGRect(x: x, y: y , width: 1, height: 1)
-//			self.screen.addSublayer(pixel)
+			let colour: UIColor = data <= 0 ? .black : .white
+			let x = i % Int(WIDTH)
+			let y = (i - x) / Int(WIDTH)
+			let rect = CGRect(x: x, y: y , width: 1, height: 1)
+			context.setFillColor(colour.cgColor)
+			context.fill(rect)
 		}
+		(self.screen.subviews[0] as! UIImageView).image = UIGraphicsGetImageFromCurrentImageContext()
+		UIGraphicsEndImageContext()
 	}
 }

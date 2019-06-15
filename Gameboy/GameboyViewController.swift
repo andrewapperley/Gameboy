@@ -16,7 +16,7 @@ class GameboyViewController: UIViewController {
         super.viewDidLoad()
 		
 		self.view.backgroundColor = .white
-		self.gameboy = Gameboy(screen: self.view.layer)
+		self.gameboy = Gameboy(screen: self.view)
 		
 		if (ProcessInfo.processInfo.environment["DEBUGGER"] != nil) {
 			setupDebugger()
