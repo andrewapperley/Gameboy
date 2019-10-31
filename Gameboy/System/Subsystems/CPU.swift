@@ -75,6 +75,10 @@ extension CPU: InstructionInvoker {
 			self.opCodePrint(code: code, func: "CPL")
 			self.CPL()
 //			8-bit Loads
+		case 0x3E:
+			self.opCodePrint(code: code, func: "LD_A_n")
+			let param = memory.readHalf(address: registers.PC+1)
+			self.LD_nn_n(n: param, nn: .A)
 		case 0x06:
 			self.opCodePrint(code: code, func: "LD_B_n")
 			let param = memory.readHalf(address: registers.PC+1)
@@ -129,10 +133,6 @@ extension CPU: InstructionInvoker {
 		case 0x77:
 			self.opCodePrint(code: code, func: "LD_HL_A")
 			self.LD_n_A(n: registers.HL)
-		case 0xEA:
-			self.opCodePrint(code: code, func: "LD_#_A")
-			let param = memory.readFull(address: registers.PC+1)
-			self.LD_n_A(nn: param)
 		case 0x32:
 			self.opCodePrint(code: code, func: "LDD_HL_A")
 			self.LDD_HL_A()
@@ -141,7 +141,7 @@ extension CPU: InstructionInvoker {
 			let param = memory.readHalf(address: registers.PC+1)
 			self.LDH_n_A(n: param)
 		case 0xE2:
-			self.opCodePrint(code: code, func: "LD_A_C")
+			self.opCodePrint(code: code, func: "0xE2 LD_A_C")
 			self.LD_A_C()
 		case 0xF0:
 			self.opCodePrint(code: code, func: "LDH_A_n")
@@ -154,7 +154,7 @@ extension CPU: InstructionInvoker {
 			self.opCodePrint(code: code, func: "LD_A_B")
 			self.LD(r1: .A, r2: .B)
 		case 0x79:
-			self.opCodePrint(code: code, func: "LD_A_C")
+			self.opCodePrint(code: code, func: "0x79 LD_A_C")
 			self.LD(r1: .A, r2: .C)
 		case 0x7A:
 			self.opCodePrint(code: code, func: "LD_A_D")
@@ -185,10 +185,6 @@ extension CPU: InstructionInvoker {
 			let address = memory.readFull(address: registers.PC+1)
 			let param = memory.readHalf(address: address)
 			self.LD_A_n(nn: param)
-		case 0x3E:
-			self.opCodePrint(code: code, func: "LD_A_#")
-			let param = memory.readHalf(address: registers.PC+1)
-			self.LD_A_n(n: param)
 		case 0x22:
 			self.opCodePrint(code: code, func: "LDI_HL_A")
 			self.LDI_HL_A()
@@ -298,7 +294,7 @@ extension CPU: InstructionInvoker {
 		case 0xFE:
 			self.opCodePrint(code: code, func: "CP_#")
 			let param = memory.readHalf(address: registers.PC+1)
-			self.CP_n(n: param)
+			self.CP_nn(nn: param)
 		case 0x3C:
 			self.opCodePrint(code: code, func: "INC_A")
 			self.INC_n(n: .A)
@@ -657,11 +653,26 @@ extension CPU: InstructionInvoker {
 			self.RRCA()
 		case 0x17:
 			self.opCodePrint(code: code, func: "RLA")
-			self.RLA()
+			self.RL_n(n: .A)
 //			Returns
 		case 0xC9:
 			self.opCodePrint(code: code, func: "RET")
 			self.RET()
+		case 0xC0:
+			self.opCodePrint(code: code, func: "RET_cc")
+			self.RET_cc(flag: .Z, state: false)
+		case 0xC8:
+			self.opCodePrint(code: code, func: "RET_cc")
+			self.RET_cc(flag: .Z, state: true)
+		case 0xD0:
+			self.opCodePrint(code: code, func: "RET_cc")
+			self.RET_cc(flag: .C, state: false)
+		case 0xD8:
+			self.opCodePrint(code: code, func: "RET_cc")
+			self.RET_cc(flag: .C, state: true)
+		case 0xD9:
+			self.opCodePrint(code: code, func: "RETI")
+			self.RETI()
 		default:
  			self.opCodeNotImplementedPrint(code: code)
 		}
@@ -674,7 +685,7 @@ extension CPU: Misc {
 	}
 	
 	func STOP() {
-//		self.running = false
+//		Halt CPU & LCD display until button pressed.
 		registers.PC += 1
 	}
 	
@@ -748,12 +759,12 @@ extension CPU: Load {
 		registers.PC += 1
 	}
 	
-	func LD_A_C() {
+	func LD_C_A() {
 		registers.A = memory.readHalf(address: 0xFF00 | UInt16(registers.C))
 		registers.PC += 1
 	}
 	
-	func LD_C_A() {
+	func LD_A_C() {
 		memory.write(address: (0xFF00 | UInt16(registers.C)), data: registers.A)
 		registers.PC += 1
 	}
@@ -803,21 +814,14 @@ extension CPU: Load {
 		registers.PC += 1
 	}
 	
-	func LDHL_SP_n(n: UInt8) {
-		let val = Int(Int8(bitPattern: n))
-		registers.HL =  UInt16(truncatingIfNeeded: Int(registers.SP) + val)
-		// Flags affected
-		registers.PC += 2
-	}
-	
 	func LD_nn_SP(nn: UInt16) {
 		registers.SP = nn
 		registers.PC += 3
 	}
 	
 	func PUSH_nn(nn: UInt16) {
+		memory.write(address: registers.SP-2, data: nn)
 		registers.SP -= 2
-		memory.write(address: registers.SP, data: nn)
 		registers.PC += 1
 	}
 	
@@ -829,18 +833,16 @@ extension CPU: Load {
 	}
 }
 // MARK: ALU
-extension CPU: ALU { //	Flags affected
+extension CPU: ALU {
 	
 //	8-bit ALU
-	
 	func ADD_A_n(n: UInt8) {
-		let l = registers.A
-		let r = n
-		registers.setFlag(.H, state: (((l & 0xf) + (r & 0xf)) & 0x10) == 0x10)
-		registers.A += r
-		registers.setFlag(.Z, state: registers.A == 0)
+		registers.setFlag(.Z, state: registers.A + n == 0)
 		registers.setFlag(.N, state: false)
-		
+		registers.setFlag(.H, state: registers.A & 0x0F + n & 0x0F > 0x0F)
+		registers.setFlag(.C, state: registers.A > registers.A + n)
+
+		registers.A &= n
 		registers.PC += 1
 	}
 	
@@ -935,7 +937,7 @@ extension CPU: ALU { //	Flags affected
 		let new = current + 1
 		registers.setFlag(.Z, state: new == 0)
 		registers.setFlag(.N, state: false)
-		registers.setFlag(.H, state: (((current & 0xf) + (new & 0xf)) & 0x10) == 0x10)
+		registers.setFlag(.H, state: (((current & 0xf) + (new & 0xf)) & Registers.Carry) == Registers.Carry)
 		registers.load(register: n, with: UInt8(new))
 		registers.PC += 1
 	}
@@ -974,6 +976,16 @@ extension CPU: ALU { //	Flags affected
 		// flags affected
 		registers.load(register: n, with: UInt16(new))
 		registers.PC += 1
+	}
+	
+	func LDHL_SP_n(n: UInt8) {
+		let val = Int(Int8(bitPattern: n))
+		registers.HL =  UInt16(truncatingIfNeeded: Int(registers.SP) + val)
+		registers.setFlag(.Z, state: false)
+		registers.setFlag(.N, state: false)
+		registers.setFlag(.H, state: true)
+		registers.setFlag(.C, state: true)
+		registers.PC += 2
 	}
 	
 	func ADD_HL_n(n: UInt16) {
@@ -1019,65 +1031,29 @@ extension CPU: Bit {
 // MARK: Rotates
 extension CPU: Rotates {
 	func RRCA() {
-		// Save old bit 0 of Register A in Carry Flag
-		let oldBit0 = registers.A.isSet(0)
-		registers.setFlag(.C, state: oldBit0)
-		
-		// Shift A to the right
-		registers.A = registers.A.rotateRight()
-		
-		// Set if result is zero. I THINK :shrug:
-		registers.setFlag(.Z, state: registers.A.isSet(0))
+		let carry = (registers.A & Registers.Carry) << 7
+		registers.A = (registers.A >> 1) + carry
+
+		registers.setFlag(.H, state: false)
+		registers.setFlag(.N, state: false)
+		registers.setFlag(.Z, state: registers.A == 0)
+		registers.setFlag(.C, state: carry > 0)
 		
 		registers.PC += 2
 	}
 	
 	func RLCA() {
-		// Save old bit 7 of Register A in Carry Flag
-		let oldBit7 = registers.A.isSet(7)
-		registers.setFlag(.C, state: oldBit7)
-		
-		// Shift A to the right
-		registers.A = registers.A.rotateLeft()
-		
-		// Set if result is zero. I THINK :shrug:
-		registers.setFlag(.Z, state: registers.A.isSet(7))
-		
-		// Reset other flags
-		registers.setFlag(.N, state: false)
-		registers.setFlag(.H, state: false)
-		
-		registers.PC += 2
-	}
-	
-	func RLA() {
-		// Save old bit 7 of Register A in Carry Flag
-		let oldBit7 = registers.A.isSet(7)
-		registers.setFlag(.C, state: oldBit7)
+		// Save old carry from register A
+		let oldCarry = registers.A.bit(at: 7)
 		
 		// Shift A to the left
-		registers.A = registers.A.rotateLeft()
+		registers.A = registers.A.rotateLeft() + UInt8(oldCarry)
 		
-		// Set if result is zero. I THINK :shrug:
-		registers.setFlag(.Z, state: !registers.A.isSet(Flag.C.hashValue))
+		// Set if result is zero.
+		registers.setFlag(.Z, state: registers.A == 0)
 		
-		// Reset other flags
-		registers.setFlag(.N, state: false)
-		registers.setFlag(.H, state: false)
-		
-		registers.PC += 1
-	}
-	
-	func RRA() {
-		// Save old bit 0 of Register A in Carry Flag
-		let oldBit0 = registers.A.isSet(0)
-		registers.setFlag(.C, state: oldBit0)
-		
-		// Shift A to the right
-		registers.A = registers.A.rotateRight()
-		
-		// Set if result is zero. I THINK :shrug:
-		registers.setFlag(.Z, state: registers.A.isSet(Flag.C.hashValue))
+		// Set if carry was set in old register A value
+		registers.setFlag(.C, state: oldCarry > 0)
 		
 		// Reset other flags
 		registers.setFlag(.N, state: false)
@@ -1087,27 +1063,100 @@ extension CPU: Rotates {
 	}
 	
 	func RL_n(n: RegisterMap.single) {
-		var r = registers.mapRegister(register: n).pointee
-		let carry = r & 0x80
-		r = (r << 1)
-		if registers.getFlagState(.C) { r += 0x01 }
+		var register = registers.mapRegister(register: n).pointee
+		// Save old carry from register
+		let oldCarry = register.bit(at: 7)
+
+		// Shift register to the left through Carry Flag
+		register = register.rotateLeft()
+		if registers.getFlag(.C) > 0 {
+			register += Registers.Carry
+		}
+		
+		// Set if result is zero.
+		registers.setFlag(.Z, state: register == 0)
+		
+		// Set if carry was set in old register value
+		registers.setFlag(.C, state: oldCarry > 0)
+		
+		// Reset other flags
 		registers.setFlag(.N, state: false)
 		registers.setFlag(.H, state: false)
-		if(r == 0) { registers.setFlag(.Z, state: true) }
-		if(carry > 0) { registers.setFlag(.C, state: true) }
+		
+		registers.PC += 1
+	}
+	
+	func RR_n(n: RegisterMap.single) {
+		var register = registers.mapRegister(register: n).pointee
+		// Save old carry from register
+		let oldCarry = register.bit(at: 0)
+
+		// Shift register to the left through Carry Flag
+		register = register.rotateRight()
+		if registers.getFlag(.C) > 0 {
+			register += Registers.Zero
+		}
+		
+		// Set if result is zero.
+		registers.setFlag(.Z, state: register == 0)
+		
+		// Set if carry was set in old register A value
+		registers.setFlag(.C, state: oldCarry > 0)
+		
+		// Reset other flags
+		registers.setFlag(.N, state: false)
+		registers.setFlag(.H, state: false)
+		
 		registers.PC += 2
 	}
 	
 	func RL_HL() {
-		var r = memory.readHalf(address: registers.HL)
-		let carry = r & 0x80
-		r = (r << 1)
-		if registers.getFlagState(.C) { r += 0x01 }
-		memory.write(address: registers.HL, data: r)
+		var register = memory.readHalf(address: registers.HL)
+		// Save old carry from register
+		let oldCarry = register.bit(at: 7)
+
+		// Shift register to the left through Carry Flag
+		register = register.rotateLeft()
+		if registers.getFlag(.C) > 0 {
+			register += Registers.Carry
+		}
+		memory.write(address: registers.HL, data: register)
+		
+		// Set if result is zero.
+		registers.setFlag(.Z, state: register == 0)
+		
+		// Set if carry was set in old register value
+		registers.setFlag(.C, state: oldCarry > 0)
+		
+		// Reset other flags
 		registers.setFlag(.N, state: false)
 		registers.setFlag(.H, state: false)
-		if(r == 0) { registers.setFlag(.Z, state: true) }
-		if(carry > 0) { registers.setFlag(.C, state: true) }
+		
+		registers.PC += 2
+	}
+	
+	func RR_HL() {
+		var register = memory.readHalf(address: registers.HL)
+		// Save old carry from register
+		let oldCarry = register.bit(at: 0)
+
+		// Shift register to the left through Carry Flag
+		register = register.rotateRight()
+		if registers.getFlag(.C) > 0 {
+			register += Registers.Zero
+		}
+		memory.write(address: registers.HL, data: register)
+		
+		// Set if result is zero.
+		registers.setFlag(.Z, state: register == 0)
+		
+		// Set if carry was set in old register A value
+		registers.setFlag(.C, state: oldCarry > 0)
+		
+		// Reset other flags
+		registers.setFlag(.N, state: false)
+		registers.setFlag(.H, state: false)
+		
 		registers.PC += 2
 	}
 }
@@ -1124,7 +1173,7 @@ extension CPU: Jumps {
 	func JR_n(n: UInt8) {
 		// signed immediate
 		let val = Int(Int8(bitPattern: n))
-		registers.PC += UInt16(truncatingIfNeeded: Int(registers.PC) + val)
+		registers.PC = UInt16(truncatingIfNeeded: Int(registers.PC) + val)
 	}
 	
 	func JR_cc_n(flag: Flag, n: UInt8, state: Bool) {
@@ -1136,12 +1185,21 @@ extension CPU: Jumps {
 			registers.PC += 2
 		}
 	}
+	
+	func JR_cc_nn(flag: Flag, nn: UInt16, state: Bool) {
+		if registers.getFlagState(flag) == state {
+			registers.PC = registers.PC + nn
+			registers.PC += 2
+		} else {
+			registers.PC += 2
+		}
+	}
 }
 // MARK: Calls
 extension CPU: Calls {
 	func CALL_nn(nn: UInt16) {
+		memory.write(address: registers.SP-2, data: registers.PC+3)
 		registers.SP -= 2
-		memory.write(address: registers.SP, data: registers.PC+3)
 		registers.PC = nn
 	}
 	
@@ -1160,10 +1218,23 @@ extension CPU: Restarts {
 		registers.PC = UInt16(0x0000 | n)
 	}
 }
-// MARKL Returns
+// MARK: Returns
 extension CPU: Returns {
 	func RET() {
 		registers.PC = memory.readFull(address: registers.SP)
 		registers.SP += 2
+	}
+	
+	func RET_cc(flag: Flag, state: Bool) {
+		if registers.getFlagState(flag) == state {
+			self.RET()
+		} else {
+			registers.PC += 2
+		}
+	}
+	
+	func RETI() {
+		self.RET()
+//		Enable interrupts
 	}
 }

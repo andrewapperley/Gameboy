@@ -13,6 +13,7 @@
 		0F1696D722738CC4009C7949 /* game.gb in Resources */ = {isa = PBXBuildFile; fileRef = 0F1696D622738CC4009C7949 /* game.gb */; };
 		0F16973622771B09009C7949 /* Registers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F16973522771B09009C7949 /* Registers.swift */; };
 		0F520B9322B3C8230054BBFC /* PPU.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F520B9222B3C8230054BBFC /* PPU.swift */; };
+		0F520C1722B577590054BBFC /* APU.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F520C1622B577590054BBFC /* APU.swift */; };
 		0F88A26222AD62E500EC5AE2 /* CPU+Debugging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F88A26122AD62E500EC5AE2 /* CPU+Debugging.swift */; };
 		0F88A26622ADD3E200EC5AE2 /* CPUState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F88A26522ADD3E200EC5AE2 /* CPUState.swift */; };
 		0F88A26822ADD8B400EC5AE2 /* Debugger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F88A26722ADD8B400EC5AE2 /* Debugger.swift */; };
@@ -48,6 +49,7 @@
 		0F1696D622738CC4009C7949 /* game.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = game.gb; sourceTree = "<group>"; };
 		0F16973522771B09009C7949 /* Registers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Registers.swift; sourceTree = "<group>"; };
 		0F520B9222B3C8230054BBFC /* PPU.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PPU.swift; sourceTree = "<group>"; };
+		0F520C1622B577590054BBFC /* APU.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APU.swift; sourceTree = "<group>"; };
 		0F88A26122AD62E500EC5AE2 /* CPU+Debugging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CPU+Debugging.swift"; sourceTree = "<group>"; };
 		0F88A26522ADD3E200EC5AE2 /* CPUState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPUState.swift; sourceTree = "<group>"; };
 		0F88A26722ADD8B400EC5AE2 /* Debugger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Debugger.swift; sourceTree = "<group>"; };
@@ -170,6 +172,7 @@
 				0FC11EC522A72F570060F7E0 /* MemoryController.swift */,
 				0F88A26522ADD3E200EC5AE2 /* CPUState.swift */,
 				0F520B9222B3C8230054BBFC /* PPU.swift */,
+				0F520C1622B577590054BBFC /* APU.swift */,
 			);
 			path = Subsystems;
 			sourceTree = "<group>";
@@ -300,6 +303,7 @@
 				0FEA3AC0226F320500AD96EE /* GameboyViewController.swift in Sources */,
 				0F88A26A22ADD98600EC5AE2 /* DebuggerView.swift in Sources */,
 				0FE4C74222A53C4800E927BA /* Cartridge.swift in Sources */,
+				0F520C1722B577590054BBFC /* APU.swift in Sources */,
 				0F88A26222AD62E500EC5AE2 /* CPU+Debugging.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -7,7 +7,7 @@
 //
 
 import Foundation
-
+private var instructionHistory: [String] = []
 protocol Debugging {
 	func opCodeFetchPrint(code: UInt8)
 	func opCodeNotImplementedPrint(code: UInt8, innerCode: UInt8?)
@@ -34,6 +34,7 @@ extension CPU: Debugging {
 			if let inner = innerCode {
 				printing += " inner \(String(format:"0x%02X", inner))"
 			}
+			instructionHistory.append(printing)
 			print(printing)
 		#endif
 	}

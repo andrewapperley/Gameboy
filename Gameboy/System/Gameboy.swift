@@ -15,6 +15,7 @@ class Gameboy {
 	let memory: MMU
 	let cpu: CPU
 	let ppu: PPU
+	let apu: APU
 	
 	var debugger: Debugger? = nil
 	
@@ -22,6 +23,7 @@ class Gameboy {
 		self.memory = MMU()
 		self.cpu = CPU(memory: memory)
 		self.ppu = PPU(memory: memory, screen: screen)
+		self.apu = APU(memory: memory)
 		self.setupDisplayLink()
 		cpu.cpuDelegate = self
 	}

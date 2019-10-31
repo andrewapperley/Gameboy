@@ -15,7 +15,7 @@ class GameboyViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 		
-		self.view.backgroundColor = .white
+		self.view.backgroundColor = .black
 		self.gameboy = Gameboy(screen: self.view)
 		
 		if (ProcessInfo.processInfo.environment["DEBUGGER"] != nil) {

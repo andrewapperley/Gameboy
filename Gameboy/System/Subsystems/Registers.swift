@@ -37,6 +37,11 @@ enum Flag: Int {
 }
 
 class Registers {
+	static let Zero: UInt8 = 0x80
+    static let Negative: UInt8 = 0x40
+    static let HalfCarry: UInt8 = 0x20
+    static let Carry: UInt8 = 0x10
+	
 	var A: UInt8 = 0x0
 	var F: UInt8 = 0x0
 	var B: UInt8 = 0x0

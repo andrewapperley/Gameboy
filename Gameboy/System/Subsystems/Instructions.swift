@@ -13,45 +13,45 @@ protocol InstructionInvoker {
 }
 
 protocol Misc {
-	func NOP()
-	func STOP()
-	func CPL()
+	// - MARK: MISC
+	func NOP() // checked
+	func STOP() // checked
+	func CPL() // checked
 }
 
 protocol Load {	
 	// - MARK: 8-Bit LOADS
-	func LD_nn_n(n: UInt8, nn: RegisterMap.single)
-	func LD(r1: RegisterMap.single, r2: RegisterMap.single)
+	func LD_nn_n(n: UInt8, nn: RegisterMap.single) // checked
+	func LD(r1: RegisterMap.single, r2: RegisterMap.single) // checked
 	
-	func LDHL(r1: RegisterMap.single)
-	func LDHL(r2: UInt8)
-	func LDHL(n: UInt8)
+	func LDHL(r1: RegisterMap.single) // checked
+	func LDHL(r2: UInt8) // checked
+	func LDHL(n: UInt8) // checked
 	
-	func LD_A_n(n: RegisterMap.single)
-	func LD_A_n(n: UInt8)
-	func LD_A_r(r: UInt8)
-	func LD_A_n(nn: UInt8)
+	func LD_A_n(n: RegisterMap.single) //checked
+	func LD_A_n(n: UInt8) //checked
+	func LD_A_r(r: UInt8) //checked
+	func LD_A_n(nn: UInt8) //checked
 	
-	func LD_n_A(n: RegisterMap.single)
-	func LD_n_A(n: UInt16)
+	func LD_n_A(n: RegisterMap.single) //checked
+	func LD_n_A(n: UInt16) //checked
 	
-	func LD_A_C()
-	func LD_C_A()
+	func LD_A_C() //checked
+	func LD_C_A() //checked
 	
-	func LDD_A_HL()
-	func LDD_HL_A()
-	func LDI_A_HL()
-	func LDI_HL_A()
-	func LDH_n_A(n: UInt8)
-	func LDH_A_n(n: UInt8)
+	func LDD_A_HL() //checked
+	func LDD_HL_A() //checked
+	func LDI_A_HL() //checked
+	func LDI_HL_A() //checked
+	func LDH_n_A(n: UInt8) //checked
+	func LDH_A_n(n: UInt8) //checked
 	
 	// - MARK: 16-Bit LOADS
-	func LD_n_nn(n: RegisterMap.combined, nn: UInt16)
-	func LD_SP_HL()
-	func LDHL_SP_n(n: UInt8)
-	func LD_nn_SP(nn: UInt16)
-	func PUSH_nn(nn: UInt16)
-	func POP_nn(nn: RegisterMap.combined)
+	func LD_n_nn(n: RegisterMap.combined, nn: UInt16) //checked
+	func LD_SP_HL() //checked
+	func LD_nn_SP(nn: UInt16) //checked
+	func PUSH_nn(nn: UInt16) //checked
+	func POP_nn(nn: RegisterMap.combined) //checked
 }
 
 protocol ALU {
@@ -72,44 +72,55 @@ protocol ALU {
 	func INC_n(n: RegisterMap.combined)
 	func DEC_n(n: RegisterMap.combined)
 	
+	func LDHL_SP_n(n: UInt8) //checked
+	
 	func ADD_HL_n(n: UInt16)
 }
 
 protocol Bit {
-	func SET_b_r(b: Int, r: RegisterMap.single)
-	func SET_b_HL(b: Int)
+	// - MARK: BIT
+	func SET_b_r(b: Int, r: RegisterMap.single) //checked
+	func SET_b_HL(b: Int) //checked
 	
-	func BIT_b_r(b: Int, r: UInt8)
+	func BIT_b_r(b: Int, r: UInt8) //checked
 	
-	func RES_b_r(b: Int, r: RegisterMap.single)
-	func RES_b_HL(b: Int)
+	func RES_b_r(b: Int, r: RegisterMap.single) //checked
+	func RES_b_HL(b: Int) //checked
 }
 
 protocol Rotates {
-	func RRCA()
-	func RLCA()
-	func RLA()
-	func RRA()
-	func RL_n(n: RegisterMap.single)
-	func RL_HL()
+	// - MARK: ROTATES
+	func RRCA() //checked
+	func RLCA() //checked
+	func RL_n(n: RegisterMap.single) //checked
+	func RR_n(n: RegisterMap.single) //checked
+	func RL_HL() //checked
+	func RR_HL() //checked
 }
 
 protocol Jumps {
-	func JP_nn(nn: UInt16)
-	func JR_n(n: UInt8)
-	func JP_HL()
-	func JR_cc_n(flag: Flag, n: UInt8, state: Bool)
+	// - MARK: JUMPS
+	func JP_nn(nn: UInt16) //checked
+	func JR_n(n: UInt8) //checked
+	func JP_HL() //checked
+	func JR_cc_n(flag: Flag, n: UInt8, state: Bool) //checked
+	func JR_cc_nn(flag: Flag, nn: UInt16, state: Bool) //checked
 }
 
 protocol Calls {
-	func CALL_nn(nn: UInt16)
-	func CALL_cc_nn(flag: Flag, nn: UInt16, state: Bool)
+	// - MARK: CALLS
+	func CALL_nn(nn: UInt16) //checked
+	func CALL_cc_nn(flag: Flag, nn: UInt16, state: Bool) //checked
 }
 
 protocol Restarts {
-	func RST_n(n: UInt8)
+	// - MARK: RESTARTS
+	func RST_n(n: UInt8) //checked
 }
 
 protocol Returns {
-	func RET()
+	// - MARK: RETURNS
+	func RET() //checked
+	func RET_cc(flag: Flag, state: Bool) //checked
+	func RETI() //checked
 }
