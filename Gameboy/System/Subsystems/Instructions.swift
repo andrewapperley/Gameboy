@@ -56,21 +56,23 @@ protocol Load {
 
 protocol ALU {
 	// - MARK: 8-Bit ALU
-	func ADD_A_n(n: UInt8)
+	func ADD_A_n(n: UInt8) //checked
 	func ADDC_A_n(n: UInt8)
 	func SUB_n(n: UInt8)
 	func SBC_A_n(n: UInt8)
-	func AND_n(n: UInt8)
-	func OR_n(n: UInt8)
-	func XOR_n(n: UInt8)
+	func AND_n(n: UInt8) //checked
+	func OR_n(n: UInt8) //checked
+	func XOR_n(n: UInt8) //checked
 	func CP_n(n: UInt8)
 	func CP_nn(nn: UInt8)
-	func INC_n(n: RegisterMap.single)
-	func DEC_n(n: RegisterMap.single)
+	func INC_n(n: RegisterMap.single) //checked
+	func INC_HL() //checked
+	func DEC_n(n: RegisterMap.single) //checked
+	func DEC_HL() //checked
 	
 	// - MARK: 16-Bit ALU
-	func INC_n(n: RegisterMap.combined)
-	func DEC_n(n: RegisterMap.combined)
+	func INC_n(n: RegisterMap.combined) //checked
+	func DEC_n(n: RegisterMap.combined) //checked
 	
 	func LDHL_SP_n(n: UInt8) //checked
 	

@@ -65,6 +65,13 @@ class Registers {
 		self.F.setBit(at: flag.rawValue, to: state ? 1 : 0)
 	}
 	
+	func clearFlags() {
+		setFlag(.Z, state: false)
+		setFlag(.N, state: false)
+		setFlag(.H, state: false)
+		setFlag(.C, state: false)
+	}
+	
 	var AF: UInt16 {
 		get {
 			return UInt16(A) << 8 | UInt16(F)

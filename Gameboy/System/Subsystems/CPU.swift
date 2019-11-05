@@ -330,7 +330,7 @@ extension CPU: InstructionInvoker {
 			self.INC_n(n: .SP)
 		case 0x34:
 			self.opCodePrint(code: code, func: "INC_HL")
-			self.INC_n(n: .HL)
+			self.INC_HL()
 		case 0x3D:
 			self.opCodePrint(code: code, func: "DEC_A")
 			self.DEC_n(n: .A)
@@ -354,7 +354,7 @@ extension CPU: InstructionInvoker {
 			self.DEC_n(n: .L)
 		case 0x35:
 			self.opCodePrint(code: code, func: "DEC_HL")
-			self.DEC_n(n: .HL)
+			self.DEC_HL()
 		case 0x09:
 			self.opCodePrint(code: code, func: "ADD_HL_BC")
 			self.ADD_HL_n(n: registers.BC)
@@ -834,15 +834,14 @@ extension CPU: Load {
 }
 // MARK: ALU
 extension CPU: ALU {
-	
 //	8-bit ALU
 	func ADD_A_n(n: UInt8) {
-		registers.setFlag(.Z, state: registers.A + n == 0)
+		registers.setFlag(.Z, state: registers.A &+ n == 0)
 		registers.setFlag(.N, state: false)
 		registers.setFlag(.H, state: registers.A & 0x0F + n & 0x0F > 0x0F)
-		registers.setFlag(.C, state: registers.A > registers.A + n)
+		registers.setFlag(.C, state: registers.A > registers.A &+ n)
 
-		registers.A &= n
+		registers.A &+= n
 		registers.PC += 1
 	}
 	
@@ -851,12 +850,23 @@ extension CPU: ALU {
 	}
 	
 	func SUB_n(n: UInt8) {
-		registers.A -= n
+		registers.A &-= n
 		registers.PC += 1
 	}
 	
 	func SBC_A_n(n: UInt8) {
-		registers.A -= n + UInt8(registers.getFlag(.C))
+		let c = UInt8(registers.getFlag(.C))
+		registers.F = Registers.Negative
+		
+		if registers.A & 0x0F < n & 0x0F { registers.setFlag(.H, state: true) }
+		if registers.A < registers.A &- n { registers.setFlag(.C, state: true) }
+		registers.A &-= n
+		
+		if registers.A & 0x0F < n & 0x0F { registers.setFlag(.H, state: true) }
+		if registers.A < registers.A &- n { registers.setFlag(.C, state: true) }
+		if registers.A - c == 0 { registers.setFlag(.Z, state: true)}
+		registers.A &-= c
+		
 		registers.PC += 1
 	}
 	
@@ -934,23 +944,41 @@ extension CPU: ALU {
 	
 	func INC_n(n: RegisterMap.single) {
 		let current = registers.mapRegister(register: n).pointee
-		let new = current + 1
+		let new: UInt8 = current &+ 1
 		registers.setFlag(.Z, state: new == 0)
 		registers.setFlag(.N, state: false)
-		registers.setFlag(.H, state: (((current & 0xf) + (new & 0xf)) & Registers.Carry) == Registers.Carry)
-		registers.load(register: n, with: UInt8(new))
+		registers.setFlag(.H, state: new & 0x0F == 0x0F)
+		registers.load(register: n, with: new)
+		registers.PC += 1
+	}
+	
+	func INC_HL() {
+		let current = memory.readHalf(address: registers.HL)
+		let new: UInt8 = current &+ 1
+		registers.setFlag(.Z, state: new == 0)
+		registers.setFlag(.N, state: false)
+		registers.setFlag(.H, state: new & 0x0F == 0x0F)
+		memory.write(address: registers.HL, data: new)
 		registers.PC += 1
 	}
 	
 	func DEC_n(n: RegisterMap.single) {
 		let current = registers.mapRegister(register: n).pointee
-		
-		if current != 0 {
-			let new: UInt8 = UInt8(current - 1)
-			// flags affected
-			registers.load(register: n, with: new)
-		}
-		
+		let new: UInt8 = current &- 1
+		registers.setFlag(.Z, state: new == 0)
+		registers.setFlag(.N, state: false)
+		registers.setFlag(.H, state: new & 0x0F == 0)
+		registers.load(register: n, with: new)
+		registers.PC += 1
+	}
+	
+	func DEC_HL() {
+		let current = memory.readHalf(address: registers.HL)
+		let new: UInt8 = current &- 1
+		registers.setFlag(.Z, state: new == 0)
+		registers.setFlag(.N, state: false)
+		registers.setFlag(.H, state: new & 0x0F == 0)
+		memory.write(address: registers.HL, data: new)
 		registers.PC += 1
 	}
 	
