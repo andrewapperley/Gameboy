@@ -9,6 +9,8 @@
 import Foundation
 
 enum MemoryMap {
+	static let ECHO_RAM_OFFSET: UInt16 = 0x2000 // 0x2000 is the offset between echo ram and internal ram
+	static let MEM_SIZE = 65536
 	static let BOOT_ROM = Range<UInt16>(0x0...0x0100)
 	static let ROM_0 = Range<UInt16>(0x0100...0x3FFF)
 	static let ROM_n = Range<UInt16>(0x4000...0x7FFF)
@@ -45,34 +47,77 @@ enum MemoryMap {
 }
 
 class MMU {
-	private var biosActive = false
-	private var memory: [UInt8] = Array<UInt8>(repeating: 0x0, count: 0xFFFF)
+	var biosActive = false
+	private var bios: [UInt8] = Array<UInt8>(repeating: 0x0, count: Int(MemoryMap.BOOT_ROM.upperBound))
+	private var memory: [UInt8] = Array<UInt8>(repeating: 0x0, count: MemoryMap.MEM_SIZE)
 	
 	func loadBios(_ bios: [UInt8]) {
-		write(address: MemoryMap.BOOT_ROM.lowerBound, data: bios)
+		self.bios = bios
 		self.biosActive = true
 	}
 	
 	func loadRom(_ rom: [UInt8]) {
-		write(address: MemoryMap.ROM_0.lowerBound, data: rom)
+		write(address: 0x0101, data: rom)
+	}
+	
+	private func read(address: UInt16) -> UInt8 {
+		switch address {
+		case MemoryMap.BOOT_ROM.lowerBound..<MemoryMap.BOOT_ROM.upperBound where self.biosActive:
+            return bios[Int(address)];
+		case MemoryMap.VRAM:
+            return memory[Int(address)];
+		case 0...MemoryMap.ERAM.upperBound:
+            return memory[Int(address)]; // THIS NEEDS TO BE CHANGED TO ACCESS CARTRIDGE
+		case MemoryMap.WRAM_0.lowerBound...MemoryMap.WRAM_n.upperBound:
+            return memory[Int(address)];
+		case MemoryMap.ECHO: // echo ram access
+			return memory[Int(address - MemoryMap.ECHO_RAM_OFFSET)]
+		case MemoryMap.OAM.lowerBound...0xFFFF:
+			return memory[Int(address)];
+		default:
+			return UInt8(0)
+		}
 	}
 	
 	func readHalf(address: UInt16) -> UInt8 {
-		return memory[Int(address)]
+		return read(address: address)
 	}
 	
 	func readFull(address: UInt16) -> UInt16 {
-		return UInt16(memory[Int(address)]) | UInt16(memory[Int(address+1)]) << 8
+		let l = UInt16(read(address: address))
+		let h = UInt16(read(address: address+1))
+		return l | (h << 8)
 	}
 	
 	func write(address: UInt16, data: UInt8) {
+		switch address {
+		case MemoryMap.BOOT_ROM.lowerBound..<MemoryMap.BOOT_ROM.upperBound where self.biosActive:
+            bios[Int(address)] = data;
+        case  MemoryMap.VRAM:
+            memory[Int(address)] = data;
+        case 0...MemoryMap.ERAM.upperBound:
+            memory[Int(address)] = data;  // THIS NEEDS TO BE CHANGED TO ACCESS CARTRIDGE
+        case MemoryMap.WRAM_0.lowerBound...MemoryMap.WRAM_n.upperBound:
+            memory[Int(address)] = data;
+		case MemoryMap.ECHO: // echo ram access
+            memory[Int(address - MemoryMap.ECHO_RAM_OFFSET)] = data;
+		case MemoryMap.LCD.DMA:
+            memory[Int(address)] = data;
+        case 0xFF50 where data == 0x01:
+            memory[Int(address)] = data;
+            self.biosActive = false
+		case MemoryMap.OAM.lowerBound...0xFFFF:
+            memory[Int(address)] = data;
+        default:
+            print("Attempted to write out of bounds at address: \(String(format:"0x%02X", address)) with data: \(String(format:"0x%02X", data))")
+        }
 		memory[Int(address)] = data
 	}
 	
 	func write(address: UInt16, data: [UInt8]) {
 		var ii: UInt16 = 0
 		for i in data {
-			memory[Int(address+ii)] = i
+			write(address: address+ii, data: i)
 			ii += 1
 		}
 	}
@@ -83,7 +128,7 @@ class MMU {
 	}
 	
 	func reset() {
-		memory = Array<UInt8>(repeating: 0x0, count: 0xFFFF)
+		memory = Array<UInt8>(repeating: 0x0, count: MemoryMap.MEM_SIZE)
 	}
 	
 	func toState() -> [UInt8] {

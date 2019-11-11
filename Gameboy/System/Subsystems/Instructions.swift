@@ -10,13 +10,17 @@ import Foundation
 
 protocol InstructionInvoker {
 	func fetchAndInvokeInstruction(with code: UInt8)
+	static func generateInstructionLookupTable() -> InstructionLookupTable
 }
+
+typealias InstructionLookupTable = Dictionary<UInt8, (CPU, UInt8) -> Void>
 
 protocol Misc {
 	// - MARK: MISC
 	func NOP() // checked
 	func STOP() // checked
 	func CPL() // checked
+	func DI()
 }
 
 protocol Load {	
@@ -57,14 +61,17 @@ protocol Load {
 protocol ALU {
 	// - MARK: 8-Bit ALU
 	func ADD_A_n(n: UInt8) //checked
-	func ADDC_A_n(n: UInt8)
-	func SUB_n(n: UInt8)
+	func ADC_A_n(n: UInt8) //checked
+	func ADC_A_r(n: RegisterMap.single) //checked
+	func ADC_A_HL() //checked
+	func SUB_n(n: UInt8) //checked
+	func SUB_n(n: RegisterMap.single) //checked
+	func SUB_HL() //checked
 	func SBC_A_n(n: UInt8)
 	func AND_n(n: UInt8) //checked
 	func OR_n(n: UInt8) //checked
 	func XOR_n(n: UInt8) //checked
-	func CP_n(n: UInt8)
-	func CP_nn(nn: UInt8)
+	func CP_n(n: UInt8) //checked
 	func INC_n(n: RegisterMap.single) //checked
 	func INC_HL() //checked
 	func DEC_n(n: RegisterMap.single) //checked
@@ -76,7 +83,7 @@ protocol ALU {
 	
 	func LDHL_SP_n(n: UInt8) //checked
 	
-	func ADD_HL_n(n: UInt16)
+	func ADD_HL_n(n: UInt16) //checked
 }
 
 protocol Bit {
