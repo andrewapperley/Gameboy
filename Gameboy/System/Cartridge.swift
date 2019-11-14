@@ -89,7 +89,6 @@ enum CartridgeMemoryMap: Int {
 }
 
 struct Cartridge {
-	let rom: [UInt8]
 	let title: String
 	let type: CartridgeType
 	let deviceType: DeviceType
@@ -100,19 +99,19 @@ struct Cartridge {
 	let memoryController: MemoryController
 	
 	init(romName: String) {
-		guard let rom = FileSystem.readROM(name: romName) else {
+		guard let data = FileSystem.readROM(name: romName) else {
 			fatalError("Cartridge data failed to load")
 		}
-		self.rom = Array<UInt8>(rom)
-//		This needs to be configured by reading the rom data
-		title = Cartridge.getTitle(from: self.rom)
-		deviceType = Cartridge.getDeviceType(from: self.rom)
-		type = Cartridge.getCartridgeType(from: self.rom)
+		let rom = Array<UInt8>(data)
+		memoryController = MBC1(memory: rom)
+
+		title = Cartridge.getTitle(from: rom)
+		deviceType = Cartridge.getDeviceType(from: rom)
+		type = Cartridge.getCartridgeType(from: rom)
 		romSize = .kBit_256
 		ramSize = .kBit_256
 		destinationCode = .Non_Japanese
 		maskROMVersion = true
-		memoryController = MBC1()
 	}
 	
 	private static func getTitle(from rom: [UInt8]) -> String {

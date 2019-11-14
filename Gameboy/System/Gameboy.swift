@@ -12,6 +12,7 @@ import UIKit
 class Gameboy {
 	var ticker: CADisplayLink!
 	
+	var cartridge: Cartridge?
 	let memory: MMU
 	let cpu: CPU
 	let ppu: PPU
@@ -30,7 +31,9 @@ class Gameboy {
 	
 	func load(cartridge: Cartridge) {
 		reset()
-		cpu.start(cartridge: cartridge)
+		self.cartridge = cartridge
+		memory.loadMemoryController(cartridge.memoryController)
+		cpu.start()
 	}
 	
 	func reset() {

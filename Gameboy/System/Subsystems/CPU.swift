@@ -17,6 +17,7 @@ class CPU {
 	private let registers: Registers = Registers()
 	private let memory: MMU
 	private let clock: CPUTimer = CPUTimer()
+	private var running = false // This needs to be determined by reading the Registers
 	var cpuDelegate: CPUDelegate?
 	
 	init(memory: MMU) {
@@ -32,19 +33,12 @@ class CPU {
 		running = true
 	}
 	
-	func start(cartridge: Cartridge) {
-		guard let boot = FileSystem.readBootROM() else { return }
-
-		memory.loadBios(Array<UInt8>(boot))
-		memory.loadRom(Array<UInt8>(cartridge.rom))
+	func start() {
+//		Maybe I need to do more initialization here?
 		self.running = true
 	}
 	
-	private var running = false // This needs to be determined by reading the Registers
-	
-	
 	func tick() {
-		NSLog("--------")
 		guard running else { return }
 		// fetch OPCode
 		let code = memory.readHalf(address: registers.PC)
@@ -54,7 +48,6 @@ class CPU {
 		// check for I/O ?
 		// call debugger with latest frame information
 		self.cpuDelegate?.onCompletedFrame()
-		NSLog("--------")
 	}
 	
 	func reset() {
@@ -67,7 +60,7 @@ extension CPU: InstructionInvoker {
 	
 	static func generateInstructionLookupTable() -> InstructionLookupTable {
 		return InstructionLookupTable(uniqueKeysWithValues: [
-//			Misc
+//			MARK: Misc
 			(0x00, { (cpu, code) in
 				cpu.opCodePrint(code: code, func: "NOP")
 				cpu.NOP()
@@ -84,7 +77,7 @@ extension CPU: InstructionInvoker {
 				cpu.opCodePrint(code: code, func: "DI")
 				cpu.DI()
 			}),
-//			8-bit Loads
+//			MARK: 8-bit Loads
 			(0x3E, { (cpu, code) in
 				cpu.opCodePrint(code: code, func: "LD_A_n")
 				let param = cpu.memory.readHalf(address: cpu.registers.PC+1)
@@ -236,7 +229,7 @@ extension CPU: InstructionInvoker {
 				cpu.opCodePrint(code: code, func: "LDI_HL_A")
 				cpu.LDI_HL_A()
 			}),
-//			16-bit Loads
+//			MARK: 16-bit Loads
 			(0x08, { (cpu, code) in
 				cpu.opCodePrint(code: code, func: "LD_nn_SP")
 				let param = cpu.memory.readFull(address: cpu.registers.PC+1)
@@ -266,46 +259,155 @@ extension CPU: InstructionInvoker {
 				cpu.opCodePrint(code: code, func: "LD_SP_HL")
 				cpu.LD_SP_HL()
 			}),
+//			MARK: Jumps
+			(0xC3, { (cpu, code) in
+				cpu.opCodePrint(code: code, func: "JP_nn")
+				let param = cpu.memory.readFull(address: cpu.registers.PC+1)
+				cpu.JP_nn(nn: param)
+			}),
+			(0x18, { (cpu, code) in
+				cpu.opCodePrint(code: code, func: "JP_n")
+				let param = cpu.memory.readHalf(address: cpu.registers.PC+1)
+				cpu.JR_n(n: param)
+			}),
+			(0x20, { (cpu, code) in
+				cpu.opCodePrint(code: code, func: "JR_cc_n")
+				let param = cpu.memory.readHalf(address: cpu.registers.PC+1)
+				cpu.JR_cc_n(flag: .Z, n: param, state: false)
+			}),
+			(0x28, { (cpu, code) in
+				cpu.opCodePrint(code: code, func: "JR_cc_n")
+				let param = cpu.memory.readHalf(address: cpu.registers.PC+1)
+				cpu.JR_cc_n(flag: .Z, n: param, state: true)
+			}),
+			(0x30, { (cpu, code) in
+				cpu.opCodePrint(code: code, func: "JR_cc_n")
+				let param = cpu.memory.readHalf(address: cpu.registers.PC+1)
+				cpu.JR_cc_n(flag: .C, n: param, state: false)
+			}),
+			(0x38, { (cpu, code) in
+				cpu.opCodePrint(code: code, func: "JR_cc_n")
+				let param = cpu.memory.readHalf(address: cpu.registers.PC+1)
+				cpu.JR_cc_n(flag: .C, n: param, state: true)
+			}),
+
+//			MARK: ALU
+			
+//			MARK: 0xCB
+
+//			MARK: Calls
+			(0xCD, { (cpu, code) in
+				cpu.opCodePrint(code: code, func: "CALL_nn")
+				let param = cpu.memory.readFull(address: cpu.registers.PC+1)
+				cpu.CALL_nn(nn: param)
+			}),
+			(0xC4, { (cpu, code) in
+				cpu.opCodePrint(code: code, func: "CALL_cc_nn")
+				let param = cpu.memory.readFull(address: cpu.registers.PC+1)
+				cpu.CALL_cc_nn(flag: .Z, nn: param, state: false)
+			}),
+			(0xCC, { (cpu, code) in
+				cpu.opCodePrint(code: code, func: "CALL_cc_nn")
+				let param = cpu.memory.readFull(address: cpu.registers.PC+1)
+				cpu.CALL_cc_nn(flag: .Z, nn: param, state: true)
+			}),
+			(0xD4, { (cpu, code) in
+				cpu.opCodePrint(code: code, func: "CALL_cc_nn")
+				let param = cpu.memory.readFull(address: cpu.registers.PC+1)
+				cpu.CALL_cc_nn(flag: .C, nn: param, state: false)
+			}),
+			(0xDC, { (cpu, code) in
+				cpu.opCodePrint(code: code, func: "CALL_cc_nn")
+				let param = cpu.memory.readFull(address: cpu.registers.PC+1)
+				cpu.CALL_cc_nn(flag: .C, nn: param, state: true)
+			}),
+//			MARK: Restarts
+			(0xC7, { (cpu, code) in
+				cpu.opCodePrint(code: code, func: "RST_n")
+				cpu.RST_n(n: 0x00)
+			}),
+			(0xCF, { (cpu, code) in
+				cpu.opCodePrint(code: code, func: "RST_n")
+				cpu.RST_n(n: 0x08)
+			}),
+			(0xD7, { (cpu, code) in
+				cpu.opCodePrint(code: code, func: "RST_n")
+				cpu.RST_n(n: 0x10)
+			}),
+			(0xDF, { (cpu, code) in
+				cpu.opCodePrint(code: code, func: "RST_n")
+				cpu.RST_n(n: 0x18)
+			}),
+			(0xE7, { (cpu, code) in
+				cpu.opCodePrint(code: code, func: "RST_n")
+				cpu.RST_n(n: 0x20)
+			}),
+			(0xEF, { (cpu, code) in
+				cpu.opCodePrint(code: code, func: "RST_n")
+				cpu.RST_n(n: 0x28)
+			}),
+			(0xF7, { (cpu, code) in
+				cpu.opCodePrint(code: code, func: "RST_n")
+				cpu.RST_n(n: 0x30)
+			}),
+			(0xFF, { (cpu, code) in
+				cpu.opCodePrint(code: code, func: "RST_n")
+				cpu.RST_n(n: 0x38)
+			}),
+//			MARK: Rotates
+			(0x07, { (cpu, code) in
+				cpu.opCodePrint(code: code, func: "RLCA")
+				cpu.RLCA()
+			}),
+			(0x0F, { (cpu, code) in
+				cpu.opCodePrint(code: code, func: "RRCA")
+				cpu.RRCA()
+			}),
+			(0x17, { (cpu, code) in
+				cpu.opCodePrint(code: code, func: "RLA")
+				cpu.RL_n(n: .A)
+			}),
+//			MARK: Returns
+			(0xC9, { (cpu, code) in
+				cpu.opCodePrint(code: code, func: "RET")
+				cpu.RET()
+			}),
+			(0xC0, { (cpu, code) in
+				cpu.opCodePrint(code: code, func: "RET_cc")
+				cpu.RET_cc(flag: .Z, state: false)
+			}),
+			(0xC8, { (cpu, code) in
+				cpu.opCodePrint(code: code, func: "RET_cc")
+				cpu.RET_cc(flag: .Z, state: true)
+			}),
+			(0xD0, { (cpu, code) in
+				cpu.opCodePrint(code: code, func: "RET_cc")
+				cpu.RET_cc(flag: .C, state: false)
+			}),
+			(0xD8, { (cpu, code) in
+				cpu.opCodePrint(code: code, func: "RET_cc")
+				cpu.RET_cc(flag: .C, state: true)
+			}),
+			(0xD9, { (cpu, code) in
+				cpu.opCodePrint(code: code, func: "RETI")
+				cpu.RETI()
+			}),
 		])
 	}
 	
 	func fetchAndInvokeInstruction(with code: UInt8) {
 		self.opCodeFetchPrint(code: code)
 		
-		guard let instruction = CPU.instructionTable[code] else {
-			self.opCodeNotImplementedPrint(code: code)
+		if let instruction = CPU.instructionTable[code] {
+			instruction(self, code)
 			return
+//			self.opCodeNotImplementedPrint(code: code)
+//			return
 		}
 
-		instruction(self, code)
-		return
+		
 		
 		switch code {
-//			Jumps
-		case 0xC3:
-			self.opCodePrint(code: code, func: "JP_nn")
-			let param = memory.readFull(address: registers.PC+1)
-			self.JP_nn(nn: param)
-		case 0x18:
-			self.opCodePrint(code: code, func: "JP_n")
-			let param = memory.readHalf(address: registers.PC+1)
-			self.JR_n(n: param)
-		case 0x20:
-			self.opCodePrint(code: code, func: "JR_cc_n")
-			let param = memory.readHalf(address: registers.PC+1)
-			self.JR_cc_n(flag: .Z, n: param, state: false)
-		case 0x28:
-			self.opCodePrint(code: code, func: "JR_cc_n")
-			let param = memory.readHalf(address: registers.PC+1)
-			self.JR_cc_n(flag: .Z, n: param, state: true)
-		case 0x30:
-			self.opCodePrint(code: code, func: "JR_cc_n")
-			let param = memory.readHalf(address: registers.PC+1)
-			self.JR_cc_n(flag: .C, n: param, state: false)
-		case 0x38:
-			self.opCodePrint(code: code, func: "JR_cc_n")
-			let param = memory.readHalf(address: registers.PC+1)
-			self.JR_cc_n(flag: .C, n: param, state: true)
 //			ALU
 		case 0x80:
 			self.opCodePrint(code: code, func: "ADD_A_B")
@@ -693,81 +795,6 @@ extension CPU: InstructionInvoker {
 			default:
 				self.opCodeNotImplementedPrint(code: code, innerCode: innerCode)
 			}
-//			Calls
-		case 0xCD:
-			self.opCodePrint(code: code, func: "CALL_nn")
-			let param = memory.readFull(address: registers.PC+1)
-			self.CALL_nn(nn: param)
-		case 0xC4:
-			self.opCodePrint(code: code, func: "CALL_cc_nn")
-			let param = memory.readFull(address: registers.PC+1)
-			self.CALL_cc_nn(flag: .Z, nn: param, state: false)
-		case 0xCC:
-			self.opCodePrint(code: code, func: "CALL_cc_nn")
-			let param = memory.readFull(address: registers.PC+1)
-			self.CALL_cc_nn(flag: .Z, nn: param, state: true)
-		case 0xD4:
-			self.opCodePrint(code: code, func: "CALL_cc_nn")
-			let param = memory.readFull(address: registers.PC+1)
-			self.CALL_cc_nn(flag: .C, nn: param, state: false)
-		case 0xDC:
-			self.opCodePrint(code: code, func: "CALL_cc_nn")
-			let param = memory.readFull(address: registers.PC+1)
-			self.CALL_cc_nn(flag: .C, nn: param, state: true)
-//			Restarts
-		case 0xC7:
-			self.opCodePrint(code: code, func: "RST_n")
-			self.RST_n(n: 0x00)
-		case 0xCF:
-			self.opCodePrint(code: code, func: "RST_n")
-			self.RST_n(n: 0x08)
-		case 0xD7:
-			self.opCodePrint(code: code, func: "RST_n")
-			self.RST_n(n: 0x10)
-		case 0xDF:
-			self.opCodePrint(code: code, func: "RST_n")
-			self.RST_n(n: 0x18)
-		case 0xE7:
-			self.opCodePrint(code: code, func: "RST_n")
-			self.RST_n(n: 0x20)
-		case 0xEF:
-			self.opCodePrint(code: code, func: "RST_n")
-			self.RST_n(n: 0x28)
-		case 0xF7:
-			self.opCodePrint(code: code, func: "RST_n")
-			self.RST_n(n: 0x30)
-		case 0xFF:
-			self.opCodePrint(code: code, func: "RST_n")
-			self.RST_n(n: 0x38)
-//			Rotates
-		case 0x07:
-			self.opCodePrint(code: code, func: "RLCA")
-			self.RLCA()
-		case 0x0F:
-			self.opCodePrint(code: code, func: "RRCA")
-			self.RRCA()
-		case 0x17:
-			self.opCodePrint(code: code, func: "RLA")
-			self.RL_n(n: .A)
-//			Returns
-		case 0xC9:
-			self.opCodePrint(code: code, func: "RET")
-			self.RET()
-		case 0xC0:
-			self.opCodePrint(code: code, func: "RET_cc")
-			self.RET_cc(flag: .Z, state: false)
-		case 0xC8:
-			self.opCodePrint(code: code, func: "RET_cc")
-			self.RET_cc(flag: .Z, state: true)
-		case 0xD0:
-			self.opCodePrint(code: code, func: "RET_cc")
-			self.RET_cc(flag: .C, state: false)
-		case 0xD8:
-			self.opCodePrint(code: code, func: "RET_cc")
-			self.RET_cc(flag: .C, state: true)
-		case 0xD9:
-			self.opCodePrint(code: code, func: "RETI")
-			self.RETI()
 		default:
  			self.opCodeNotImplementedPrint(code: code)
 		}

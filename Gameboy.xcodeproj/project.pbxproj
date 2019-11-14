@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		0F1696682271D065009C7949 /* MMU.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F1696672271D065009C7949 /* MMU.swift */; };
-		0F1696AF227327BA009C7949 /* dmg_boot.bin in Resources */ = {isa = PBXBuildFile; fileRef = 0F1696AE227327BA009C7949 /* dmg_boot.bin */; };
 		0F1696B322732B69009C7949 /* Instructions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F1696B222732B69009C7949 /* Instructions.swift */; };
 		0F1696D722738CC4009C7949 /* game.gb in Resources */ = {isa = PBXBuildFile; fileRef = 0F1696D622738CC4009C7949 /* game.gb */; };
 		0F16973622771B09009C7949 /* Registers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F16973522771B09009C7949 /* Registers.swift */; };
@@ -44,7 +43,6 @@
 /* Begin PBXFileReference section */
 		0F169666227119CA009C7949 /* DevelopmentPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = DevelopmentPlayground.playground; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		0F1696672271D065009C7949 /* MMU.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MMU.swift; sourceTree = "<group>"; };
-		0F1696AE227327BA009C7949 /* dmg_boot.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = dmg_boot.bin; sourceTree = "<group>"; };
 		0F1696B222732B69009C7949 /* Instructions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Instructions.swift; sourceTree = "<group>"; };
 		0F1696D622738CC4009C7949 /* game.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = game.gb; sourceTree = "<group>"; };
 		0F16973522771B09009C7949 /* Registers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Registers.swift; sourceTree = "<group>"; };
@@ -93,7 +91,6 @@
 			isa = PBXGroup;
 			children = (
 				0F1696D622738CC4009C7949 /* game.gb */,
-				0F1696AE227327BA009C7949 /* dmg_boot.bin */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -268,7 +265,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				0F1696D722738CC4009C7949 /* game.gb in Resources */,
-				0F1696AF227327BA009C7949 /* dmg_boot.bin in Resources */,
 				0FEA3AA7226F319100AD96EE /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

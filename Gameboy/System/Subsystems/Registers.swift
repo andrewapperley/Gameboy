@@ -109,6 +109,15 @@ class Registers {
 		}
 	}
 	
+	func setInitial() {
+		AF = 0x01B0
+		BC = 0x0013
+		DE = 0x00D8
+		HL = 0x014D
+		SP = 0xFFFE
+		PC = 0x100
+	}
+	
 	func reset() {
 		A = 0x0
 		F = 0x0
@@ -120,6 +129,7 @@ class Registers {
 		L = 0x0
 		SP = 0x0
 		PC = 0x0
+		setInitial()
 	}
 }
 

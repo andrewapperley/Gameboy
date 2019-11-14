@@ -47,33 +47,35 @@ enum MemoryMap {
 }
 
 class MMU {
-	var biosActive = false
+	private(set) var biosActive = false
 	private var bios: [UInt8] = Array<UInt8>(repeating: 0x0, count: Int(MemoryMap.BOOT_ROM.upperBound))
 	private var memory: [UInt8] = Array<UInt8>(repeating: 0x0, count: MemoryMap.MEM_SIZE)
+	var memoryController: MemoryController?
 	
 	func loadBios(_ bios: [UInt8]) {
 		self.bios = bios
 		self.biosActive = true
 	}
 	
-	func loadRom(_ rom: [UInt8]) {
-		write(address: 0x0101, data: rom)
+	func loadMemoryController(_ memoryController: MemoryController?) {
+		self.memoryController = memoryController
 	}
 	
 	private func read(address: UInt16) -> UInt8 {
 		switch address {
 		case MemoryMap.BOOT_ROM.lowerBound..<MemoryMap.BOOT_ROM.upperBound where self.biosActive:
-            return bios[Int(address)];
+            return bios[Int(address)]
 		case MemoryMap.VRAM:
-            return memory[Int(address)];
+            return memory[Int(address)]
 		case 0...MemoryMap.ERAM.upperBound:
-            return memory[Int(address)]; // THIS NEEDS TO BE CHANGED TO ACCESS CARTRIDGE
+			guard let memoryController = memoryController else { return UInt8(0) }
+			return memoryController.read(address: address)
 		case MemoryMap.WRAM_0.lowerBound...MemoryMap.WRAM_n.upperBound:
-            return memory[Int(address)];
+            return memory[Int(address)]
 		case MemoryMap.ECHO: // echo ram access
 			return memory[Int(address - MemoryMap.ECHO_RAM_OFFSET)]
 		case MemoryMap.OAM.lowerBound...0xFFFF:
-			return memory[Int(address)];
+			return memory[Int(address)]
 		default:
 			return UInt8(0)
 		}
@@ -92,22 +94,23 @@ class MMU {
 	func write(address: UInt16, data: UInt8) {
 		switch address {
 		case MemoryMap.BOOT_ROM.lowerBound..<MemoryMap.BOOT_ROM.upperBound where self.biosActive:
-            bios[Int(address)] = data;
+            bios[Int(address)] = data
         case  MemoryMap.VRAM:
-            memory[Int(address)] = data;
+            memory[Int(address)] = data
         case 0...MemoryMap.ERAM.upperBound:
-            memory[Int(address)] = data;  // THIS NEEDS TO BE CHANGED TO ACCESS CARTRIDGE
+			guard let memoryController = memoryController else { return }
+			memoryController.write(address: address, data: data)
         case MemoryMap.WRAM_0.lowerBound...MemoryMap.WRAM_n.upperBound:
-            memory[Int(address)] = data;
+            memory[Int(address)] = data
 		case MemoryMap.ECHO: // echo ram access
-            memory[Int(address - MemoryMap.ECHO_RAM_OFFSET)] = data;
+            memory[Int(address - MemoryMap.ECHO_RAM_OFFSET)] = data
 		case MemoryMap.LCD.DMA:
-            memory[Int(address)] = data;
+            memory[Int(address)] = data
         case 0xFF50 where data == 0x01:
-            memory[Int(address)] = data;
+            memory[Int(address)] = data
             self.biosActive = false
 		case MemoryMap.OAM.lowerBound...0xFFFF:
-            memory[Int(address)] = data;
+            memory[Int(address)] = data
         default:
             print("Attempted to write out of bounds at address: \(String(format:"0x%02X", address)) with data: \(String(format:"0x%02X", data))")
         }
@@ -127,8 +130,43 @@ class MMU {
 		write(address: address+1, data: UInt8(data >> 8))
 	}
 	
+	func setInitial() {
+		write(address: UInt16(0xFF05), data: UInt8(0x00)) // TIMA
+		write(address: UInt16(0xFF06), data: UInt8(0x00)) // TMA
+		write(address: UInt16(0xFF07), data: UInt8(0x00)) // TAC
+		write(address: UInt16(0xFF10), data: UInt8(0x80)) // NR10
+		write(address: UInt16(0xFF11), data: UInt8(0xBF)) // NR11
+		write(address: UInt16(0xFF12), data: UInt8(0xF3)) // NR12
+		write(address: UInt16(0xFF14), data: UInt8(0xBF)) // NR14
+		write(address: UInt16(0xFF16), data: UInt8(0x3F)) // NR21
+		write(address: UInt16(0xFF17), data: UInt8(0x00)) // NR22
+		write(address: UInt16(0xFF19), data: UInt8(0xBF)) // NR24
+		write(address: UInt16(0xFF1A), data: UInt8(0x75)) // NR30
+		write(address: UInt16(0xFF1B), data: UInt8(0xFF)) // NR31
+		write(address: UInt16(0xFF1C), data: UInt8(0x95)) // NR32
+		write(address: UInt16(0xFF1E), data: UInt8(0xBF)) // NR33
+		write(address: UInt16(0xFF20), data: UInt8(0xFF)) // NR41
+		write(address: UInt16(0xFF21), data: UInt8(0x00)) // NR42
+		write(address: UInt16(0xFF22), data: UInt8(0x00)) // NR43
+		write(address: UInt16(0xFF23), data: UInt8(0xBF)) // NR30
+		write(address: UInt16(0xFF24), data: UInt8(0x77)) // NR50
+		write(address: UInt16(0xFF25), data: UInt8(0xF3)) // NR51
+		write(address: UInt16(0xFF26), data: UInt8(0xF1)) // NR52
+		write(address: UInt16(0xFF40), data: UInt8(0x91)) // LCDC
+		write(address: UInt16(0xFF42), data: UInt8(0x00)) // SCY
+		write(address: UInt16(0xFF43), data: UInt8(0x00)) // SCX
+		write(address: UInt16(0xFF45), data: UInt8(0x00)) // LYC
+		write(address: UInt16(0xFF47), data: UInt8(0xFC)) // BGP
+		write(address: UInt16(0xFF48), data: UInt8(0xFF)) // OBP0
+		write(address: UInt16(0xFF49), data: UInt8(0xFF)) // OBP1
+		write(address: UInt16(0xFF4A), data: UInt8(0x00)) // WY
+		write(address: UInt16(0xFF4B), data: UInt8(0x00)) // WX
+		write(address: UInt16(0xFFFF), data: UInt8(0x00)) // IE
+	}
+	
 	func reset() {
 		memory = Array<UInt8>(repeating: 0x0, count: MemoryMap.MEM_SIZE)
+		setInitial()
 	}
 	
 	func toState() -> [UInt8] {
