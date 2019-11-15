@@ -32,5 +32,6 @@ struct StateRegisters {
 struct CPUState {
 	let registers: StateRegisters
 	let memory: [UInt8]
+	var rom: [UInt8]?
 //	Add cartridge state here
 }

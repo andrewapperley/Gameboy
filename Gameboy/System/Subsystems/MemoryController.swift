@@ -11,6 +11,7 @@ import Foundation
 protocol MemoryController {
 	func read(address: UInt16) -> UInt8
 	func write(address: UInt16, data: UInt8)
+	func toState() -> [UInt8]
 }
 
 class MBC: MemoryController {
@@ -26,6 +27,10 @@ class MBC: MemoryController {
 	
 	func write(address: UInt16, data: UInt8) {
 		fatalError("Must subclass MBC")
+	}
+	
+	func toState() -> [UInt8] {
+		return memory
 	}
 }
 

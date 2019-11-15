@@ -71,11 +71,13 @@ extension StateRegisters {
 private enum DebuggerViewSections: Int {
 	case Registers
 	case Flags
+	case Rom
 	case Memory
-	
+
 	static let RegistersKey = "Registers"
 	static let FlagsKey = "Flags"
 	static let MemoryKey = "Memory"
+	static let RomKey = "Rom"
 }
 
 protocol DebuggerViewDelegate {
@@ -119,6 +121,7 @@ class DebuggerView: UIView {
 		dataView.register(UITableViewCell.self, forCellReuseIdentifier: DebuggerViewSections.RegistersKey)
 		dataView.register(UITableViewCell.self, forCellReuseIdentifier: DebuggerViewSections.FlagsKey)
 		dataView.register(UITableViewCell.self, forCellReuseIdentifier: DebuggerViewSections.MemoryKey)
+		dataView.register(UITableViewCell.self, forCellReuseIdentifier: DebuggerViewSections.RomKey)
 	}
 	
 	func setupContraints() {
@@ -159,6 +162,8 @@ extension DebuggerView: UITableViewDataSource {
 			return 4
 		case .Memory:
 			return state.memory.count
+		case .Rom:
+			return state.rom?.count ?? 0
 		}
 	}
 	
@@ -170,6 +175,8 @@ extension DebuggerView: UITableViewDataSource {
 			return "Flags"
 		case .Memory:
 			return "Memory Map"
+		case .Rom:
+			return "Rom Data"
 		}
 	}
 	
@@ -188,6 +195,9 @@ extension DebuggerView: UITableViewDataSource {
 			case .Memory:
 				cell = tableView.dequeueReusableCell(withIdentifier: DebuggerViewSections.MemoryKey, for: indexPath)
 				cell.textLabel?.text = "0x\(String(indexPath.row, radix: 16, uppercase: true)): 0x\(String(self.state!.memory[Int(indexPath.row)], radix: 16, uppercase: true))"
+			case .Rom:
+				cell = tableView.dequeueReusableCell(withIdentifier: DebuggerViewSections.RomKey, for: indexPath)
+				cell.textLabel?.text = "0x\(String(indexPath.row, radix: 16, uppercase: true)): 0x\(String(self.state!.rom![Int(indexPath.row)], radix: 16, uppercase: true))"
 		}
 		return cell
 	}

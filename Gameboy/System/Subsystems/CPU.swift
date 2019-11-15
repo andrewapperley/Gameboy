@@ -26,7 +26,7 @@ class CPU {
 	
 	func pause() -> CPUState {
 		running = false
-		return CPUState(registers: registers.toState(), memory: memory.toState())
+		return CPUState(registers: registers.toState(), memory: memory.toState(), rom: memory.memoryController?.toState())
 	}
 	
 	func resume() {
