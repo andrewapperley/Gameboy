@@ -14,6 +14,7 @@ protocol CPUDelegate {
 
 class CPU {
 	private static let instructionTable: InstructionLookupTable = CPU.generateInstructionLookupTable()
+	private static let innerInstructionTable: InnerInstructionLookupTable = CPU.generateInnerInstructionLookupTable()
 	private let registers: Registers = Registers()
 	private let memory: MMU
 	private let clock: CPUTimer = CPUTimer()
@@ -57,6 +58,54 @@ class CPU {
 
 // MARK: Instruction Invoker
 extension CPU: InstructionInvoker {
+	
+	static func generateInnerInstructionLookupTable() -> InnerInstructionLookupTable {
+		return InnerInstructionLookupTable(uniqueKeysWithValues: [
+//			MARK: Rotates
+			(0x11, { (cpu, code, innerCode) in
+				cpu.opCodePrint(code: code, func: "RL_C", innerCode: innerCode)
+				cpu.RL_n(n: .C)
+			}),
+			(0x17, { (cpu, code, innerCode) in
+				cpu.opCodePrint(code: code, func: "RL_A", innerCode: innerCode)
+				cpu.RL_n(n: .A)
+			}),
+//			MARK: Bits
+			(0x40, { (cpu, code, innerCode) in
+				cpu.opCodePrint(code: code, func: "BIT_0_B", innerCode: innerCode)
+				cpu.BIT_b_r(b: 0, r: cpu.registers.B)
+			}),
+			(0x41, { (cpu, code, innerCode) in
+				cpu.opCodePrint(code: code, func: "BIT_0_C", innerCode: innerCode)
+				cpu.BIT_b_r(b: 0, r: cpu.registers.C)
+			}),
+			(0x42, { (cpu, code, innerCode) in
+				cpu.opCodePrint(code: code, func: "BIT_0_D", innerCode: innerCode)
+				cpu.BIT_b_r(b: 0, r: cpu.registers.D)
+			}),
+			(0x43, { (cpu, code, innerCode) in
+				cpu.opCodePrint(code: code, func: "BIT_0_E", innerCode: innerCode)
+				cpu.BIT_b_r(b: 0, r: cpu.registers.E)
+			}),
+			(0x44, { (cpu, code, innerCode) in
+				cpu.opCodePrint(code: code, func: "BIT_0_H", innerCode: innerCode)
+				cpu.BIT_b_r(b: 0, r: cpu.registers.H)
+			}),
+			(0x45, { (cpu, code, innerCode) in
+				cpu.opCodePrint(code: code, func: "BIT_0_L", innerCode: innerCode)
+				cpu.BIT_b_r(b: 0, r: cpu.registers.L)
+			}),
+			(0x46, { (cpu, code, innerCode) in
+				cpu.opCodePrint(code: code, func: "BIT_0_HL", innerCode: innerCode)
+				let param = cpu.memory.readHalf(address: cpu.registers.HL)
+				cpu.BIT_b_r(b: 0, r: param)
+			}),
+			(0x47, { (cpu, code, innerCode) in
+				cpu.opCodePrint(code: code, func: "BIT_0_A", innerCode: innerCode)
+				cpu.BIT_b_r(b: 0, r: cpu.registers.A)
+			})
+		])
+	}
 	
 	static func generateInstructionLookupTable() -> InstructionLookupTable {
 		return InstructionLookupTable(uniqueKeysWithValues: [
@@ -294,6 +343,14 @@ extension CPU: InstructionInvoker {
 //			MARK: ALU
 			
 //			MARK: 0xCB
+			(0xCB, { (cpu, code) in
+				let innerCode = cpu.memory.readHalf(address: cpu.registers.PC+1)
+				guard let instruction = CPU.innerInstructionTable[innerCode] else {
+					cpu.opCodeNotImplementedPrint(code: code, innerCode: innerCode)
+					return
+				}
+				instruction(cpu, code, innerCode)
+			}),
 
 //			MARK: Calls
 			(0xCD, { (cpu, code) in
@@ -398,14 +455,12 @@ extension CPU: InstructionInvoker {
 	func fetchAndInvokeInstruction(with code: UInt8) {
 		self.opCodeFetchPrint(code: code)
 		
-		if let instruction = CPU.instructionTable[code] {
-			instruction(self, code)
+		guard let instruction = CPU.instructionTable[code] else {
+			self.opCodeNotImplementedPrint(code: code)
 			return
-//			self.opCodeNotImplementedPrint(code: code)
-//			return
 		}
-
-		
+		instruction(self, code)
+		return
 		
 		switch code {
 //			ALU
@@ -578,12 +633,6 @@ extension CPU: InstructionInvoker {
 		case 0xCB:
 			let innerCode = memory.readHalf(address: registers.PC+1)
 			switch(innerCode) {
-			case 0x11:
-				self.opCodePrint(code: code, func: "RL_C", innerCode: innerCode)
-				self.RL_n(n: .C)
-			case 0x17:
-				self.opCodePrint(code: code, func: "RL_A", innerCode: innerCode)
-				self.RL_n(n: .A)
 //				Bits
 			case 0x40:
 				self.opCodePrint(code: code, func: "BIT_0_B", innerCode: innerCode)

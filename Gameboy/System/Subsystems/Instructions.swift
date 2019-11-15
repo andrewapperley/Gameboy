@@ -14,6 +14,7 @@ protocol InstructionInvoker {
 }
 
 typealias InstructionLookupTable = Dictionary<UInt8, (CPU, UInt8) -> Void>
+typealias InnerInstructionLookupTable = Dictionary<UInt8, (CPU, UInt8, UInt8) -> Void>
 
 protocol Misc {
 	// - MARK: MISC
