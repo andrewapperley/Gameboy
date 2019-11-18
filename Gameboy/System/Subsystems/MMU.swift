@@ -67,7 +67,7 @@ class MMU {
             return bios[Int(address)]
 		case MemoryMap.VRAM:
             return memory[Int(address)]
-		case 0...MemoryMap.ERAM.upperBound:
+		case 0...MemoryMap.ROM_n.upperBound:
 			guard let memoryController = memoryController else { return UInt8(0) }
 			return memoryController.read(address: address)
 		case MemoryMap.WRAM_0.lowerBound...MemoryMap.WRAM_n.upperBound:

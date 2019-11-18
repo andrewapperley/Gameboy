@@ -103,13 +103,13 @@ struct Cartridge {
 			fatalError("Cartridge data failed to load")
 		}
 		let rom = Array<UInt8>(data)
-		memoryController = MBC1(memory: rom)
 
 		title = Cartridge.getTitle(from: rom)
 		deviceType = Cartridge.getDeviceType(from: rom)
 		type = Cartridge.getCartridgeType(from: rom)
-		romSize = .kBit_256
-		ramSize = .kBit_256
+		memoryController = Cartridge.getMemoryControllerType(from: type, with: rom)
+		romSize = Cartridge.getRomSize(from: rom)
+		ramSize = Cartridge.getRamSize(from: rom)
 		destinationCode = .Non_Japanese
 		maskROMVersion = true
 	}
@@ -127,5 +127,26 @@ struct Cartridge {
 	
 	private static func getCartridgeType(from rom: [UInt8]) -> CartridgeType {
 		return CartridgeType(rawValue: Int(rom[CartridgeMemoryMap.CartridgeType.rawValue])) ?? CartridgeType.ROM
+	}
+	
+	private static func getRomSize(from rom: [UInt8]) -> RomSize {
+		return RomSize(rawValue: Int(rom[CartridgeMemoryMap.RomSize.rawValue])) ?? RomSize.kBit_256
+	}
+	
+	private static func getRamSize(from rom: [UInt8]) -> RamSize {
+		return RamSize(rawValue: Int(rom[CartridgeMemoryMap.Ramize.rawValue])) ?? RamSize.None
+	}
+	
+	private static func getMemoryControllerType(from type: CartridgeType, with rom: [UInt8]) -> MemoryController {
+		switch type {
+		case .ROM:
+			return MBC0(memory: rom)
+		case .ROM_MBC1:
+			return MBC1(memory: rom)
+		case .ROM_MBC2:
+			return MBC2(memory: rom)
+		@unknown default:
+			return MBC0(memory: rom)
+		}
 	}
 }
