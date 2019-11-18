@@ -11,6 +11,7 @@ import Foundation
 protocol InstructionInvoker {
 	func fetchAndInvokeInstruction(with code: UInt8)
 	static func generateInstructionLookupTable() -> InstructionLookupTable
+	static func generateInnerInstructionLookupTable() -> InnerInstructionLookupTable
 }
 
 typealias InstructionLookupTable = Dictionary<UInt8, (CPU, UInt8) -> Void>
