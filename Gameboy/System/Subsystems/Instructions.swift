@@ -911,6 +911,10 @@ struct Instructions {
 					cpu.opCodePrint(code: code, func: "RLA")
 					cpu.RL_n(n: .A)
 				}) as Operation),
+				(0x1F as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
+					cpu.opCodePrint(code: code, func: "RR_A")
+					cpu.RR_n(n: .A)
+				}) as Operation),
 	//			MARK: Returns
 				(0xC9 as UInt8, (cycles: 2, pc: 0, { (cpu, code) in
 					cpu.opCodePrint(code: code, func: "RET")
