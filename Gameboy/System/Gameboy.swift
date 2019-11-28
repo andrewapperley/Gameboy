@@ -7,11 +7,10 @@
 //
 
 import Foundation
-import UIKit
 
 class Gameboy {
-	var ticker: CADisplayLink!
-	
+	var queue: DispatchQueue!
+	var bp: UInt16 = 0
 	var cartridge: Cartridge?
 	let memory: MMU
 	let cpu: CPU
@@ -20,20 +19,23 @@ class Gameboy {
 	
 	var debugger: Debugger? = nil
 	
-	init(screen: UIView) {
+	init() {
 		self.memory = MMU()
 		self.cpu = CPU(memory: memory)
-		self.ppu = PPU(memory: memory, screen: screen)
+		self.ppu = PPU(memory: memory)
 		self.apu = APU(memory: memory)
-		self.setupDisplayLink()
+		self.setupQueue()
 		cpu.cpuDelegate = self
 	}
 	
 	func load(cartridge: Cartridge) {
-		reset()
 		self.cartridge = cartridge
 		memory.loadMemoryController(cartridge.memoryController)
+		reset()
 		cpu.start()
+		queue.async {
+			self.onTick()
+		}
 	}
 	
 	func reset() {
@@ -41,14 +43,29 @@ class Gameboy {
 		self.cpu.reset()
 	}
 	
-	func setupDisplayLink() {
-		self.ticker = CADisplayLink(target: self, selector: #selector(onTick))
-		self.ticker.add(to: RunLoop.current, forMode: .common)
+	func setupQueue() {
+		self.queue = DispatchQueue(label: "Gameboy Dispatch Queue")
 	}
 	
-	@objc func onTick() {
-		self.cpu.tick()
-		self.ppu.render()
+	func onTick() {
+		
+		let start = Date().timeIntervalSince1970
+		
+		var count: Int = 0
+		while count < cpu.clock.ticLoopCount {
+			var delta = cpu.clock.mCounter
+			self.cpu.tick()
+			delta = cpu.clock.mCounter - delta
+			self.ppu.render()
+			count += Int(delta)
+		}
+		
+		let elapsed = Date().timeIntervalSince1970 - start
+		
+		if cpu.running {
+			let time = DispatchTime.now() + Double(Int64(Double(NSEC_PER_SEC) * (cpu.clock.tic * Double(count) - elapsed))) / Double(NSEC_PER_SEC)
+			queue.asyncAfter(deadline: time, execute: self.onTick)
+		}
 	}
 }
 

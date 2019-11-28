@@ -34,6 +34,21 @@ enum Flag: Int {
 	case N = 6 // Subtract Flag
 	case H = 5 // Half Carry Flag
 	case C = 4 // Carry Flag
+	
+	static let all: [Flag] = [.Z, .N, .H, .C]
+	
+	var registerValue: UInt8 {
+		switch self {
+		case .Z:
+			return Registers.Carry
+		case .N:
+			return Registers.Negative
+		case .H:
+			return Registers.HalfCarry
+		case .C:
+			return Registers.Carry
+		}
+	}
 }
 
 class Registers {
@@ -70,6 +85,13 @@ class Registers {
 		setFlag(.N, state: false)
 		setFlag(.H, state: false)
 		setFlag(.C, state: false)
+	}
+	
+	func clearFlags(notAffacted: [Flag]) {
+		for flag in Flag.all {
+			guard !notAffacted.contains(flag) else { continue }
+			setFlag(flag, state: false)
+		}
 	}
 	
 	var AF: UInt16 {

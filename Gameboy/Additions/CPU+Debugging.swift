@@ -7,12 +7,12 @@
 //
 
 import Foundation
-private var instructionHistory: [String] = []
+
 protocol Debugging {
 	func opCodeFetchPrint(code: UInt8)
-	func opCodeNotImplementedPrint(code: UInt8, innerCode: UInt8?)
-	func opCodePrint(code: UInt8, func: String, innerCode: UInt8?)
-	func debugPrinting(message: String, code: UInt8, innerCode: UInt8?)
+	func opCodeNotImplementedPrint(code: UInt8)
+	func opCodePrint(code: UInt8, func: String)
+	func debugPrinting(message: String, code: UInt8)
 }
 
 extension CPU: Debugging {
@@ -20,22 +20,17 @@ extension CPU: Debugging {
 		debugPrinting(message: "Fetching OPCode::", code: code)
 	}
 	
-	func opCodeNotImplementedPrint(code: UInt8, innerCode: UInt8? = nil) {
-		debugPrinting(message: "OPCode not implemented yet::", code: code, innerCode: innerCode)
+	func opCodeNotImplementedPrint(code: UInt8) {
+		debugPrinting(message: "OPCode not implemented yet::", code: code)
 	}
 	
-	func opCodePrint(code: UInt8, func: String, innerCode: UInt8? = nil) {
-		debugPrinting(message: "Executing Instruction:: \(`func`) for ", code: code, innerCode: innerCode)
+	func opCodePrint(code: UInt8, func: String) {
+		debugPrinting(message: "Executing Instruction:: \(`func`) for ", code: code)
 	}
 	
-	func debugPrinting(message: String, code: UInt8, innerCode: UInt8? = nil) {
+	func debugPrinting(message: String, code: UInt8) {
 		#if DEBUG
-			var printing = "\(message) \(String(format:"0x%02X", code))"
-			if let inner = innerCode {
-				printing += " inner \(String(format:"0x%02X", inner))"
-			}
-			instructionHistory.append(printing)
-			print(printing)
+			print("\(message) \(String(format:"0x%02X", code))")
 		#endif
 	}
 }

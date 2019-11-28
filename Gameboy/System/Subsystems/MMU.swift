@@ -41,7 +41,20 @@ enum MemoryMap {
 		static let BG_MAP_1 = Range<UInt16>(0x9C00...0x9FFF) // Second 32x32 BG Tile Map
 	}
 	
-	static let IF: UInt16 = 0xFF0F // IF – Interrupt Flag (R/W)
+	static let DIV: UInt16 = 0xFF04
+	static let TIMA: UInt16 = 0xFF05
+	static let TMA: UInt16 = 0xFF06
+	static let TAC: UInt16 = 0xFF07
+	
+	enum IF: UInt8 { // IF – Interrupt Flag (R/W)
+		static let address: UInt16 = 0xFF0F
+		case IF_P10P13 = 0x10
+		case IF_SERIAL = 0x08
+		case IF_TIMER = 0x04
+		case IF_LCDC = 0x02
+		case IF_VBLANK = 0x01
+	}
+
 	static let HRAM = Range<UInt16>(0xFF80...0xFFFE)
 	static let IER = 0xFFFF // Interrupt Enable Register
 }
@@ -61,7 +74,7 @@ class MMU {
 		self.memoryController = memoryController
 	}
 	
-	private func read(address: UInt16) -> UInt8 {
+	internal func read(address: UInt16) -> UInt8 {
 		switch address {
 		case MemoryMap.BOOT_ROM.lowerBound..<MemoryMap.BOOT_ROM.upperBound where self.biosActive:
             return bios[Int(address)]
@@ -114,7 +127,6 @@ class MMU {
         default:
             print("Attempted to write out of bounds at address: \(String(format:"0x%02X", address)) with data: \(String(format:"0x%02X", data))")
         }
-		memory[Int(address)] = data
 	}
 	
 	func write(address: UInt16, data: [UInt8]) {
@@ -128,6 +140,11 @@ class MMU {
 	func write(address: UInt16, data: UInt16) {
 		write(address: address, data: UInt8(data & 0xFF))
 		write(address: address+1, data: UInt8(data >> 8))
+	}
+	
+	func writeInterrupt(_ flag: MemoryMap.IF) {
+		let interrupts = readHalf(address: MemoryMap.IF.address)
+		write(address: MemoryMap.IF.address, data: interrupts | flag.rawValue)
 	}
 	
 	func setInitial() {
@@ -169,18 +186,67 @@ class MMU {
 		setInitial()
 	}
 	
-	func toState() -> [UInt8] {
-		return memory
+	func toState() -> MemoryState {
+		return MemoryState(memory: memory, rom: memoryController?.toState())
 	}
 }
 
 protocol VMMU {
-//	Add functions that only return memory from the VRAM or OAM locations
-//	Will also need write functions with the same restrictions
+	func readVMMU(address: UInt16) -> UInt8
+	func writeVMMU(address: UInt16, data: UInt8)
 }
 
 extension MMU: VMMU {
+	func readVMMU(address: UInt16) -> UInt8 {
+		switch address {
+		case MemoryMap.VRAM,
+			 MemoryMap.OAM,
+			 MemoryMap.LCD.LCDC,
+			 MemoryMap.LCD.STAT,
+			 MemoryMap.LCD.SCY,
+			 MemoryMap.LCD.SCX,
+			 MemoryMap.LCD.LY,
+			 MemoryMap.LCD.LYC,
+			 MemoryMap.LCD.BGP,
+			 MemoryMap.LCD.OBP0,
+			 MemoryMap.LCD.OBP1,
+			 MemoryMap.LCD.WY,
+			 MemoryMap.LCD.WX,
+			 MemoryMap.LCD.TILES,
+			 MemoryMap.LCD.SPT,
+			 MemoryMap.LCD.BG_MAP_0,
+			 MemoryMap.LCD.BG_MAP_1:
+				return read(address: address)
+		default:
+			print("Attempted to read out of VMMU bounds at address: \(String(format:"0x%02X", address))")
+			return UInt8(0)
+		}
+	}
 	
+	func writeVMMU(address: UInt16, data: UInt8) {
+		switch address {
+		case MemoryMap.VRAM,
+			 MemoryMap.OAM,
+			 MemoryMap.LCD.LCDC,
+			 MemoryMap.LCD.STAT,
+			 MemoryMap.LCD.SCY,
+			 MemoryMap.LCD.SCX,
+			 MemoryMap.LCD.LYC,
+			 MemoryMap.LCD.DMA,
+			 MemoryMap.LCD.BGP,
+			 MemoryMap.LCD.OBP0,
+			 MemoryMap.LCD.OBP1,
+			 MemoryMap.LCD.WY,
+			 MemoryMap.LCD.WX,
+			 MemoryMap.LCD.TILES,
+			 MemoryMap.LCD.SPT,
+			 MemoryMap.LCD.BG_MAP_0,
+			 MemoryMap.LCD.BG_MAP_1:
+				write(address: address, data: data)
+		default:
+			print("Attempted to write out of VMMU bounds at address: \(String(format:"0x%02X", address)) with data: \(String(format:"0x%02X", data))")
+		}
+	}
 }
 
 protocol AMMU {

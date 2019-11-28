@@ -29,9 +29,13 @@ struct StateRegisters {
 	let flags: StateFlags
 }
 
+struct MemoryState {
+	let memory: [UInt8]
+	let rom: [UInt8]?
+}
+
 struct CPUState {
 	let registers: StateRegisters
-	let memory: [UInt8]
-	var rom: [UInt8]?
+	let memory: MemoryState
 //	Add cartridge state here
 }

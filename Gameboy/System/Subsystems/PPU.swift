@@ -11,15 +11,12 @@ import UIKit
 
 class PPU {
 	let memory: VMMU
-	let screen: UIView
 
 	let WIDTH: CGFloat = 160
 	let HEIGHT: CGFloat = 144
 	
-	init(memory: VMMU, screen: UIView) {
+	init(memory: VMMU) {
 		self.memory = memory
-		self.screen = screen
-		self.screen.addSubview(UIImageView(frame: CGRect(x: (screen.bounds.width - WIDTH)/2, y: 50, width: WIDTH, height: HEIGHT)))
 	}
 	
 	func render() {

@@ -76,8 +76,8 @@ private enum DebuggerViewSections: Int {
 
 	static let RegistersKey = "Registers"
 	static let FlagsKey = "Flags"
-	static let MemoryKey = "Memory"
 	static let RomKey = "Rom"
+	static let MemoryKey = "Memory"
 }
 
 protocol DebuggerViewDelegate {
@@ -150,7 +150,7 @@ extension DebuggerView: Debugger {
 extension DebuggerView: UITableViewDataSource {
 	
 	func numberOfSections(in tableView: UITableView) -> Int {
-		return self.state != nil ? 3 : 0
+		return self.state != nil ? 4 : 0
 	}
 	
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -161,9 +161,9 @@ extension DebuggerView: UITableViewDataSource {
 		case .Flags:
 			return 4
 		case .Memory:
-			return state.memory.count
+			return state.memory.memory.count
 		case .Rom:
-			return state.rom?.count ?? 0
+			return state.memory.rom?.count ?? 0
 		}
 	}
 	
@@ -194,10 +194,10 @@ extension DebuggerView: UITableViewDataSource {
 				cell.textLabel?.text = "\(flag.name): 0x\(String(flag.value, radix: 16, uppercase: true))"
 			case .Memory:
 				cell = tableView.dequeueReusableCell(withIdentifier: DebuggerViewSections.MemoryKey, for: indexPath)
-				cell.textLabel?.text = "0x\(String(indexPath.row, radix: 16, uppercase: true)): 0x\(String(self.state!.memory[Int(indexPath.row)], radix: 16, uppercase: true))"
+				cell.textLabel?.text = "0x\(String(indexPath.row, radix: 16, uppercase: true)): 0x\(String(self.state!.memory.memory[Int(indexPath.row)], radix: 16, uppercase: true))"
 			case .Rom:
 				cell = tableView.dequeueReusableCell(withIdentifier: DebuggerViewSections.RomKey, for: indexPath)
-				cell.textLabel?.text = "0x\(String(indexPath.row, radix: 16, uppercase: true)): 0x\(String(self.state!.rom![Int(indexPath.row)], radix: 16, uppercase: true))"
+				cell.textLabel?.text = "0x\(String(indexPath.row, radix: 16, uppercase: true)): 0x\(String(self.state!.memory.rom![Int(indexPath.row)], radix: 16, uppercase: true))"
 		}
 		return cell
 	}

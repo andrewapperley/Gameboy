@@ -17,6 +17,18 @@
 		0F88A26622ADD3E200EC5AE2 /* CPUState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F88A26522ADD3E200EC5AE2 /* CPUState.swift */; };
 		0F88A26822ADD8B400EC5AE2 /* Debugger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F88A26722ADD8B400EC5AE2 /* Debugger.swift */; };
 		0F88A26A22ADD98600EC5AE2 /* DebuggerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F88A26922ADD98600EC5AE2 /* DebuggerView.swift */; };
+		0FBF668C238DB94B00FEC173 /* cpu_instrs.gb in Resources */ = {isa = PBXBuildFile; fileRef = 0FBF668B238DB94B00FEC173 /* cpu_instrs.gb */; };
+		0FBF6699238DB9CF00FEC173 /* 06-ld r,r.gb in Resources */ = {isa = PBXBuildFile; fileRef = 0FBF668E238DB9CE00FEC173 /* 06-ld r,r.gb */; };
+		0FBF669A238DB9CF00FEC173 /* 02-interrupts.gb in Resources */ = {isa = PBXBuildFile; fileRef = 0FBF668F238DB9CE00FEC173 /* 02-interrupts.gb */; };
+		0FBF669B238DB9CF00FEC173 /* 09-op r,r.gb in Resources */ = {isa = PBXBuildFile; fileRef = 0FBF6690238DB9CE00FEC173 /* 09-op r,r.gb */; };
+		0FBF669C238DB9CF00FEC173 /* 10-bit ops.gb in Resources */ = {isa = PBXBuildFile; fileRef = 0FBF6691238DB9CE00FEC173 /* 10-bit ops.gb */; };
+		0FBF669D238DB9CF00FEC173 /* 05-op rp.gb in Resources */ = {isa = PBXBuildFile; fileRef = 0FBF6692238DB9CE00FEC173 /* 05-op rp.gb */; };
+		0FBF669E238DB9CF00FEC173 /* 03-op sp,hl.gb in Resources */ = {isa = PBXBuildFile; fileRef = 0FBF6693238DB9CE00FEC173 /* 03-op sp,hl.gb */; };
+		0FBF669F238DB9CF00FEC173 /* 01-special.gb in Resources */ = {isa = PBXBuildFile; fileRef = 0FBF6694238DB9CF00FEC173 /* 01-special.gb */; };
+		0FBF66A0238DB9CF00FEC173 /* 07-jr,jp,call,ret,rst.gb in Resources */ = {isa = PBXBuildFile; fileRef = 0FBF6695238DB9CF00FEC173 /* 07-jr,jp,call,ret,rst.gb */; };
+		0FBF66A1238DB9CF00FEC173 /* 04-op r,imm.gb in Resources */ = {isa = PBXBuildFile; fileRef = 0FBF6696238DB9CF00FEC173 /* 04-op r,imm.gb */; };
+		0FBF66A2238DB9CF00FEC173 /* 11-op a,(hl).gb in Resources */ = {isa = PBXBuildFile; fileRef = 0FBF6697238DB9CF00FEC173 /* 11-op a,(hl).gb */; };
+		0FBF66A3238DB9CF00FEC173 /* 08-misc instrs.gb in Resources */ = {isa = PBXBuildFile; fileRef = 0FBF6698238DB9CF00FEC173 /* 08-misc instrs.gb */; };
 		0FC11E9A22A697D30060F7E0 /* FileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FC11E9922A697D30060F7E0 /* FileSystem.swift */; };
 		0FC11EC422A72B100060F7E0 /* CPUTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FC11EC322A72B100060F7E0 /* CPUTimer.swift */; };
 		0FC11EC622A72F570060F7E0 /* MemoryController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FC11EC522A72F570060F7E0 /* MemoryController.swift */; };
@@ -52,6 +64,18 @@
 		0F88A26522ADD3E200EC5AE2 /* CPUState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPUState.swift; sourceTree = "<group>"; };
 		0F88A26722ADD8B400EC5AE2 /* Debugger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Debugger.swift; sourceTree = "<group>"; };
 		0F88A26922ADD98600EC5AE2 /* DebuggerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebuggerView.swift; sourceTree = "<group>"; };
+		0FBF668B238DB94B00FEC173 /* cpu_instrs.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = cpu_instrs.gb; sourceTree = "<group>"; };
+		0FBF668E238DB9CE00FEC173 /* 06-ld r,r.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = "06-ld r,r.gb"; sourceTree = "<group>"; };
+		0FBF668F238DB9CE00FEC173 /* 02-interrupts.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = "02-interrupts.gb"; sourceTree = "<group>"; };
+		0FBF6690238DB9CE00FEC173 /* 09-op r,r.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = "09-op r,r.gb"; sourceTree = "<group>"; };
+		0FBF6691238DB9CE00FEC173 /* 10-bit ops.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = "10-bit ops.gb"; sourceTree = "<group>"; };
+		0FBF6692238DB9CE00FEC173 /* 05-op rp.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = "05-op rp.gb"; sourceTree = "<group>"; };
+		0FBF6693238DB9CE00FEC173 /* 03-op sp,hl.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = "03-op sp,hl.gb"; sourceTree = "<group>"; };
+		0FBF6694238DB9CF00FEC173 /* 01-special.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = "01-special.gb"; sourceTree = "<group>"; };
+		0FBF6695238DB9CF00FEC173 /* 07-jr,jp,call,ret,rst.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = "07-jr,jp,call,ret,rst.gb"; sourceTree = "<group>"; };
+		0FBF6696238DB9CF00FEC173 /* 04-op r,imm.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = "04-op r,imm.gb"; sourceTree = "<group>"; };
+		0FBF6697238DB9CF00FEC173 /* 11-op a,(hl).gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = "11-op a,(hl).gb"; sourceTree = "<group>"; };
+		0FBF6698238DB9CF00FEC173 /* 08-misc instrs.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = "08-misc instrs.gb"; sourceTree = "<group>"; };
 		0FC11E9922A697D30060F7E0 /* FileSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileSystem.swift; sourceTree = "<group>"; };
 		0FC11EC322A72B100060F7E0 /* CPUTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPUTimer.swift; sourceTree = "<group>"; };
 		0FC11EC522A72F570060F7E0 /* MemoryController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryController.swift; sourceTree = "<group>"; };
@@ -90,6 +114,7 @@
 		0F1696AD22732791009C7949 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				0FBF668D238DB9BD00FEC173 /* Test Roms */,
 				0F1696D622738CC4009C7949 /* game.gb */,
 			);
 			path = Resources;
@@ -101,6 +126,25 @@
 				0F88A26922ADD98600EC5AE2 /* DebuggerView.swift */,
 			);
 			path = Debugger;
+			sourceTree = "<group>";
+		};
+		0FBF668D238DB9BD00FEC173 /* Test Roms */ = {
+			isa = PBXGroup;
+			children = (
+				0FBF6694238DB9CF00FEC173 /* 01-special.gb */,
+				0FBF668F238DB9CE00FEC173 /* 02-interrupts.gb */,
+				0FBF6693238DB9CE00FEC173 /* 03-op sp,hl.gb */,
+				0FBF6696238DB9CF00FEC173 /* 04-op r,imm.gb */,
+				0FBF6692238DB9CE00FEC173 /* 05-op rp.gb */,
+				0FBF668E238DB9CE00FEC173 /* 06-ld r,r.gb */,
+				0FBF6695238DB9CF00FEC173 /* 07-jr,jp,call,ret,rst.gb */,
+				0FBF6698238DB9CF00FEC173 /* 08-misc instrs.gb */,
+				0FBF6690238DB9CE00FEC173 /* 09-op r,r.gb */,
+				0FBF6691238DB9CE00FEC173 /* 10-bit ops.gb */,
+				0FBF6697238DB9CF00FEC173 /* 11-op a,(hl).gb */,
+				0FBF668B238DB94B00FEC173 /* cpu_instrs.gb */,
+			);
+			path = "Test Roms";
 			sourceTree = "<group>";
 		};
 		0FEA3A93226F319000AD96EE = {
@@ -265,6 +309,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				0F1696D722738CC4009C7949 /* game.gb in Resources */,
+				0FBF668C238DB94B00FEC173 /* cpu_instrs.gb in Resources */,
+				0FBF669C238DB9CF00FEC173 /* 10-bit ops.gb in Resources */,
+				0FBF669B238DB9CF00FEC173 /* 09-op r,r.gb in Resources */,
+				0FBF6699238DB9CF00FEC173 /* 06-ld r,r.gb in Resources */,
+				0FBF669D238DB9CF00FEC173 /* 05-op rp.gb in Resources */,
+				0FBF66A0238DB9CF00FEC173 /* 07-jr,jp,call,ret,rst.gb in Resources */,
+				0FBF669E238DB9CF00FEC173 /* 03-op sp,hl.gb in Resources */,
+				0FBF66A3238DB9CF00FEC173 /* 08-misc instrs.gb in Resources */,
+				0FBF669F238DB9CF00FEC173 /* 01-special.gb in Resources */,
+				0FBF669A238DB9CF00FEC173 /* 02-interrupts.gb in Resources */,
+				0FBF66A1238DB9CF00FEC173 /* 04-op r,imm.gb in Resources */,
+				0FBF66A2238DB9CF00FEC173 /* 11-op a,(hl).gb in Resources */,
 				0FEA3AA7226F319100AD96EE /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

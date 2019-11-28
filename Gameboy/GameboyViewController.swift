@@ -16,14 +16,13 @@ class GameboyViewController: UIViewController {
         super.viewDidLoad()
 		
 		self.view.backgroundColor = .black
-		self.gameboy = Gameboy(screen: self.view)
+		self.gameboy = Gameboy()
 		
 		if (ProcessInfo.processInfo.environment["DEBUGGER"] != nil) {
 			setupDebugger()
 		}
 		
-		let cartridge = Cartridge(romName: "game")
-		gameboy.load(cartridge: cartridge)
+		gameboy.load(cartridge: Cartridge(romName: "06-ld r,r"))
     }
 	
 	func setupDebugger() {
