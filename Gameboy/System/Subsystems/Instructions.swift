@@ -785,11 +785,8 @@ struct Instructions {
 							cpu.LDH_A_n(n: param)
 						}) as Operation),
 			//			MARK: 16-bit Loads
-						(0x08 as UInt8, (cycles: 5, pc: 3, { (cpu, code) in
-							cpu.opCodePrint(code: code, func: "LD_nn_SP")
-							let param = cpu.memory.readFull(address: cpu.registers.PC+1)
-							cpu.LD_nn_SP(nn: param)
-						}) as Operation),
+			//			MARK: -
+			//			MARK: LD n,nn
 						(0x01 as UInt8, (cycles: 3, pc: 3, { (cpu, code) in
 							cpu.opCodePrint(code: code, func: "LD_n_nn")
 							let param = cpu.memory.readFull(address: cpu.registers.PC+1)
@@ -810,42 +807,26 @@ struct Instructions {
 							let param = cpu.memory.readFull(address: cpu.registers.PC+1)
 							cpu.LD_n_nn(n: .SP, nn: param)
 						}) as Operation),
+			//			MARK: -
+			//			MARK: LD SP,HL
 						(0xF9 as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
 							cpu.opCodePrint(code: code, func: "LD_SP_HL")
 							cpu.LD_SP_HL()
 						}) as Operation),
-			//			MARK: Jumps
-						(0xC3 as UInt8, (cycles: 3, pc: 0, { (cpu, code) in
-							cpu.opCodePrint(code: code, func: "JP_nn")
+			//			MARK: -
+			//			MARK: LDHL SP,n
+						(0xF8 as UInt8, (cycles: 3, pc: 1, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "LDHL_SP_n")
+							let param = cpu.memory.readHalf(address: cpu.registers.PC+1)
+							cpu.LDHL_SP_n(n: param)
+						}) as Operation),
+			//			MARK: -
+			//			MARK: LD (nn),SP
+						(0x08 as UInt8, (cycles: 5, pc: 3, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "LD_(nn)_SP")
 							let param = cpu.memory.readFull(address: cpu.registers.PC+1)
-							cpu.JP_nn(nn: param)
+							cpu.LD_nn_SP(nn: param)
 						}) as Operation),
-						(0x18 as UInt8, (cycles: 2, pc: 0, { (cpu, code) in
-							cpu.opCodePrint(code: code, func: "JP_n")
-							let param = cpu.memory.readHalf(address: cpu.registers.PC+1)
-							cpu.JR_n(n: param)
-						}) as Operation),
-						(0x20 as UInt8, (cycles: 2, pc: 0, { (cpu, code) in
-							cpu.opCodePrint(code: code, func: "JR_cc_n")
-							let param = cpu.memory.readHalf(address: cpu.registers.PC+1)
-							cpu.JR_cc_n(flag: .Z, n: param, state: false)
-						}) as Operation),
-						(0x28 as UInt8, (cycles: 2, pc: 0, { (cpu, code) in
-							cpu.opCodePrint(code: code, func: "JR_cc_n")
-							let param = cpu.memory.readHalf(address: cpu.registers.PC+1)
-							cpu.JR_cc_n(flag: .Z, n: param, state: true)
-						}) as Operation),
-						(0x30 as UInt8, (cycles: 2, pc: 0, { (cpu, code) in
-							cpu.opCodePrint(code: code, func: "JR_cc_n")
-							let param = cpu.memory.readHalf(address: cpu.registers.PC+1)
-							cpu.JR_cc_n(flag: .C, n: param, state: false)
-						}) as Operation),
-						(0x38 as UInt8, (cycles: 2, pc: 0, { (cpu, code) in
-							cpu.opCodePrint(code: code, func: "JR_cc_n")
-							let param = cpu.memory.readHalf(address: cpu.registers.PC+1)
-							cpu.JR_cc_n(flag: .C, n: param, state: true)
-						}) as Operation),
-
 			//			MARK: ALU
 						(0x80 as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
 							cpu.opCodePrint(code: code, func: "ADD_A_B")
@@ -1187,6 +1168,37 @@ struct Instructions {
 							cpu.opCodePrint(code: code, func: "POP_HL")
 							cpu.POP_nn(nn: .HL)
 						}) as Operation),
+			//			MARK: Jumps
+						(0xC3 as UInt8, (cycles: 3, pc: 0, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "JP_nn")
+							let param = cpu.memory.readFull(address: cpu.registers.PC+1)
+							cpu.JP_nn(nn: param)
+						}) as Operation),
+						(0x18 as UInt8, (cycles: 2, pc: 0, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "JP_n")
+							let param = cpu.memory.readHalf(address: cpu.registers.PC+1)
+							cpu.JR_n(n: param)
+						}) as Operation),
+						(0x20 as UInt8, (cycles: 2, pc: 0, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "JR_cc_n")
+							let param = cpu.memory.readHalf(address: cpu.registers.PC+1)
+							cpu.JR_cc_n(flag: .Z, n: param, state: false)
+						}) as Operation),
+						(0x28 as UInt8, (cycles: 2, pc: 0, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "JR_cc_n")
+							let param = cpu.memory.readHalf(address: cpu.registers.PC+1)
+							cpu.JR_cc_n(flag: .Z, n: param, state: true)
+						}) as Operation),
+						(0x30 as UInt8, (cycles: 2, pc: 0, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "JR_cc_n")
+							let param = cpu.memory.readHalf(address: cpu.registers.PC+1)
+							cpu.JR_cc_n(flag: .C, n: param, state: false)
+						}) as Operation),
+						(0x38 as UInt8, (cycles: 2, pc: 0, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "JR_cc_n")
+							let param = cpu.memory.readHalf(address: cpu.registers.PC+1)
+							cpu.JR_cc_n(flag: .C, n: param, state: true)
+						}) as Operation),
 			//			MARK: Calls
 						(0xCD as UInt8, (cycles: 3, pc: 0, { (cpu, code) in
 							cpu.opCodePrint(code: code, func: "CALL_nn")
@@ -1330,10 +1342,9 @@ protocol Load {
 	
 	// - MARK: 16-Bit LOADS
 	func LD_n_nn(n: RegisterMap.combined, nn: UInt16) //checked
+	func LDHL_SP_n(n: UInt8) //checked
 	func LD_SP_HL() //checked
 	func LD_nn_SP(nn: UInt16) //checked
-	func PUSH_nn(nn: UInt16) //checked
-	func POP_nn(nn: RegisterMap.combined) //checked
 }
 
 protocol ALU {
@@ -1354,13 +1365,12 @@ protocol ALU {
 	func INC_HL() //checked
 	func DEC_n(n: RegisterMap.single) //checked
 	func DEC_HL() //checked
+	func PUSH_nn(nn: UInt16) //checked
+	func POP_nn(nn: RegisterMap.combined) //checked
 	
 	// - MARK: 16-Bit ALU
 	func INC_n(n: RegisterMap.combined) //checked
 	func DEC_n(n: RegisterMap.combined) //checked
-	
-	func LDHL_SP_n(n: UInt8) //checked
-	
 	func ADD_HL_n(n: UInt16) //checked
 }
 
