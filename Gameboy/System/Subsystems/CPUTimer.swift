@@ -49,7 +49,7 @@ class CPUTimer {
             if timerControl & 0x04 > 0 {
                 timaCounter += baseBy4
                 var increment = UInt8(0)
-                switch  timerControl & 0x03 {
+                switch timerControl & 0x03 {
                 case 0x00 where timaCounter >= 64: // M/64*4
                     increment = UInt8(timaCounter / 64)
                     timaCounter %= 64
@@ -66,9 +66,8 @@ class CPUTimer {
                     return
                 }
                 
-                
                 var tima = memory.readHalf(address: MemoryMap.TIMA)
-				if tima > 0xFF - increment { memory.writeInterrupt(MemoryMap.IF.IF_TIMER) } //request timer interrupt
+				if tima > 0xFF - increment { memory.writeInterrupt(MemoryMap.IF.IF_TIMER) }
                 tima = tima &+ increment
 				memory.write(address: MemoryMap.TIMA, data: tima)
                 memory.write(address: MemoryMap.TMA, data: tima)

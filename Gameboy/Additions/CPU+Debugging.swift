@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import os
 
 protocol Debugging {
 	func opCodeFetchPrint(code: UInt8)
@@ -29,8 +30,16 @@ extension CPU: Debugging {
 	}
 	
 	func debugPrinting(message: String, code: UInt8) {
+		Logger.log("\(message) \(String(format:"0x%02X", code))")
+	}
+}
+
+struct Logger {
+	static func log(_ message: String) {
 		#if DEBUG
-			print("\(message) \(String(format:"0x%02X", code))")
+		print(message)
+//		Has a memory leak?
+//		os_log("%{public}@", log: OSLog(subsystem: "Gameboy", category: "debugging"), type: .default, message)
 		#endif
 	}
 }

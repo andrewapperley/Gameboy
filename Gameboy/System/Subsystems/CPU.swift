@@ -13,8 +13,8 @@ protocol CPUDelegate {
 }
 
 class CPU {
-	private static let instructionTable: Instructions.InstructionLookupTable = Instructions.generateInstructionLookupTable()
-	private static let innerInstructionTable: Instructions.InnerInstructionLookupTable = Instructions.generateInnerInstructionLookupTable()
+	private let instructionTable: Instructions.InstructionLookupTable = Instructions.generateInstructionLookupTable()
+	private let innerInstructionTable: Instructions.InstructionLookupTable = Instructions.generateInnerInstructionLookupTable()
 	private(set) var registers: Registers = Registers()
 	private(set) var memory: MMU
 	let clock: CPUTimer
@@ -50,13 +50,71 @@ class CPU {
 	
 	func tick() {
 		guard running else { return }
+		
+		// Interrupts
+		handleInterrupts()
+		
 		// fetch OPCode
 		let code = memory.readHalf(address: registers.PC)
 		// fetch and execute instruction
 		fetchAndInvokeInstruction(with: code)
 		// check for I/O ?
 		// call debugger with latest frame information
-		self.cpuDelegate?.onCompletedFrame()
+		DispatchQueue.main.sync {
+			self.cpuDelegate?.onCompletedFrame()
+		}
+	}
+	
+	func handleInterrupts() {
+		guard memory.interruptsAvailable else { return }
+		let IE = memory.readHalf(address: MemoryMap.IER)
+		let IF = memory.readHalf(address: MemoryMap.IF.address)
+		
+		// V-BLANK
+		if (IE & IF & MemoryMap.IF.IF_VBLANK.rawValue) != 0 {
+//			return // TEMP until I handle PPU
+			memory.write(address: registers.SP-2, data: registers.PC)
+            registers.SP -= 2;
+			registers.PC = MemoryMap.JUMP_VBLANK
+            memory.write(address: MemoryMap.IF.address, data: IF & ~MemoryMap.IF.IF_VBLANK.rawValue)
+			return
+		}
+		
+		// LCDC
+		if (IE & IF & MemoryMap.IF.IF_LCDC.rawValue) != 0 {
+			memory.write(address: registers.SP-2, data: registers.PC)
+            registers.SP -= 2;
+			registers.PC = MemoryMap.JUMP_LCDC
+            memory.write(address: MemoryMap.IF.address, data: IF & ~MemoryMap.IF.IF_LCDC.rawValue)
+			return
+		}
+		
+		// TIMER OVERFLOW
+		if (IE & IF & MemoryMap.IF.IF_TIMER.rawValue) != 0 {
+			memory.write(address: registers.SP-2, data: registers.PC)
+            registers.SP -= 2;
+			registers.PC = MemoryMap.JUMP_TIMER
+            memory.write(address: MemoryMap.IF.address, data: IF & ~MemoryMap.IF.IF_TIMER.rawValue)
+			return
+		}
+		
+		// SERIAL TRANSFER COMPLETE
+		if (IE & IF & MemoryMap.IF.IF_SERIAL.rawValue) != 0 {
+			memory.write(address: registers.SP-2, data: registers.PC)
+            registers.SP -= 2;
+			registers.PC = MemoryMap.JUMP_SERIAL
+            memory.write(address: MemoryMap.IF.address, data: IF & ~MemoryMap.IF.IF_SERIAL.rawValue)
+			return
+		}
+		
+		// Hi-Lo of P10-P13
+		if (IE & IF & MemoryMap.IF.IF_P10P13.rawValue) != 0 {
+			memory.write(address: registers.SP-2, data: registers.PC)
+            registers.SP -= 2;
+			registers.PC = MemoryMap.JUMP_P10P13
+            memory.write(address: MemoryMap.IF.address, data: IF & ~MemoryMap.IF.IF_P10P13.rawValue)
+			return
+		}
 	}
 	
 	func reset() {
@@ -67,11 +125,11 @@ class CPU {
 // MARK: Instruction Invoker
 extension CPU: InstructionInvoker {
 	func fetchAndInvokeInstruction(with code: UInt8) {
-		print("Current PC is:: 0x\(String(registers.PC, radix: 16, uppercase: true))")
-		
+		Logger.log("Current PC is:: 0x\(String(registers.PC, radix: 16, uppercase: true))")
+
 		let context = self.context(from: code)
 		self.opCodeFetchPrint(code: context.code)
-		
+
 		guard let data = context.table[context.code] else {
 			self.opCodeNotImplementedPrint(code: context.code)
 			return
@@ -86,18 +144,17 @@ extension CPU: InstructionInvoker {
 		}
 	}
 	
-	private func context(from code: UInt8) -> (code: UInt8, table: Instructions.InnerInstructionLookupTable) {
+	private func context(from code: UInt8) -> (code: UInt8, table: Instructions.InstructionLookupTable) {
 		if code == 0xCB {
-			return (code: self.memory.readHalf(address: self.registers.PC+1), table: CPU.innerInstructionTable)
+			return (code: self.memory.readHalf(address: self.registers.PC+1), table: self.innerInstructionTable)
 		} else {
-			return (code: code, table: CPU.instructionTable)
+			return (code: code, table: self.instructionTable)
 		}
 	}
 }
 // MARK: Misc
 extension CPU: Misc {
-	func NOP() {
-	}
+	func NOP() {}
 	
 	func STOP() {
 //		Halt CPU & LCD display until button pressed.
@@ -111,7 +168,21 @@ extension CPU: Misc {
 	}
 	
 	func DI() {
+		memory.interruptsAvailable = false
 //		This instruction disables interrupts but not immediately. Interrupts are disabled after instruction after DI is executed.
+	}
+	
+	func EI() {
+		memory.interruptsAvailable = true
+//		This instruction enables interrupts but not immediately. Interrupts are enabled after instruction after EI is executed.
+	}
+	
+	func CCF() {
+		registers.clearFlags(notAffacted: [.Z, .C])
+		
+		registers.setFlag(.C, state: !registers.getFlagState(.C))
+		registers.setFlag(.N, state: false)
+		registers.setFlag(.H, state: false)
 	}
 }
 // MARK: Load
@@ -496,6 +567,7 @@ extension CPU: Rotates {
 		let carry = (registers.A & Registers.Carry) << 7
 		registers.A = (registers.A >> 1) + carry
 
+		registers.clearFlags()
 		registers.setFlag(.H, state: false)
 		registers.setFlag(.N, state: false)
 		registers.setFlag(.Z, state: registers.A == 0)
@@ -504,61 +576,77 @@ extension CPU: Rotates {
 	
 	func RLCA() {
 		// Save old carry from register A
-		let oldCarry = registers.A.bit(at: 7)
+		let oldCarry = registers.A.bit(at: Flag.C.rawValue)
 		
 		// Shift A to the left
-		registers.A = registers.A.rotateLeft() + UInt8(oldCarry)
+		registers.A = (registers.A << 1) + UInt8(oldCarry)
+		
+		registers.clearFlags()
 		
 		// Set if result is zero.
-		registers.setFlag(.Z, state: registers.A == 0)
+		if registers.A == 0 {
+			registers.setFlag(.Z, state: true)
+		}
 		
 		// Set if carry was set in old register A value
-		registers.setFlag(.C, state: oldCarry > 0)
-		
+		if oldCarry > 0 {
+			registers.setFlag(.C, state: true)
+		}
+
 		// Reset other flags
 		registers.setFlag(.N, state: false)
 		registers.setFlag(.H, state: false)
 	}
 	
-	func RL_n(n: RegisterMap.single) {
-		var register = registers.mapRegister(register: n).pointee
+	func RL_n(n register: inout UInt8) {
 		// Save old carry from register
-		let oldCarry = register.bit(at: 7)
+		let oldCarry = register.bit(at: Flag.C.rawValue)
 
 		// Shift register to the left through Carry Flag
-		register = register.rotateLeft()
+		register = (register << 1)
 		if registers.getFlag(.C) > 0 {
 			register += Registers.Carry
 		}
+				
+		registers.clearFlags()
 		
 		// Set if result is zero.
-		registers.setFlag(.Z, state: register == 0)
+		if register == 0 {
+			registers.setFlag(.Z, state: true)
+		}
 		
-		// Set if carry was set in old register value
-		registers.setFlag(.C, state: oldCarry > 0)
-		
+		// Set if carry was set in old register A value
+		if oldCarry > 0 {
+			registers.setFlag(.C, state: true)
+		}
+
 		// Reset other flags
 		registers.setFlag(.N, state: false)
 		registers.setFlag(.H, state: false)
 	}
 	
-	func RR_n(n: RegisterMap.single) {
-		var register = registers.mapRegister(register: n).pointee
+	func RR_n(n register: inout UInt8) {
 		// Save old carry from register
-		let oldCarry = register.bit(at: 0)
-
-		// Shift register to the left through Carry Flag
-		register = register.rotateRight()
+		let oldCarry = register.bit(at: Flag.C.rawValue)
+		
+		// Shift register to the right through Carry Flag
+		register = (register >> 1)
 		if registers.getFlag(.C) > 0 {
 			register += Registers.Zero
 		}
+				
+		registers.clearFlags()
 		
 		// Set if result is zero.
-		registers.setFlag(.Z, state: register == 0)
+		if register == 0 {
+			registers.setFlag(.Z, state: true)
+		}
 		
 		// Set if carry was set in old register A value
-		registers.setFlag(.C, state: oldCarry > 0)
-		
+		if oldCarry > 0 {
+			registers.setFlag(.C, state: true)
+		}
+
 		// Reset other flags
 		registers.setFlag(.N, state: false)
 		registers.setFlag(.H, state: false)
@@ -567,20 +655,26 @@ extension CPU: Rotates {
 	func RL_HL() {
 		var register = memory.readHalf(address: registers.HL)
 		// Save old carry from register
-		let oldCarry = register.bit(at: 7)
+		let oldCarry = register.bit(at: Flag.C.rawValue)
 
 		// Shift register to the left through Carry Flag
-		register = register.rotateLeft()
+		register = (register << 1)
 		if registers.getFlag(.C) > 0 {
 			register += Registers.Carry
 		}
 		memory.write(address: registers.HL, data: register)
 		
-		// Set if result is zero.
-		registers.setFlag(.Z, state: register == 0)
+		registers.clearFlags()
 		
-		// Set if carry was set in old register value
-		registers.setFlag(.C, state: oldCarry > 0)
+		// Set if result is zero.
+		if register == 0 {
+			registers.setFlag(.Z, state: true)
+		}
+		
+		// Set if carry was set in old register A value
+		if oldCarry > 0 {
+			registers.setFlag(.C, state: true)
+		}
 		
 		// Reset other flags
 		registers.setFlag(.N, state: false)
@@ -590,20 +684,26 @@ extension CPU: Rotates {
 	func RR_HL() {
 		var register = memory.readHalf(address: registers.HL)
 		// Save old carry from register
-		let oldCarry = register.bit(at: 0)
+		let oldCarry = register.bit(at: Flag.C.rawValue)
 
-		// Shift register to the left through Carry Flag
-		register = register.rotateRight()
+		// Shift register to the right through Carry Flag
+		register = (register >> 1)
 		if registers.getFlag(.C) > 0 {
 			register += Registers.Zero
 		}
 		memory.write(address: registers.HL, data: register)
 		
+		registers.clearFlags()
+		
 		// Set if result is zero.
-		registers.setFlag(.Z, state: register == 0)
+		if register == 0 {
+			registers.setFlag(.Z, state: true)
+		}
 		
 		// Set if carry was set in old register A value
-		registers.setFlag(.C, state: oldCarry > 0)
+		if oldCarry > 0 {
+			registers.setFlag(.C, state: true)
+		}
 		
 		// Reset other flags
 		registers.setFlag(.N, state: false)
@@ -672,7 +772,7 @@ extension CPU: Restarts {
 extension CPU: Returns {
 	func RET() {
 		registers.PC = memory.readFull(address: registers.SP)
-		registers.SP += 2
+		registers.SP &+= 2
 	}
 	
 	func RET_cc(flag: Flag, state: Bool) {

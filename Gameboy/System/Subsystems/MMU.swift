@@ -45,6 +45,11 @@ enum MemoryMap {
 	static let TIMA: UInt16 = 0xFF05
 	static let TMA: UInt16 = 0xFF06
 	static let TAC: UInt16 = 0xFF07
+	static let JUMP_VBLANK: UInt16 = 0x0040
+	static let JUMP_LCDC: UInt16 = 0x0048
+	static let JUMP_TIMER: UInt16 = 0x0050
+	static let JUMP_SERIAL: UInt16 = 0x0058
+	static let JUMP_P10P13: UInt16 = 0x0060
 	
 	enum IF: UInt8 { // IF – Interrupt Flag (R/W)
 		static let address: UInt16 = 0xFF0F
@@ -56,10 +61,11 @@ enum MemoryMap {
 	}
 
 	static let HRAM = Range<UInt16>(0xFF80...0xFFFE)
-	static let IER = 0xFFFF // Interrupt Enable Register
+	static let IER: UInt16 = 0xFFFF // Interrupt Enable Register
 }
 
 class MMU {
+	var interruptsAvailable = true
 	private(set) var biosActive = false
 	private var bios: [UInt8] = Array<UInt8>(repeating: 0x0, count: Int(MemoryMap.BOOT_ROM.upperBound))
 	private var memory: [UInt8] = Array<UInt8>(repeating: 0x0, count: MemoryMap.MEM_SIZE)
@@ -194,59 +200,6 @@ class MMU {
 protocol VMMU {
 	func readVMMU(address: UInt16) -> UInt8
 	func writeVMMU(address: UInt16, data: UInt8)
-}
-
-extension MMU: VMMU {
-	func readVMMU(address: UInt16) -> UInt8 {
-		switch address {
-		case MemoryMap.VRAM,
-			 MemoryMap.OAM,
-			 MemoryMap.LCD.LCDC,
-			 MemoryMap.LCD.STAT,
-			 MemoryMap.LCD.SCY,
-			 MemoryMap.LCD.SCX,
-			 MemoryMap.LCD.LY,
-			 MemoryMap.LCD.LYC,
-			 MemoryMap.LCD.BGP,
-			 MemoryMap.LCD.OBP0,
-			 MemoryMap.LCD.OBP1,
-			 MemoryMap.LCD.WY,
-			 MemoryMap.LCD.WX,
-			 MemoryMap.LCD.TILES,
-			 MemoryMap.LCD.SPT,
-			 MemoryMap.LCD.BG_MAP_0,
-			 MemoryMap.LCD.BG_MAP_1:
-				return read(address: address)
-		default:
-			print("Attempted to read out of VMMU bounds at address: \(String(format:"0x%02X", address))")
-			return UInt8(0)
-		}
-	}
-	
-	func writeVMMU(address: UInt16, data: UInt8) {
-		switch address {
-		case MemoryMap.VRAM,
-			 MemoryMap.OAM,
-			 MemoryMap.LCD.LCDC,
-			 MemoryMap.LCD.STAT,
-			 MemoryMap.LCD.SCY,
-			 MemoryMap.LCD.SCX,
-			 MemoryMap.LCD.LYC,
-			 MemoryMap.LCD.DMA,
-			 MemoryMap.LCD.BGP,
-			 MemoryMap.LCD.OBP0,
-			 MemoryMap.LCD.OBP1,
-			 MemoryMap.LCD.WY,
-			 MemoryMap.LCD.WX,
-			 MemoryMap.LCD.TILES,
-			 MemoryMap.LCD.SPT,
-			 MemoryMap.LCD.BG_MAP_0,
-			 MemoryMap.LCD.BG_MAP_1:
-				write(address: address, data: data)
-		default:
-			print("Attempted to write out of VMMU bounds at address: \(String(format:"0x%02X", address)) with data: \(String(format:"0x%02X", data))")
-		}
-	}
 }
 
 protocol AMMU {

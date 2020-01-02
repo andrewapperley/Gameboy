@@ -15,11 +15,9 @@ protocol MemoryController {
 }
 
 class MBC: MemoryController {
-	var memory: [UInt8]
+	var memory: [UInt8]!
 	
-	init(memory: [UInt8]) {
-		self.memory = memory
-	}
+	init(memory: [UInt8]) {}
 	
 	func read(address: UInt16) -> UInt8 {
 		fatalError("Must subclass MBC")
@@ -35,12 +33,19 @@ class MBC: MemoryController {
 }
 
 class MBC0: MBC {
+	override init(memory: [UInt8]) {
+		super.init(memory: memory)
+		self.memory = [UInt8](repeating: UInt8(0), count: 0xC000)
+//		Take max size of rom data and copy it to MBC0 memory data
+		self.memory[0...0x7FFF] = memory[0...0x7FFF]
+	}
 	
 	override func read(address: UInt16) -> UInt8 {
 		return memory[Int(address)]
 	}
 	
 	override func write(address: UInt16, data: UInt8) {
+		if address > 0x8000 { return }
 		memory[Int(address)] = data
 	}
 }

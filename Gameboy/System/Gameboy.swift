@@ -56,7 +56,7 @@ class Gameboy {
 			var delta = cpu.clock.mCounter
 			self.cpu.tick()
 			delta = cpu.clock.mCounter - delta
-			self.ppu.render()
+			self.ppu.render(delta: delta)
 			count += Int(delta)
 		}
 		

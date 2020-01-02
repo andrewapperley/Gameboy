@@ -22,7 +22,7 @@ class GameboyViewController: UIViewController {
 			setupDebugger()
 		}
 		
-		gameboy.load(cartridge: Cartridge(romName: "06-ld r,r"))
+		gameboy.load(cartridge: Cartridge(romName: "game"))
     }
 	
 	func setupDebugger() {
