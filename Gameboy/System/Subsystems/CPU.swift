@@ -72,7 +72,6 @@ class CPU {
 		
 		// V-BLANK
 		if (IE & IF & MemoryMap.IF.IF_VBLANK.rawValue) != 0 {
-//			return // TEMP until I handle PPU
 			memory.write(address: registers.SP-2, data: registers.PC)
             registers.SP -= 2;
 			registers.PC = MemoryMap.JUMP_VBLANK
@@ -160,6 +159,10 @@ extension CPU: Misc {
 //		Halt CPU & LCD display until button pressed.
 	}
 	
+	func HALT() {
+//		Power down CPU until an interrupt occurs.
+	}
+	
 	func CPL() {
 		registers.clearFlags(notAffacted: [.Z, .C])
 		registers.setFlag(.N, state: true)
@@ -183,6 +186,31 @@ extension CPU: Misc {
 		registers.setFlag(.C, state: !registers.getFlagState(.C))
 		registers.setFlag(.N, state: false)
 		registers.setFlag(.H, state: false)
+	}
+	
+	func SCF() {
+		registers.clearFlags(notAffacted: [.Z])
+		
+		registers.setFlag(.C, state: true)
+		registers.setFlag(.N, state: false)
+		registers.setFlag(.H, state: false)
+	}
+	
+	func DAA() {
+//		Decimal adjust register A.
+//		This instruction adjusts register A so that the
+//		correct representation of Binary Coded Decimal (BCD)
+//		   is obtained.
+	}
+	
+	func SWAP(n: inout UInt8) {
+		registers.clearFlags()
+		let upper: UInt8 = n & 0b00001111
+		let lower: UInt8 = n & 0b11110000
+		n = (lower >> 4) | (upper << 4)
+		if n == 0 {
+			registers.setFlag(.Z, state: true)
+		}
 	}
 }
 // MARK: Load
@@ -530,6 +558,21 @@ extension CPU: ALU {
 		registers.setFlag(.C, state: HL > HL &+ n)
 		self.registers.HL = self.registers.HL &+ n
 	}
+	
+	func ADD_SP_n(n: UInt8) {
+		let tmp = Int8(bitPattern: n)
+		let result = UInt16(truncatingIfNeeded: Int(registers.SP) + Int(tmp))
+		registers.clearFlags()
+		
+		if tmp < 0 {
+			if result & 0x0F <= registers.SP & 0x0F { registers.setFlag(.H, state: true) }
+			if result & 0xFF <= registers.SP & 0xFF { registers.setFlag(.C, state: true) }
+		} else {
+			if result & 0x0F < registers.SP & 0x0F { registers.setFlag(.H, state: true)  }
+			if result & 0xFF < registers.SP & 0xFF { registers.setFlag(.C, state: true)  }
+		}
+		registers.SP = result
+	}
 }
 // MARK: Bit
 extension CPU: Bit {
@@ -563,28 +606,32 @@ extension CPU: Bit {
 }
 // MARK: Rotates
 extension CPU: Rotates {
-	func RRCA() {
-		let carry = (registers.A & Registers.Carry) << 7
-		registers.A = (registers.A >> 1) + carry
+	func RRC_n(n: inout UInt8) {
+		let carry = (n & Registers.Carry) << 7
+		n = (n >> 1) + carry
 
 		registers.clearFlags()
 		registers.setFlag(.H, state: false)
 		registers.setFlag(.N, state: false)
-		registers.setFlag(.Z, state: registers.A == 0)
+		registers.setFlag(.Z, state: n == 0)
 		registers.setFlag(.C, state: carry > 0)
 	}
 	
-	func RLCA() {
-		// Save old carry from register A
-		let oldCarry = registers.A.bit(at: Flag.C.rawValue)
+	func RRCA() {
+		RRC_n(n: &registers.A)
+	}
+	
+	func RLC_n(n: inout UInt8) {
+		// Save old carry from n
+		let oldCarry = n.bit(at: Flag.C.rawValue)
 		
-		// Shift A to the left
-		registers.A = (registers.A << 1) + UInt8(oldCarry)
+		// Shift n to the left
+		n = (n << 1) + UInt8(oldCarry)
 		
 		registers.clearFlags()
 		
 		// Set if result is zero.
-		if registers.A == 0 {
+		if n == 0 {
 			registers.setFlag(.Z, state: true)
 		}
 		
@@ -596,6 +643,10 @@ extension CPU: Rotates {
 		// Reset other flags
 		registers.setFlag(.N, state: false)
 		registers.setFlag(.H, state: false)
+	}
+	
+	func RLCA() {
+		RLC_n(n: &registers.A)
 	}
 	
 	func RL_n(n register: inout UInt8) {
@@ -785,6 +836,6 @@ extension CPU: Returns {
 	
 	func RETI() {
 		self.RET()
-//		Enable interrupts
+		self.memory.interruptsAvailable = true
 	}
 }

@@ -18,7 +18,86 @@ struct Instructions {
 
 	static func generateInnerInstructionLookupTable() -> InstructionLookupTable {
 			return InstructionLookupTable(uniqueKeysWithValues: [
-	//			MARK: Rotates
+	//			MARK: Misc
+	//			MARK: SWAP
+	//			MARK: -
+				(0x37 as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
+					cpu.opCodePrint(code: code, func: "SWAP_A")
+					cpu.SWAP(n: &cpu.registers.A)
+				}) as Operation),
+				(0x30 as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
+					cpu.opCodePrint(code: code, func: "SWAP_B")
+					cpu.SWAP(n: &cpu.registers.B)
+				}) as Operation),
+				(0x31 as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
+					cpu.opCodePrint(code: code, func: "SWAP_C")
+					cpu.SWAP(n: &cpu.registers.C)
+				}) as Operation),
+				(0x32 as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
+					cpu.opCodePrint(code: code, func: "SWAP_D")
+					cpu.SWAP(n: &cpu.registers.D)
+				}) as Operation),
+				(0x33 as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
+					cpu.opCodePrint(code: code, func: "SWAP_E")
+					cpu.SWAP(n: &cpu.registers.E)
+				}) as Operation),
+				(0x34 as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
+					cpu.opCodePrint(code: code, func: "SWAP_H")
+					cpu.SWAP(n: &cpu.registers.H)
+				}) as Operation),
+				(0x35 as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
+					cpu.opCodePrint(code: code, func: "SWAP_L")
+					cpu.SWAP(n: &cpu.registers.L)
+				}) as Operation),
+				(0x36 as UInt8, (cycles: 4, pc: 1, { (cpu, code) in
+					cpu.opCodePrint(code: code, func: "SWAP_(HL)")
+					var param = cpu.memory.readHalf(address: cpu.registers.HL)
+					cpu.SWAP(n: &param)
+					cpu.memory.write(address: cpu.registers.HL, data: param)
+				}) as Operation),
+	//			MARK: Rotates & Shifts
+	//			MARK: RLC n
+	//			MARK: -
+				(0x07 as UInt8, (cycles:2, pc: 1, { (cpu, code) in
+					cpu.opCodePrint(code: code, func: "RLC_A")
+					cpu.RLC_n(n: &cpu.registers.A)
+				}) as Operation),
+				(0x00 as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
+					cpu.opCodePrint(code: code, func: "RLC_B")
+					cpu.RLC_n(n: &cpu.registers.B)
+				}) as Operation),
+				(0x01 as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
+					cpu.opCodePrint(code: code, func: "RLC_C")
+					cpu.RLC_n(n: &cpu.registers.C)
+				}) as Operation),
+				(0x02 as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
+					cpu.opCodePrint(code: code, func: "RLC_D")
+					cpu.RLC_n(n: &cpu.registers.D)
+				}) as Operation),
+				(0x03 as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
+					cpu.opCodePrint(code: code, func: "RLC_E")
+					cpu.RLC_n(n: &cpu.registers.E)
+				}) as Operation),
+				(0x04 as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
+					cpu.opCodePrint(code: code, func: "RLC_H")
+					cpu.RLC_n(n: &cpu.registers.H)
+				}) as Operation),
+				(0x05 as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
+					cpu.opCodePrint(code: code, func: "RLC_L")
+					cpu.RLC_n(n: &cpu.registers.L)
+				}) as Operation),
+				(0x06 as UInt8, (cycles: 4, pc: 1, { (cpu, code) in
+					cpu.opCodePrint(code: code, func: "RLC_(HL)")
+					var param = cpu.memory.readHalf(address: cpu.registers.HL)
+					cpu.RLC_n(n: &param)
+					cpu.memory.write(address: cpu.registers.HL, data: param)
+				}) as Operation),
+	//			MARK: RL n
+	//			MARK: -
+				(0x17 as UInt8, (cycles: 2, pc: 2, { (cpu, code) in
+					cpu.opCodePrint(code: code, func: "RL_A")
+					cpu.RL_n(n: &cpu.registers.A)
+				}) as Operation),
 				(0x10 as UInt8, (cycles: 2, pc: 2, { (cpu, code) in
 					cpu.opCodePrint(code: code, func: "RL_B")
 					cpu.RL_n(n: &cpu.registers.B)
@@ -44,13 +123,47 @@ struct Instructions {
 					cpu.RL_n(n: &cpu.registers.H)
 				}) as Operation),
 				(0x16 as UInt8, (cycles: 4, pc: 2, { (cpu, code) in
-					cpu.opCodePrint(code: code, func: "RL_HL")
+					cpu.opCodePrint(code: code, func: "RL_(HL)")
 					cpu.RL_HL()
 				}) as Operation),
-				(0x17 as UInt8, (cycles: 2, pc: 2, { (cpu, code) in
-					cpu.opCodePrint(code: code, func: "RL_A")
-					cpu.RL_n(n: &cpu.registers.A)
+	//			MARK: RRC n
+	//			MARK: -
+				(0x0F as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
+					cpu.opCodePrint(code: code, func: "RRC_A")
+					cpu.RRCA()
 				}) as Operation),
+				(0x08 as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
+					cpu.opCodePrint(code: code, func: "RRC_B")
+					cpu.RRC_n(n: &cpu.registers.B)
+				}) as Operation),
+				(0x09 as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
+					cpu.opCodePrint(code: code, func: "RRC_C")
+					cpu.RRC_n(n: &cpu.registers.C)
+				}) as Operation),
+				(0x0A as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
+					cpu.opCodePrint(code: code, func: "RRC_D")
+					cpu.RRC_n(n: &cpu.registers.D)
+				}) as Operation),
+				(0x0B as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
+					cpu.opCodePrint(code: code, func: "RRC_E")
+					cpu.RRC_n(n: &cpu.registers.E)
+				}) as Operation),
+				(0x0C as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
+					cpu.opCodePrint(code: code, func: "RRC_H")
+					cpu.RRC_n(n: &cpu.registers.H)
+				}) as Operation),
+				(0x0D as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
+					cpu.opCodePrint(code: code, func: "RRC_L")
+					cpu.RRC_n(n: &cpu.registers.L)
+				}) as Operation),
+				(0x0E as UInt8, (cycles: 4, pc: 1, { (cpu, code) in
+					cpu.opCodePrint(code: code, func: "RR_(HL)")
+					var param = cpu.memory.readHalf(address: cpu.registers.HL)
+					cpu.RRC_n(n: &param)
+					cpu.memory.write(address: cpu.registers.HL, data: param)
+				}) as Operation),
+	//			MARK: RR n
+	//			MARK: -
 				(0x1F as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
 					cpu.opCodePrint(code: code, func: "RR_A")
 					cpu.RR_n(n: &cpu.registers.A)
@@ -83,7 +196,14 @@ struct Instructions {
 					cpu.opCodePrint(code: code, func: "RR_(HL)")
 					cpu.RR_HL()
 				}) as Operation),
+	//			MARK: SLA n
+	//			MARK: -
+	//			MARK: SRA n
+	//			MARK: -
+	//			MARK: SRL n
+	//			MARK: -
 	//			MARK: Bits : Bit 0
+	//			MARK: -
 				(0x40 as UInt8, (cycles: 2, pc: 2, { (cpu, code) in
 					cpu.opCodePrint(code: code, func: "BIT_0_B")
 					cpu.BIT_b_r(b: 0, r: cpu.registers.B)
@@ -118,6 +238,7 @@ struct Instructions {
 					cpu.BIT_b_r(b: 0, r: cpu.registers.A)
 				}) as Operation),
 	//			MARK: Bits : Bit 1
+	//			MARK: -
 				(0x48 as UInt8, (cycles: 2, pc: 2, { (cpu, code) in
 					cpu.opCodePrint(code: code, func: "BIT_1_B")
 					cpu.BIT_b_r(b: 1, r: cpu.registers.B)
@@ -152,6 +273,7 @@ struct Instructions {
 					cpu.BIT_b_r(b: 1, r: cpu.registers.A)
 				}) as Operation),
 	//			MARK: Bits : Bit 2
+	//			MARK: -
 				(0x50 as UInt8, (cycles: 2, pc: 2, { (cpu, code) in
 					cpu.opCodePrint(code: code, func: "BIT_2_B")
 					cpu.BIT_b_r(b: 2, r: cpu.registers.B)
@@ -186,6 +308,7 @@ struct Instructions {
 					cpu.BIT_b_r(b: 2, r: cpu.registers.A)
 				}) as Operation),
 	//			MARK: Bits : Bit 3
+	//			MARK: -
 				(0x58 as UInt8, (cycles: 2, pc: 2, { (cpu, code) in
 					cpu.opCodePrint(code: code, func: "BIT_3_B")
 					cpu.BIT_b_r(b: 3, r: cpu.registers.B)
@@ -220,6 +343,7 @@ struct Instructions {
 					cpu.BIT_b_r(b: 3, r: cpu.registers.A)
 				}) as Operation),
 	//			MARK: Bits : Bit 4
+	//			MARK: -
 				(0x60 as UInt8, (cycles: 2, pc: 2, { (cpu, code) in
 					cpu.opCodePrint(code: code, func: "BIT_4_B")
 					cpu.BIT_b_r(b: 4, r: cpu.registers.B)
@@ -254,6 +378,7 @@ struct Instructions {
 					cpu.BIT_b_r(b: 4, r: cpu.registers.A)
 				}) as Operation),
 	//			MARK: Bits : Bit 5
+	//			MARK: -
 				(0x68 as UInt8, (cycles: 2, pc: 2, { (cpu, code) in
 					cpu.opCodePrint(code: code, func: "BIT_5_B")
 					cpu.BIT_b_r(b: 5, r: cpu.registers.B)
@@ -288,6 +413,7 @@ struct Instructions {
 					cpu.BIT_b_r(b: 5, r: cpu.registers.A)
 				}) as Operation),
 	//			MARK: Bits : Bit 6
+	//			MARK: -
 				(0x70 as UInt8, (cycles: 2, pc: 2, { (cpu, code) in
 					cpu.opCodePrint(code: code, func: "BIT_6_B")
 					cpu.BIT_b_r(b: 6, r: cpu.registers.B)
@@ -322,6 +448,7 @@ struct Instructions {
 					cpu.BIT_b_r(b: 6, r: cpu.registers.A)
 				}) as Operation),
 	//			MARK: Bits : Bit 7
+	//			MARK: -
 				(0x78 as UInt8, (cycles: 2, pc: 2, { (cpu, code) in
 					cpu.opCodePrint(code: code, func: "BIT_7_B")
 					cpu.BIT_b_r(b: 7, r: cpu.registers.B)
@@ -355,6 +482,9 @@ struct Instructions {
 					cpu.opCodePrint(code: code, func: "BIT_7_A")
 					cpu.BIT_b_r(b: 7, r: cpu.registers.A)
 				}) as Operation)
+	//			MARK: SET BIT
+	//			MARK: -
+	//			MARK: RESET BIT
 			])
 		}
 		
@@ -827,11 +957,50 @@ struct Instructions {
 							let param = cpu.memory.readFull(address: cpu.registers.PC+1)
 							cpu.LD_nn_SP(nn: param)
 						}) as Operation),
-			//			MARK: ALU
+			//			MARK: -
+			//			MARK: 8-Bit ALU
+			//			MARK: -
+			//			MARK: ADD A,n
+						(0x87 as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "ADD_A_A")
+							cpu.ADD_A_n(n: cpu.registers.A)
+						}) as Operation),
 						(0x80 as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
 							cpu.opCodePrint(code: code, func: "ADD_A_B")
 							cpu.ADD_A_n(n: cpu.registers.B)
 						}) as Operation),
+						(0x81 as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "ADD_A_C")
+							cpu.ADD_A_n(n: cpu.registers.C)
+						}) as Operation),
+						(0x82 as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "ADD_A_D")
+							cpu.ADD_A_n(n: cpu.registers.D)
+						}) as Operation),
+						(0x83 as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "ADD_A_E")
+							cpu.ADD_A_n(n: cpu.registers.E)
+						}) as Operation),
+						(0x84 as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "ADD_A_H")
+							cpu.ADD_A_n(n: cpu.registers.H)
+						}) as Operation),
+						(0x85 as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "ADD_A_L")
+							cpu.ADD_A_n(n: cpu.registers.L)
+						}) as Operation),
+						(0x86 as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "ADD_A_(HL)")
+							let param = cpu.memory.readHalf(address: cpu.registers.HL)
+							cpu.ADD_A_n(n: param)
+						}) as Operation),
+						(0xC6 as UInt8, (cycles: 2, pc: 2, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "ADD_A_#")
+							let param = cpu.memory.readHalf(address: cpu.registers.PC+1)
+							cpu.ADD_A_n(n: param)
+						}) as Operation),
+			//			MARK: -
+			//			MARK: ADC A,n
 						(0x8F as UInt8, (cycles: 1, pc: 2, { (cpu, code) in
 							cpu.opCodePrint(code: code, func: "ADC_A_A")
 							cpu.ADC_A_n(n: cpu.registers.A)
@@ -869,6 +1038,12 @@ struct Instructions {
 							let param = cpu.memory.readHalf(address: cpu.registers.PC+1)
 							cpu.ADC_A_n(n: param)
 						}) as Operation),
+			//			MARK: -
+			//			MARK: SUB n
+						(0x97 as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "SUB_A_A")
+							cpu.SUB_n(n: .A)
+						}) as Operation),
 						(0x90 as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
 							cpu.opCodePrint(code: code, func: "SUB_B_A")
 							cpu.SUB_n(n: .B)
@@ -897,15 +1072,13 @@ struct Instructions {
 							cpu.opCodePrint(code: code, func: "SUB_(HL)_A")
 							cpu.SUB_HL()
 						}) as Operation),
-						(0x97 as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
-							cpu.opCodePrint(code: code, func: "SUB_A_A")
-							cpu.SUB_n(n: .A)
-						}) as Operation),
 						(0xD6 as UInt8, (cycles: 2, pc: 2, { (cpu, code) in
 							cpu.opCodePrint(code: code, func: "SUB_#_A")
 							let param = cpu.memory.readHalf(address: cpu.registers.PC+1)
 							cpu.SUB_n(n: param)
 						}) as Operation),
+			//			MARK: -
+			//			MARK: SBC A,n
 						(0x9F as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
 							cpu.opCodePrint(code: code, func: "SBC_A_A")
 							cpu.SBC_A_n(n: cpu.registers.A)
@@ -939,6 +1112,8 @@ struct Instructions {
 							let param = cpu.memory.readHalf(address: cpu.registers.HL)
 							cpu.SBC_A_n(n: param)
 						}) as Operation),
+			//			MARK: -
+			//			MARK: AND n
 						(0xA7 as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
 							cpu.opCodePrint(code: code, func: "AND_A")
 							cpu.AND_n(n: cpu.registers.A)
@@ -977,15 +1152,88 @@ struct Instructions {
 							let param = cpu.memory.readHalf(address: cpu.registers.PC+1)
 							cpu.AND_n(n: param)
 						}) as Operation),
+			//			MARK: -
+			//			MARK: OR n
+						(0xB7 as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "OR_A")
+							cpu.OR_n(n: cpu.registers.A)
+						}) as Operation),
+						(0xB0 as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "OR_B")
+							cpu.OR_n(n: cpu.registers.B)
+						}) as Operation),
+						(0xB1 as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "OR_C")
+							cpu.OR_n(n: cpu.registers.C)
+						}) as Operation),
+						(0xB2 as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "OR_D")
+							cpu.OR_n(n: cpu.registers.D)
+						}) as Operation),
+						(0xB3 as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "OR_E")
+							cpu.OR_n(n: cpu.registers.E)
+						}) as Operation),
+						(0xB4 as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "OR_H")
+							cpu.OR_n(n: cpu.registers.H)
+						}) as Operation),
+						(0xB5 as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "OR_L")
+							cpu.OR_n(n: cpu.registers.L)
+						}) as Operation),
+						(0xB6 as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "OR_(HL)")
+							let param = cpu.memory.readHalf(address: cpu.registers.HL)
+							cpu.OR_n(n: param)
+						}) as Operation),
+						(0xF6 as UInt8, (cycles: 2, pc: 2, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "OR_#")
+							let param = cpu.memory.readHalf(address: cpu.registers.PC+1)
+							cpu.OR_n(n: param)
+						}) as Operation),
+			//			MARK: -
+			//			MARK: XOR n
 						(0xAF as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
 							cpu.opCodePrint(code: code, func: "XOR_A")
 							cpu.XOR_n(n: cpu.registers.A)
 						}) as Operation),
+						(0xA8 as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "XOR_B")
+							cpu.XOR_n(n: cpu.registers.B)
+						}) as Operation),
+						(0xA9 as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "XOR_C")
+							cpu.XOR_n(n: cpu.registers.C)
+						}) as Operation),
+						(0xAA as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "XOR_D")
+							cpu.XOR_n(n: cpu.registers.D)
+						}) as Operation),
+						(0xAB as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "XOR_E")
+							cpu.XOR_n(n: cpu.registers.E)
+						}) as Operation),
+						(0xAC as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "XOR_H")
+							cpu.XOR_n(n: cpu.registers.H)
+						}) as Operation),
+						(0xAD as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "XOR_L")
+							cpu.XOR_n(n: cpu.registers.L)
+						}) as Operation),
 						(0xAE as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
-							cpu.opCodePrint(code: code, func: "XOR_HL")
+							cpu.opCodePrint(code: code, func: "XOR_(HL)")
 							let param = cpu.memory.readHalf(address: cpu.registers.HL)
 							cpu.XOR_n(n: param)
 						}) as Operation),
+						(0xEE as UInt8, (cycles: 2, pc: 2, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "XOR_#")
+							let param = cpu.memory.readHalf(address: cpu.registers.PC+1)
+							cpu.XOR_n(n: param)
+						}) as Operation),
+			//			MARK: -
+			//			MARK: CP n
 						(0xBF as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
 							cpu.opCodePrint(code: code, func: "CP_A")
 							cpu.CP_n(n: cpu.registers.A)
@@ -1015,7 +1263,7 @@ struct Instructions {
 							cpu.CP_n(n: cpu.registers.L)
 						}) as Operation),
 						(0xBE as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
-							cpu.opCodePrint(code: code, func: "CP_HL")
+							cpu.opCodePrint(code: code, func: "CP_(HL)")
 							let param = cpu.memory.readHalf(address: cpu.registers.HL)
 							cpu.CP_HL(n: param)
 						}) as Operation),
@@ -1024,33 +1272,19 @@ struct Instructions {
 							let param = cpu.memory.readHalf(address: cpu.registers.PC+1)
 							cpu.CP_n(n: param)
 						}) as Operation),
-						(0x1B as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
-							cpu.opCodePrint(code: code, func: "DEC_DE")
-							cpu.DEC_n(n: .DE)
-						}) as Operation),
+			//			MARK: -
+			//			MARK: INC n
 						(0x3C as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
 							cpu.opCodePrint(code: code, func: "INC_A")
 							cpu.INC_n(n: .A)
-						}) as Operation),
-						(0x03 as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
-							cpu.opCodePrint(code: code, func: "INC_BC")
-							cpu.INC_n(n: .BC)
 						}) as Operation),
 						(0x04 as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
 							cpu.opCodePrint(code: code, func: "INC_B")
 							cpu.INC_n(n: .B)
 						}) as Operation),
-						(0x0B as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
-							cpu.opCodePrint(code: code, func: "DEC_BC")
-							cpu.DEC_n(n: .BC)
-						}) as Operation),
 						(0x0C as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
 							cpu.opCodePrint(code: code, func: "INC_C")
 							cpu.INC_n(n: .C)
-						}) as Operation),
-						(0x13 as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
-							cpu.opCodePrint(code: code, func: "INC_DE")
-							cpu.INC_n(n: .DE)
 						}) as Operation),
 						(0x14 as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
 							cpu.opCodePrint(code: code, func: "INC_D")
@@ -1060,34 +1294,20 @@ struct Instructions {
 							cpu.opCodePrint(code: code, func: "INC_E")
 							cpu.INC_n(n: .E)
 						}) as Operation),
-						(0x23 as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
-							cpu.opCodePrint(code: code, func: "INC_HL")
-							cpu.INC_n(n: .HL)
-						}) as Operation),
 						(0x24 as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
 							cpu.opCodePrint(code: code, func: "INC_H")
 							cpu.INC_n(n: .H)
-						}) as Operation),
-						(0x2B as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
-							cpu.opCodePrint(code: code, func: "DEC_HL")
-							cpu.DEC_n(n: .HL)
 						}) as Operation),
 						(0x2C as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
 							cpu.opCodePrint(code: code, func: "INC_L")
 							cpu.INC_n(n: .L)
 						}) as Operation),
-						(0x33 as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
-							cpu.opCodePrint(code: code, func: "INC_SP")
-							cpu.INC_n(n: .SP)
-						}) as Operation),
 						(0x34 as UInt8, (cycles: 3, pc: 1, { (cpu, code) in
-							cpu.opCodePrint(code: code, func: "INC_HL")
+							cpu.opCodePrint(code: code, func: "INC_(HL)")
 							cpu.INC_HL()
 						}) as Operation),
-						(0x3B as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
-							cpu.opCodePrint(code: code, func: "DEC_SP")
-							cpu.DEC_n(n: .SP)
-						}) as Operation),
+			//			MARK: -
+			//			MARK: DEC n
 						(0x3D as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
 							cpu.opCodePrint(code: code, func: "DEC_A")
 							cpu.DEC_n(n: .A)
@@ -1117,9 +1337,12 @@ struct Instructions {
 							cpu.DEC_n(n: .L)
 						}) as Operation),
 						(0x35 as UInt8, (cycles: 3, pc: 1, { (cpu, code) in
-							cpu.opCodePrint(code: code, func: "DEC_HL")
+							cpu.opCodePrint(code: code, func: "DEC_(HL)")
 							cpu.DEC_HL()
 						}) as Operation),
+			//			MARK: -
+			//			MARK: 16-Bit ALU
+			//			MARK: ADD HL,n
 						(0x09 as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
 							cpu.opCodePrint(code: code, func: "ADD_HL_BC")
 							cpu.ADD_HL_n(n: cpu.registers.BC)
@@ -1136,6 +1359,51 @@ struct Instructions {
 							cpu.opCodePrint(code: code, func: "ADD_HL_SP")
 							cpu.ADD_HL_n(n: cpu.registers.BC)
 						}) as Operation),
+			//			MARK: -
+			//			MARK: ADD SP,n
+						(0xE8 as UInt8, (cycles: 4, pc: 2, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "ADD_SP_#")
+							let param = cpu.memory.readHalf(address: cpu.registers.PC+1)
+							cpu.ADD_SP_n(n: param)
+						}) as Operation),
+			//			MARK: -
+			//			MARK: INC nn
+						(0x03 as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "INC_BC")
+							cpu.INC_n(n: .BC)
+						}) as Operation),
+						(0x13 as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "INC_DE")
+							cpu.INC_n(n: .DE)
+						}) as Operation),
+						(0x23 as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "INC_HL")
+							cpu.INC_n(n: .HL)
+						}) as Operation),
+						(0x33 as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "INC_SP")
+							cpu.INC_n(n: .SP)
+						}) as Operation),
+			//			MARK: -
+			//			MARK: DEC nn
+						(0x0B as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "DEC_BC")
+							cpu.DEC_n(n: .BC)
+						}) as Operation),
+						(0x1B as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "DEC_DE")
+							cpu.DEC_n(n: .DE)
+						}) as Operation),
+						(0x2B as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "DEC_HL")
+							cpu.DEC_n(n: .HL)
+						}) as Operation),
+						(0x3B as UInt8, (cycles: 2, pc: 1, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "DEC_SP")
+							cpu.DEC_n(n: .SP)
+						}) as Operation),
+			//			MARK: -
+			//			MARK: PUSH nn
 						(0xF5 as UInt8, (cycles: 4, pc: 1, { (cpu, code) in
 							cpu.opCodePrint(code: code, func: "PUSH_AF")
 							cpu.PUSH_nn(nn: cpu.registers.AF)
@@ -1152,6 +1420,8 @@ struct Instructions {
 							cpu.opCodePrint(code: code, func: "PUSH_HL")
 							cpu.PUSH_nn(nn: cpu.registers.HL)
 						}) as Operation),
+			//			MARK: -
+			//			MARK: POP nn
 						(0xF1 as UInt8, (cycles: 3, pc: 1, { (cpu, code) in
 							cpu.opCodePrint(code: code, func: "POP_AF")
 							cpu.POP_nn(nn: .AF)
@@ -1168,17 +1438,76 @@ struct Instructions {
 							cpu.opCodePrint(code: code, func: "POP_HL")
 							cpu.POP_nn(nn: .HL)
 						}) as Operation),
+			//			MARK: Rotates & Shifts
+			//			MARK: -
+			//			MARK: RLCA
+						(0x07 as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "RLCA")
+							cpu.RLCA()
+						}) as Operation),
+			//			MARK: -
+			//			MARK: RLA
+						(0x17 as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "RLA")
+							cpu.RL_n(n: &cpu.registers.A)
+						}) as Operation),
+			//			MARK: -
+			//			MARK: RRCA
+						(0x0F as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "RRCA")
+							cpu.RRCA()
+						}) as Operation),
+			//			MARK: -
+			//			MARK: RRA
+						(0x1F as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "RRA")
+							cpu.RR_n(n: &cpu.registers.A)
+						}) as Operation),
+			//			MARK: -
 			//			MARK: Jumps
+			//			MARK: JP nn
 						(0xC3 as UInt8, (cycles: 3, pc: 0, { (cpu, code) in
 							cpu.opCodePrint(code: code, func: "JP_nn")
 							let param = cpu.memory.readFull(address: cpu.registers.PC+1)
 							cpu.JP_nn(nn: param)
 						}) as Operation),
+			//			MARK: -
+			//			MARK: JP cc,nn
+						(0xC2 as UInt8, (cycles: 3, pc: 0, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "JR_cc_n")
+							let param = cpu.memory.readFull(address: cpu.registers.PC+1)
+							cpu.JR_cc_nn(flag: .Z, nn: param, state: false)
+						}) as Operation),
+						(0xCA as UInt8, (cycles: 3, pc: 0, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "JR_cc_n")
+							let param = cpu.memory.readFull(address: cpu.registers.PC+1)
+							cpu.JR_cc_nn(flag: .Z, nn: param, state: true)
+						}) as Operation),
+						(0xD2 as UInt8, (cycles: 3, pc: 0, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "JR_cc_n")
+							let param = cpu.memory.readFull(address: cpu.registers.PC+1)
+							cpu.JR_cc_nn(flag: .C, nn: param, state: false)
+						}) as Operation),
+						(0xDA as UInt8, (cycles: 3, pc: 0, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "JR_cc_n")
+							let param = cpu.memory.readFull(address: cpu.registers.PC+1)
+							cpu.JR_cc_nn(flag: .C, nn: param, state: true)
+						}) as Operation),
+			//			MARK: -
+			//			MARK: JP (HL)
+						(0xE9 as UInt8, (cycles: 1, pc: 0, { (cpu, code) in
+							cpu.opCodePrint(code: code, func: "JP_(HL)")
+							cpu.JP_HL()
+						}) as Operation),
+			//			MARK: -
+			//			MARK: JR n
 						(0x18 as UInt8, (cycles: 2, pc: 0, { (cpu, code) in
-							cpu.opCodePrint(code: code, func: "JP_n")
+							cpu.opCodePrint(code: code, func: "JR_n")
 							let param = cpu.memory.readHalf(address: cpu.registers.PC+1)
 							cpu.JR_n(n: param)
 						}) as Operation),
+			//			MARK: -
+			//			MARK: JR cc,n
 						(0x20 as UInt8, (cycles: 2, pc: 0, { (cpu, code) in
 							cpu.opCodePrint(code: code, func: "JR_cc_n")
 							let param = cpu.memory.readHalf(address: cpu.registers.PC+1)
@@ -1258,23 +1587,7 @@ struct Instructions {
 							cpu.opCodePrint(code: code, func: "RST_n")
 							cpu.RST_n(n: 0x38)
 						}) as Operation),
-			//			MARK: Rotates
-						(0x07 as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
-							cpu.opCodePrint(code: code, func: "RLCA")
-							cpu.RLCA()
-						}) as Operation),
-						(0x0F as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
-							cpu.opCodePrint(code: code, func: "RRCA")
-							cpu.RRCA()
-						}) as Operation),
-						(0x17 as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
-							cpu.opCodePrint(code: code, func: "RLA")
-							cpu.RL_n(n: &cpu.registers.A)
-						}) as Operation),
-						(0x1F as UInt8, (cycles: 1, pc: 1, { (cpu, code) in
-							cpu.opCodePrint(code: code, func: "RRA")
-							cpu.RR_n(n: &cpu.registers.A)
-						}) as Operation),
+			
 			//			MARK: Returns
 						(0xC9 as UInt8, (cycles: 2, pc: 0, { (cpu, code) in
 							cpu.opCodePrint(code: code, func: "RET")
@@ -1312,6 +1625,10 @@ protocol Misc {
 	func DI()
 	func EI()
 	func CCF()
+	func DAA()
+	func SCF()
+	func HALT()
+	func SWAP(n: inout UInt8) // checked
 }
 
 protocol Load {	
@@ -1371,6 +1688,7 @@ protocol ALU {
 	// - MARK: 16-Bit ALU
 	func INC_n(n: RegisterMap.combined) //checked
 	func DEC_n(n: RegisterMap.combined) //checked
+	func ADD_SP_n(n: UInt8)
 	func ADD_HL_n(n: UInt16) //checked
 }
 
@@ -1388,7 +1706,9 @@ protocol Bit {
 protocol Rotates {
 	// - MARK: ROTATES
 	func RRCA() //checked
+	func RRC_n(n: inout UInt8) //checked
 	func RLCA() //checked
+	func RLC_n(n: inout UInt8) //checked
 	func RL_n(n: inout UInt8) //checked
 	func RR_n(n: inout UInt8) //checked
 	func RL_HL() //checked
