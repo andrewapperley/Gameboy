@@ -9,10 +9,10 @@
 import Foundation
 
 class Gameboy {
-	var queue: DispatchQueue!
+	let queue = DispatchQueue(label: "Gameboy Dispatch Queue")
 	var bp: UInt16 = 0
 	var cartridge: Cartridge?
-	let memory: MMU
+	let mmu: MMU
 	let cpu: CPU
 	let ppu: PPU
 	let apu: APU
@@ -20,17 +20,23 @@ class Gameboy {
 	var debugger: Debugger? = nil
 	
 	init() {
-		self.memory = MMU()
-		self.cpu = CPU(memory: memory)
-		self.ppu = PPU(memory: memory)
-		self.apu = APU(memory: memory)
-		self.setupQueue()
+		self.mmu = MMU()
+		self.cpu = CPU(memory: mmu)
+		self.ppu = PPU(memory: mmu)
+		self.apu = APU(memory: mmu)
 		cpu.cpuDelegate = self
 	}
 	
+    func loadBios() {
+        guard let bios = FileSystem.readBootROM() else {
+            fatalError("Failed to load bios")
+        }
+        mmu.loadBios(Array<UInt8>(bios))
+    }
+    
 	func load(cartridge: Cartridge) {
 		self.cartridge = cartridge
-		memory.loadMemoryController(cartridge.memoryController)
+        mmu.loadMemoryController(cartridge.memoryController)
 		reset()
 		cpu.start()
 		queue.async {
@@ -39,12 +45,9 @@ class Gameboy {
 	}
 	
 	func reset() {
-		self.memory.reset()
+		self.mmu.reset()
 		self.cpu.reset()
-	}
-	
-	func setupQueue() {
-		self.queue = DispatchQueue(label: "Gameboy Dispatch Queue")
+        loadBios()
 	}
 	
 	func onTick() {

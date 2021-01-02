@@ -73,7 +73,6 @@ class MMU {
 	
 	func loadBios(_ bios: [UInt8]) {
 		self.bios = bios
-		self.biosActive = true
 	}
 	
 	func loadMemoryController(_ memoryController: MemoryController?) {
@@ -189,7 +188,8 @@ class MMU {
 	
 	func reset() {
 		memory = Array<UInt8>(repeating: 0x0, count: MemoryMap.MEM_SIZE)
-		setInitial()
+        self.biosActive = true
+//		setInitial()
 	}
 	
 	func toState() -> MemoryState {

@@ -10,13 +10,12 @@ import UIKit
 
 class GameboyViewController: UIViewController {
 
-	var gameboy: Gameboy!
+	let gameboy = Gameboy()
 	
     override func viewDidLoad() {
         super.viewDidLoad()
 		
 		self.view.backgroundColor = .black
-		self.gameboy = Gameboy()
 		
 		if (ProcessInfo.processInfo.environment["DEBUGGER"] != nil) {
 			setupDebugger()
