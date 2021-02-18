@@ -16,15 +16,12 @@ class Gameboy {
 	let cpu: CPU
 	let ppu: PPU
 	let apu: APU
-	
-	var debugger: Debugger? = nil
-	
+		
 	init() {
 		self.mmu = MMU()
 		self.cpu = CPU(memory: mmu)
 		self.ppu = PPU(memory: mmu)
 		self.apu = APU(memory: mmu)
-		cpu.cpuDelegate = self
 	}
 	
     func loadBios() {
@@ -47,7 +44,7 @@ class Gameboy {
 	func reset() {
 		self.mmu.reset()
 		self.cpu.reset()
-        loadBios()
+//        loadBios()
 	}
 	
 	func onTick() {
@@ -55,29 +52,17 @@ class Gameboy {
 		let start = Date().timeIntervalSince1970
 		
 		var count: Int = 0
-		while count < cpu.clock.ticLoopCount {
+		while count <= cpu.clock.ticLoopCount {
 			var delta = cpu.clock.mCounter
 			self.cpu.tick()
 			delta = cpu.clock.mCounter - delta
 			self.ppu.render(delta: delta)
 			count += Int(delta)
 		}
-		
 		let elapsed = Date().timeIntervalSince1970 - start
-		
 		if cpu.running {
 			let time = DispatchTime.now() + Double(Int64(Double(NSEC_PER_SEC) * (cpu.clock.tic * Double(count) - elapsed))) / Double(NSEC_PER_SEC)
 			queue.asyncAfter(deadline: time, execute: self.onTick)
 		}
-	}
-}
-
-extension Gameboy: CPUDelegate {
-	func onCompletedFrame() {
-		self.debugger?.onReceiveState(state: cpu.pause())
-	}
-	
-	func nextFrame() {
-		self.cpu.resume()
 	}
 }

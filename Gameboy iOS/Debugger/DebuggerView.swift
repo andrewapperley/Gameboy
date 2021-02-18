@@ -84,35 +84,28 @@ protocol DebuggerViewDelegate {
 	func onNextFrameRequested()
 }
 
+class DebuggerViewController: UIViewController {
+    var debuggerView: DebuggerView { self.view as! DebuggerView }
+    
+    override func loadView() {
+        self.view = DebuggerView(frame: .zero)
+    }
+}
+
 class DebuggerView: UIView {
-	let nextButton: UIButton
 	let dataView: UITableView
 	var state: CPUState? = nil
 	var debuggerViewDelegate: DebuggerViewDelegate? = nil
 	
 	override init(frame: CGRect) {
 		self.dataView = UITableView(frame: .zero)
-		self.nextButton = UIButton(type: .roundedRect)
 		super.init(frame: frame)
-		setupNextButton()
 		setupDataView()
 		setupContraints()
 	}
 	
 	required init?(coder aDecoder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
-	}
-	
-	func setupNextButton() {
-		nextButton.setTitle("Next Frame", for: .normal)
-		nextButton.setTitleColor(.white, for: .normal)
-		nextButton.setTitleColor(.lightGray, for: .selected)
-		nextButton.addTarget(self, action: #selector(onNextFrameRequested), for: .touchUpInside)
-		self.addSubview(nextButton)
-	}
-	
-	@objc func onNextFrameRequested() {
-		self.debuggerViewDelegate?.onNextFrameRequested()
 	}
 	
 	func setupDataView() {
@@ -125,12 +118,9 @@ class DebuggerView: UIView {
 	}
 	
 	func setupContraints() {
-		nextButton.translatesAutoresizingMaskIntoConstraints = false
 		dataView.translatesAutoresizingMaskIntoConstraints = false
 		NSLayoutConstraint.activate([
-			nextButton.topAnchor.constraint(equalTo: topAnchor),
-			nextButton.centerXAnchor.constraint(equalTo: centerXAnchor),
-			dataView.topAnchor.constraint(equalTo: nextButton.bottomAnchor),
+			dataView.topAnchor.constraint(equalTo: topAnchor),
 			dataView.leftAnchor.constraint(equalTo: leftAnchor),
 			dataView.rightAnchor.constraint(equalTo: rightAnchor),
 			dataView.bottomAnchor.constraint(equalTo: bottomAnchor),
@@ -142,8 +132,26 @@ class DebuggerView: UIView {
 extension DebuggerView: Debugger {
 
 	func onReceiveState(state: CPUState) {
+        if self.state == nil {
+            self.state = state
+            self.dataView.reloadData()
+            return
+        }
+        var sectionsToUpdate: IndexSet = []
+        
+        /*
+         case Registers 0
+         case Flags 1
+         case Rom 2
+         case Memory 3
+         */
+        
+        if state.registers != self.state?.registers {
+            sectionsToUpdate.insert(DebuggerViewSections.Registers.rawValue)
+        }
+        
 		self.state = state
-		dataView.reloadData()
+        self.dataView.reloadSections(sectionsToUpdate, with: .none)
 	}
 }
 

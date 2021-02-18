@@ -8,10 +8,6 @@
 
 import Foundation
 
-protocol CPUDelegate {
-	func onCompletedFrame()
-}
-
 class CPU {
 	private let instructionTable: Instructions.InstructionLookupTable = Instructions.generateInstructionLookupTable()
 	private let innerInstructionTable: Instructions.InstructionLookupTable = Instructions.generateInnerInstructionLookupTable()
@@ -19,16 +15,19 @@ class CPU {
 	private(set) var memory: MMU
 	let clock: CPUTimer
 	private(set) var running = false
-	var cpuDelegate: CPUDelegate?
 	
 	init(memory: MMU) {
 		self.memory = memory
 		clock = CPUTimer(memory)
 	}
 	
+    func getState() -> CPUState {
+        return CPUState(registers: registers.toState(), memory: memory.toState())
+    }
+    
 	func pause() -> CPUState {
 		running = false
-		return CPUState(registers: registers.toState(), memory: memory.toState())
+		return getState()
 	}
 	
 	func resume() {
@@ -59,10 +58,6 @@ class CPU {
 		// fetch and execute instruction
 		fetchAndInvokeInstruction(with: code)
 		// check for I/O ?
-		// call debugger with latest frame information
-		DispatchQueue.main.sync {
-			self.cpuDelegate?.onCompletedFrame()
-		}
 	}
 	
 	func handleInterrupts() {
@@ -128,7 +123,7 @@ extension CPU: InstructionInvoker {
 
 		let context = self.context(from: code)
 		self.opCodeFetchPrint(code: context.code)
-
+        
 		guard let data = context.table[context.code] else {
 			self.opCodeNotImplementedPrint(code: context.code)
 			return
@@ -649,31 +644,54 @@ extension CPU: Rotates {
 		RLC_n(n: &registers.A)
 	}
 	
+    /*
+         u8 carry = IsSetFlag(FLAG_CARRY) ? 1 : 0;
+         u8 result = reg->GetValue();
+         ((result & 0x80) != 0) ? SetFlag(FLAG_CARRY) : ClearAllFlags();
+         result <<= 1;
+         result |= carry;
+         reg->SetValue(result);
+         if (!isRegisterA)
+         {
+             ToggleZeroFlagFromResult(result);
+         }
+     */
+    
 	func RL_n(n register: inout UInt8) {
-		// Save old carry from register
-		let oldCarry = register.bit(at: Flag.C.rawValue)
-
-		// Shift register to the left through Carry Flag
-		register = (register << 1)
-		if registers.getFlag(.C) > 0 {
-			register += Registers.Carry
-		}
-				
-		registers.clearFlags()
-		
-		// Set if result is zero.
-		if register == 0 {
-			registers.setFlag(.Z, state: true)
-		}
-		
-		// Set if carry was set in old register A value
-		if oldCarry > 0 {
-			registers.setFlag(.C, state: true)
-		}
-
-		// Reset other flags
-		registers.setFlag(.N, state: false)
-		registers.setFlag(.H, state: false)
+        let carry = UInt8(registers.getFlag(.C))
+        var result = register
+        ((result & 0x80) != 0) ? registers.setFlag(.C, state: true) : registers.clearFlags()
+        result <<= 1
+        result |= carry
+        register = result
+        if result == 0 {
+            registers.setFlag(.Z, state: true)
+        }
+        
+//		// Save old carry from register
+//		let oldCarry = register.bit(at: Flag.C.rawValue)
+//
+//		// Shift register to the left through Carry Flag
+//		register = (register << 1)
+//		if registers.getFlag(.C) > 0 {
+//			register += Registers.Carry
+//		}
+//
+//		registers.clearFlags()
+//
+//		// Set if result is zero.
+//		if register == 0 {
+//			registers.setFlag(.Z, state: true)
+//		}
+//
+//		// Set if carry was set in old register A value
+//		if oldCarry > 0 {
+//			registers.setFlag(.C, state: true)
+//		}
+//
+//		// Reset other flags
+//		registers.setFlag(.N, state: false)
+//		registers.setFlag(.H, state: false)
 	}
 	
 	func RR_n(n register: inout UInt8) {

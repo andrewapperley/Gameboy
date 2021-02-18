@@ -11,25 +11,34 @@
 		0F1696B322732B69009C7949 /* Instructions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F1696B222732B69009C7949 /* Instructions.swift */; };
 		0F1696D722738CC4009C7949 /* game.gb in Resources */ = {isa = PBXBuildFile; fileRef = 0F1696D622738CC4009C7949 /* game.gb */; };
 		0F16973622771B09009C7949 /* Registers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F16973522771B09009C7949 /* Registers.swift */; };
-		0F48CF1C259E58F20055B1FB /* dmg_boot.bin in Resources */ = {isa = PBXBuildFile; fileRef = 0F48CF1B259E58F20055B1FB /* dmg_boot.bin */; };
+		0F42130825B4C3CC00A79BB6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F42130725B4C3CC00A79BB6 /* AppDelegate.swift */; };
+		0F42130A25B4C3CC00A79BB6 /* GameboyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F42130925B4C3CC00A79BB6 /* GameboyViewController.swift */; };
+		0F42130C25B4C3CE00A79BB6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0F42130B25B4C3CE00A79BB6 /* Assets.xcassets */; };
+		0F42130F25B4C3CE00A79BB6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0F42130D25B4C3CE00A79BB6 /* Main.storyboard */; };
+		0F42131C25B4C42A00A79BB6 /* Int+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FEB93FC22AA7D94002B8D57 /* Int+Additions.swift */; };
+		0F42132025B4C43000A79BB6 /* CPU+Debugging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F88A26122AD62E500EC5AE2 /* CPU+Debugging.swift */; };
+		0F42132725B4C44C00A79BB6 /* dmg_boot.bin in Resources */ = {isa = PBXBuildFile; fileRef = 0F48CF1F259E58F40055B1FB /* dmg_boot.bin */; };
+		0F42132B25B4C44D00A79BB6 /* dmg_boot.bin in Resources */ = {isa = PBXBuildFile; fileRef = 0F48CF1F259E58F40055B1FB /* dmg_boot.bin */; };
+		0F42132F25B4C45200A79BB6 /* game.gb in Resources */ = {isa = PBXBuildFile; fileRef = 0F1696D622738CC4009C7949 /* game.gb */; };
+		0F42133325B4C46000A79BB6 /* Cartridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FE4C74122A53C4800E927BA /* Cartridge.swift */; };
+		0F42133725B4C46300A79BB6 /* Gameboy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FEA3AC2226F339700AD96EE /* Gameboy.swift */; };
+		0F42133B25B4C46600A79BB6 /* CPU.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FEA3AC5226F352800AD96EE /* CPU.swift */; };
+		0F42133F25B4C46800A79BB6 /* MMU.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F1696672271D065009C7949 /* MMU.swift */; };
+		0F42134325B4C46A00A79BB6 /* Instructions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F1696B222732B69009C7949 /* Instructions.swift */; };
+		0F42134725B4C46C00A79BB6 /* Registers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F16973522771B09009C7949 /* Registers.swift */; };
+		0F42134B25B4C46E00A79BB6 /* FileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FC11E9922A697D30060F7E0 /* FileSystem.swift */; };
+		0F42134F25B4C47100A79BB6 /* CPUTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FC11EC322A72B100060F7E0 /* CPUTimer.swift */; };
+		0F42135325B4C47200A79BB6 /* MemoryController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FC11EC522A72F570060F7E0 /* MemoryController.swift */; };
+		0F42135725B4C47400A79BB6 /* CPUState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F88A26522ADD3E200EC5AE2 /* CPUState.swift */; };
+		0F42135B25B4C47700A79BB6 /* PPU.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F520B9222B3C8230054BBFC /* PPU.swift */; };
+		0F42135F25B4C47900A79BB6 /* APU.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F520C1622B577590054BBFC /* APU.swift */; };
+		0F42136325B4C47E00A79BB6 /* Debugger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F88A26722ADD8B400EC5AE2 /* Debugger.swift */; };
 		0F520B9322B3C8230054BBFC /* PPU.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F520B9222B3C8230054BBFC /* PPU.swift */; };
 		0F520C1722B577590054BBFC /* APU.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F520C1622B577590054BBFC /* APU.swift */; };
 		0F88A26222AD62E500EC5AE2 /* CPU+Debugging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F88A26122AD62E500EC5AE2 /* CPU+Debugging.swift */; };
 		0F88A26622ADD3E200EC5AE2 /* CPUState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F88A26522ADD3E200EC5AE2 /* CPUState.swift */; };
 		0F88A26822ADD8B400EC5AE2 /* Debugger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F88A26722ADD8B400EC5AE2 /* Debugger.swift */; };
 		0F88A26A22ADD98600EC5AE2 /* DebuggerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F88A26922ADD98600EC5AE2 /* DebuggerView.swift */; };
-		0FBF668C238DB94B00FEC173 /* cpu_instrs.gb in Resources */ = {isa = PBXBuildFile; fileRef = 0FBF668B238DB94B00FEC173 /* cpu_instrs.gb */; };
-		0FBF6699238DB9CF00FEC173 /* 06-ld r,r.gb in Resources */ = {isa = PBXBuildFile; fileRef = 0FBF668E238DB9CE00FEC173 /* 06-ld r,r.gb */; };
-		0FBF669A238DB9CF00FEC173 /* 02-interrupts.gb in Resources */ = {isa = PBXBuildFile; fileRef = 0FBF668F238DB9CE00FEC173 /* 02-interrupts.gb */; };
-		0FBF669B238DB9CF00FEC173 /* 09-op r,r.gb in Resources */ = {isa = PBXBuildFile; fileRef = 0FBF6690238DB9CE00FEC173 /* 09-op r,r.gb */; };
-		0FBF669C238DB9CF00FEC173 /* 10-bit ops.gb in Resources */ = {isa = PBXBuildFile; fileRef = 0FBF6691238DB9CE00FEC173 /* 10-bit ops.gb */; };
-		0FBF669D238DB9CF00FEC173 /* 05-op rp.gb in Resources */ = {isa = PBXBuildFile; fileRef = 0FBF6692238DB9CE00FEC173 /* 05-op rp.gb */; };
-		0FBF669E238DB9CF00FEC173 /* 03-op sp,hl.gb in Resources */ = {isa = PBXBuildFile; fileRef = 0FBF6693238DB9CE00FEC173 /* 03-op sp,hl.gb */; };
-		0FBF669F238DB9CF00FEC173 /* 01-special.gb in Resources */ = {isa = PBXBuildFile; fileRef = 0FBF6694238DB9CF00FEC173 /* 01-special.gb */; };
-		0FBF66A0238DB9CF00FEC173 /* 07-jr,jp,call,ret,rst.gb in Resources */ = {isa = PBXBuildFile; fileRef = 0FBF6695238DB9CF00FEC173 /* 07-jr,jp,call,ret,rst.gb */; };
-		0FBF66A1238DB9CF00FEC173 /* 04-op r,imm.gb in Resources */ = {isa = PBXBuildFile; fileRef = 0FBF6696238DB9CF00FEC173 /* 04-op r,imm.gb */; };
-		0FBF66A2238DB9CF00FEC173 /* 11-op a,(hl).gb in Resources */ = {isa = PBXBuildFile; fileRef = 0FBF6697238DB9CF00FEC173 /* 11-op a,(hl).gb */; };
-		0FBF66A3238DB9CF00FEC173 /* 08-misc instrs.gb in Resources */ = {isa = PBXBuildFile; fileRef = 0FBF6698238DB9CF00FEC173 /* 08-misc instrs.gb */; };
 		0FC11E9A22A697D30060F7E0 /* FileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FC11E9922A697D30060F7E0 /* FileSystem.swift */; };
 		0FC11EC422A72B100060F7E0 /* CPUTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FC11EC322A72B100060F7E0 /* CPUTimer.swift */; };
 		0FC11EC622A72F570060F7E0 /* MemoryController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FC11EC522A72F570060F7E0 /* MemoryController.swift */; };
@@ -58,7 +67,13 @@
 		0F1696B222732B69009C7949 /* Instructions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Instructions.swift; sourceTree = "<group>"; };
 		0F1696D622738CC4009C7949 /* game.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = game.gb; sourceTree = "<group>"; };
 		0F16973522771B09009C7949 /* Registers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Registers.swift; sourceTree = "<group>"; };
-		0F48CF1B259E58F20055B1FB /* dmg_boot.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = dmg_boot.bin; path = "../../../../../../../Users/andrewapperley/Downloads/GB boot ROM/dmg_boot.bin"; sourceTree = "<group>"; };
+		0F42130525B4C3CC00A79BB6 /* Gameboy Mac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Gameboy Mac.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		0F42130725B4C3CC00A79BB6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		0F42130925B4C3CC00A79BB6 /* GameboyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameboyViewController.swift; sourceTree = "<group>"; };
+		0F42130B25B4C3CE00A79BB6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		0F42130E25B4C3CE00A79BB6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		0F42131025B4C3CE00A79BB6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0F42131125B4C3CE00A79BB6 /* Gameboy_Mac.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Gameboy_Mac.entitlements; sourceTree = "<group>"; };
 		0F48CF1F259E58F40055B1FB /* dmg_boot.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = dmg_boot.bin; sourceTree = "<group>"; };
 		0F520B9222B3C8230054BBFC /* PPU.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PPU.swift; sourceTree = "<group>"; };
 		0F520C1622B577590054BBFC /* APU.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APU.swift; sourceTree = "<group>"; };
@@ -66,18 +81,6 @@
 		0F88A26522ADD3E200EC5AE2 /* CPUState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPUState.swift; sourceTree = "<group>"; };
 		0F88A26722ADD8B400EC5AE2 /* Debugger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Debugger.swift; sourceTree = "<group>"; };
 		0F88A26922ADD98600EC5AE2 /* DebuggerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebuggerView.swift; sourceTree = "<group>"; };
-		0FBF668B238DB94B00FEC173 /* cpu_instrs.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = cpu_instrs.gb; sourceTree = "<group>"; };
-		0FBF668E238DB9CE00FEC173 /* 06-ld r,r.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = "06-ld r,r.gb"; sourceTree = "<group>"; };
-		0FBF668F238DB9CE00FEC173 /* 02-interrupts.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = "02-interrupts.gb"; sourceTree = "<group>"; };
-		0FBF6690238DB9CE00FEC173 /* 09-op r,r.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = "09-op r,r.gb"; sourceTree = "<group>"; };
-		0FBF6691238DB9CE00FEC173 /* 10-bit ops.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = "10-bit ops.gb"; sourceTree = "<group>"; };
-		0FBF6692238DB9CE00FEC173 /* 05-op rp.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = "05-op rp.gb"; sourceTree = "<group>"; };
-		0FBF6693238DB9CE00FEC173 /* 03-op sp,hl.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = "03-op sp,hl.gb"; sourceTree = "<group>"; };
-		0FBF6694238DB9CF00FEC173 /* 01-special.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = "01-special.gb"; sourceTree = "<group>"; };
-		0FBF6695238DB9CF00FEC173 /* 07-jr,jp,call,ret,rst.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = "07-jr,jp,call,ret,rst.gb"; sourceTree = "<group>"; };
-		0FBF6696238DB9CF00FEC173 /* 04-op r,imm.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = "04-op r,imm.gb"; sourceTree = "<group>"; };
-		0FBF6697238DB9CF00FEC173 /* 11-op a,(hl).gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = "11-op a,(hl).gb"; sourceTree = "<group>"; };
-		0FBF6698238DB9CF00FEC173 /* 08-misc instrs.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = "08-misc instrs.gb"; sourceTree = "<group>"; };
 		0FC11E9922A697D30060F7E0 /* FileSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileSystem.swift; sourceTree = "<group>"; };
 		0FC11EC322A72B100060F7E0 /* CPUTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPUTimer.swift; sourceTree = "<group>"; };
 		0FC11EC522A72F570060F7E0 /* MemoryController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryController.swift; sourceTree = "<group>"; };
@@ -96,6 +99,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		0F42130225B4C3CC00A79BB6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		0FEA3A99226F319000AD96EE /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -116,14 +126,36 @@
 		0F1696AD22732791009C7949 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				0FBF668D238DB9BD00FEC173 /* Test Roms */,
 				0F48CF1F259E58F40055B1FB /* dmg_boot.bin */,
 				0F1696D622738CC4009C7949 /* game.gb */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
 		};
-		0F88A26B22ADE18F00EC5AE2 /* Debugger */ = {
+		0F42130625B4C3CC00A79BB6 /* Gameboy Mac */ = {
+			isa = PBXGroup;
+			children = (
+				0F42130725B4C3CC00A79BB6 /* AppDelegate.swift */,
+				0F42130925B4C3CC00A79BB6 /* GameboyViewController.swift */,
+				0F42130B25B4C3CE00A79BB6 /* Assets.xcassets */,
+				0F42130D25B4C3CE00A79BB6 /* Main.storyboard */,
+				0F42131025B4C3CE00A79BB6 /* Info.plist */,
+				0F42131125B4C3CE00A79BB6 /* Gameboy_Mac.entitlements */,
+			);
+			path = "Gameboy Mac";
+			sourceTree = "<group>";
+		};
+		0F42131825B4C3E600A79BB6 /* Gameboy Shared */ = {
+			isa = PBXGroup;
+			children = (
+				0FEB93FB22AA7D73002B8D57 /* Additions */,
+				0F1696AD22732791009C7949 /* Resources */,
+				0FEA3AC1226F334400AD96EE /* System */,
+			);
+			path = "Gameboy Shared";
+			sourceTree = "<group>";
+		};
+		0F42136725B4C49900A79BB6 /* Debugger */ = {
 			isa = PBXGroup;
 			children = (
 				0F88A26922ADD98600EC5AE2 /* DebuggerView.swift */,
@@ -131,31 +163,21 @@
 			path = Debugger;
 			sourceTree = "<group>";
 		};
-		0FBF668D238DB9BD00FEC173 /* Test Roms */ = {
+		0F88A26B22ADE18F00EC5AE2 /* Debugger */ = {
 			isa = PBXGroup;
 			children = (
-				0F48CF1B259E58F20055B1FB /* dmg_boot.bin */,
-				0FBF6694238DB9CF00FEC173 /* 01-special.gb */,
-				0FBF668F238DB9CE00FEC173 /* 02-interrupts.gb */,
-				0FBF6693238DB9CE00FEC173 /* 03-op sp,hl.gb */,
-				0FBF6696238DB9CF00FEC173 /* 04-op r,imm.gb */,
-				0FBF6692238DB9CE00FEC173 /* 05-op rp.gb */,
-				0FBF668E238DB9CE00FEC173 /* 06-ld r,r.gb */,
-				0FBF6695238DB9CF00FEC173 /* 07-jr,jp,call,ret,rst.gb */,
-				0FBF6698238DB9CF00FEC173 /* 08-misc instrs.gb */,
-				0FBF6690238DB9CE00FEC173 /* 09-op r,r.gb */,
-				0FBF6691238DB9CE00FEC173 /* 10-bit ops.gb */,
-				0FBF6697238DB9CF00FEC173 /* 11-op a,(hl).gb */,
-				0FBF668B238DB94B00FEC173 /* cpu_instrs.gb */,
+				0F88A26722ADD8B400EC5AE2 /* Debugger.swift */,
 			);
-			path = "Test Roms";
+			path = Debugger;
 			sourceTree = "<group>";
 		};
 		0FEA3A93226F319000AD96EE = {
 			isa = PBXGroup;
 			children = (
-				0FEA3A9E226F319000AD96EE /* Gameboy */,
+				0F42131825B4C3E600A79BB6 /* Gameboy Shared */,
+				0FEA3A9E226F319000AD96EE /* Gameboy iOS */,
 				0FEA3AB3226F319100AD96EE /* GameboyTests */,
+				0F42130625B4C3CC00A79BB6 /* Gameboy Mac */,
 				0FEA3A9D226F319000AD96EE /* Products */,
 			);
 			sourceTree = "<group>";
@@ -165,22 +187,21 @@
 			children = (
 				0FEA3A9C226F319000AD96EE /* Gameboy.app */,
 				0FEA3AB0226F319100AD96EE /* GameboyTests.xctest */,
+				0F42130525B4C3CC00A79BB6 /* Gameboy Mac.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		0FEA3A9E226F319000AD96EE /* Gameboy */ = {
+		0FEA3A9E226F319000AD96EE /* Gameboy iOS */ = {
 			isa = PBXGroup;
 			children = (
-				0FEB93FB22AA7D73002B8D57 /* Additions */,
-				0F1696AD22732791009C7949 /* Resources */,
-				0FEA3AC1226F334400AD96EE /* System */,
+				0F42136725B4C49900A79BB6 /* Debugger */,
 				0FEA3A9F226F319000AD96EE /* AppDelegate.swift */,
 				0FEA3AA6226F319100AD96EE /* Assets.xcassets */,
 				0FEA3AAB226F319100AD96EE /* Info.plist */,
 				0FEA3ABF226F320500AD96EE /* GameboyViewController.swift */,
 			);
-			path = Gameboy;
+			path = "Gameboy iOS";
 			sourceTree = "<group>";
 		};
 		0FEA3AB3226F319100AD96EE /* GameboyTests */ = {
@@ -198,8 +219,6 @@
 				0F88A26B22ADE18F00EC5AE2 /* Debugger */,
 				0FEA3AC4226F351E00AD96EE /* Subsystems */,
 				0FEA3AC2226F339700AD96EE /* Gameboy.swift */,
-				0FE4C74122A53C4800E927BA /* Cartridge.swift */,
-				0F88A26722ADD8B400EC5AE2 /* Debugger.swift */,
 			);
 			path = System;
 			sourceTree = "<group>";
@@ -207,6 +226,7 @@
 		0FEA3AC4226F351E00AD96EE /* Subsystems */ = {
 			isa = PBXGroup;
 			children = (
+				0FE4C74122A53C4800E927BA /* Cartridge.swift */,
 				0FEA3AC5226F352800AD96EE /* CPU.swift */,
 				0F1696672271D065009C7949 /* MMU.swift */,
 				0F1696B222732B69009C7949 /* Instructions.swift */,
@@ -233,6 +253,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		0F42130425B4C3CC00A79BB6 /* Gameboy Mac */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0F42131425B4C3CE00A79BB6 /* Build configuration list for PBXNativeTarget "Gameboy Mac" */;
+			buildPhases = (
+				0F42130125B4C3CC00A79BB6 /* Sources */,
+				0F42130225B4C3CC00A79BB6 /* Frameworks */,
+				0F42130325B4C3CC00A79BB6 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Gameboy Mac";
+			productName = "Gameboy Mac";
+			productReference = 0F42130525B4C3CC00A79BB6 /* Gameboy Mac.app */;
+			productType = "com.apple.product-type.application";
+		};
 		0FEA3A9B226F319000AD96EE /* Gameboy */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 0FEA3AB9226F319100AD96EE /* Build configuration list for PBXNativeTarget "Gameboy" */;
@@ -274,10 +311,13 @@
 		0FEA3A94226F319000AD96EE /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1020;
+				LastSwiftUpdateCheck = 1230;
 				LastUpgradeCheck = 1020;
 				ORGANIZATIONNAME = "Andrew Apperley";
 				TargetAttributes = {
+					0F42130425B4C3CC00A79BB6 = {
+						CreatedOnToolsVersion = 12.3;
+					};
 					0FEA3A9B226F319000AD96EE = {
 						CreatedOnToolsVersion = 10.2;
 					};
@@ -302,30 +342,30 @@
 			targets = (
 				0FEA3A9B226F319000AD96EE /* Gameboy */,
 				0FEA3AAF226F319100AD96EE /* GameboyTests */,
+				0F42130425B4C3CC00A79BB6 /* Gameboy Mac */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		0F42130325B4C3CC00A79BB6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0F42132F25B4C45200A79BB6 /* game.gb in Resources */,
+				0F42130C25B4C3CE00A79BB6 /* Assets.xcassets in Resources */,
+				0F42130F25B4C3CE00A79BB6 /* Main.storyboard in Resources */,
+				0F42132B25B4C44D00A79BB6 /* dmg_boot.bin in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		0FEA3A9A226F319000AD96EE /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				0F1696D722738CC4009C7949 /* game.gb in Resources */,
-				0FBF668C238DB94B00FEC173 /* cpu_instrs.gb in Resources */,
-				0FBF669C238DB9CF00FEC173 /* 10-bit ops.gb in Resources */,
-				0FBF669B238DB9CF00FEC173 /* 09-op r,r.gb in Resources */,
-				0FBF6699238DB9CF00FEC173 /* 06-ld r,r.gb in Resources */,
-				0FBF669D238DB9CF00FEC173 /* 05-op rp.gb in Resources */,
-				0FBF66A0238DB9CF00FEC173 /* 07-jr,jp,call,ret,rst.gb in Resources */,
-				0FBF669E238DB9CF00FEC173 /* 03-op sp,hl.gb in Resources */,
-				0FBF66A3238DB9CF00FEC173 /* 08-misc instrs.gb in Resources */,
-				0FBF669F238DB9CF00FEC173 /* 01-special.gb in Resources */,
-				0FBF669A238DB9CF00FEC173 /* 02-interrupts.gb in Resources */,
-				0FBF66A1238DB9CF00FEC173 /* 04-op r,imm.gb in Resources */,
-				0FBF66A2238DB9CF00FEC173 /* 11-op a,(hl).gb in Resources */,
 				0FEA3AA7226F319100AD96EE /* Assets.xcassets in Resources */,
-				0F48CF1C259E58F20055B1FB /* dmg_boot.bin in Resources */,
+				0F42132725B4C44C00A79BB6 /* dmg_boot.bin in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -339,6 +379,30 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		0F42130125B4C3CC00A79BB6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0F42136325B4C47E00A79BB6 /* Debugger.swift in Sources */,
+				0F42131C25B4C42A00A79BB6 /* Int+Additions.swift in Sources */,
+				0F42135B25B4C47700A79BB6 /* PPU.swift in Sources */,
+				0F42134325B4C46A00A79BB6 /* Instructions.swift in Sources */,
+				0F42135725B4C47400A79BB6 /* CPUState.swift in Sources */,
+				0F42132025B4C43000A79BB6 /* CPU+Debugging.swift in Sources */,
+				0F42133B25B4C46600A79BB6 /* CPU.swift in Sources */,
+				0F42133F25B4C46800A79BB6 /* MMU.swift in Sources */,
+				0F42130A25B4C3CC00A79BB6 /* GameboyViewController.swift in Sources */,
+				0F42134725B4C46C00A79BB6 /* Registers.swift in Sources */,
+				0F42134B25B4C46E00A79BB6 /* FileSystem.swift in Sources */,
+				0F42135F25B4C47900A79BB6 /* APU.swift in Sources */,
+				0F42135325B4C47200A79BB6 /* MemoryController.swift in Sources */,
+				0F42130825B4C3CC00A79BB6 /* AppDelegate.swift in Sources */,
+				0F42133725B4C46300A79BB6 /* Gameboy.swift in Sources */,
+				0F42134F25B4C47100A79BB6 /* CPUTimer.swift in Sources */,
+				0F42133325B4C46000A79BB6 /* Cartridge.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		0FEA3A98226F319000AD96EE /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -382,7 +446,66 @@
 		};
 /* End PBXTargetDependency section */
 
+/* Begin PBXVariantGroup section */
+		0F42130D25B4C3CE00A79BB6 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				0F42130E25B4C3CE00A79BB6 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
 /* Begin XCBuildConfiguration section */
+		0F42131225B4C3CE00A79BB6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_ENTITLEMENTS = "Gameboy Mac/Gameboy_Mac.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = FY3J4UQCJY;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = "Gameboy Mac/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				PRODUCT_BUNDLE_IDENTIFIER = "ca.andrewapperley.Gameboy-Mac";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		0F42131325B4C3CE00A79BB6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_ENTITLEMENTS = "Gameboy Mac/Gameboy_Mac.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = FY3J4UQCJY;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = "Gameboy Mac/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				PRODUCT_BUNDLE_IDENTIFIER = "ca.andrewapperley.Gameboy-Mac";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 		0FEA3AB7226F319100AD96EE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -434,7 +557,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.3;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -489,7 +612,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -506,7 +629,9 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = D7Z468F72Q;
+				GCC_OPTIMIZATION_LEVEL = fast;
 				INFOPLIST_FILE = Gameboy/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.3;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -515,7 +640,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -526,7 +651,9 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = D7Z468F72Q;
+				GCC_OPTIMIZATION_LEVEL = fast;
 				INFOPLIST_FILE = Gameboy/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.3;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -534,7 +661,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = ca.andrewapperley.Gameboy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -583,6 +710,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		0F42131425B4C3CE00A79BB6 /* Build configuration list for PBXNativeTarget "Gameboy Mac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0F42131225B4C3CE00A79BB6 /* Debug */,
+				0F42131325B4C3CE00A79BB6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		0FEA3A97226F319000AD96EE /* Build configuration list for PBXProject "Gameboy" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

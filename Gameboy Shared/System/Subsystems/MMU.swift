@@ -65,7 +65,7 @@ enum MemoryMap {
 }
 
 class MMU {
-	var interruptsAvailable = true
+	var interruptsAvailable = false
 	private(set) var biosActive = false
 	private var bios: [UInt8] = Array<UInt8>(repeating: 0x0, count: Int(MemoryMap.BOOT_ROM.upperBound))
 	private var memory: [UInt8] = Array<UInt8>(repeating: 0x0, count: MemoryMap.MEM_SIZE)
@@ -111,6 +111,8 @@ class MMU {
 	
 	func write(address: UInt16, data: UInt8) {
 		switch address {
+        case MemoryMap.IER:
+            interruptsAvailable = data >= 0x00
 		case MemoryMap.BOOT_ROM.lowerBound..<MemoryMap.BOOT_ROM.upperBound where self.biosActive:
             bios[Int(address)] = data
         case  MemoryMap.VRAM:
@@ -126,6 +128,7 @@ class MMU {
             memory[Int(address)] = data
         case 0xFF50 where data == 0x01:
             memory[Int(address)] = data
+            interruptsAvailable = true
             self.biosActive = false
 		case MemoryMap.OAM.lowerBound...0xFFFF:
             memory[Int(address)] = data
@@ -184,12 +187,14 @@ class MMU {
 		write(address: UInt16(0xFF4A), data: UInt8(0x00)) // WY
 		write(address: UInt16(0xFF4B), data: UInt8(0x00)) // WX
 		write(address: UInt16(0xFFFF), data: UInt8(0x00)) // IE
+        write(address: UInt16(0xFF0F), data: UInt8(0xE0)) // IF
 	}
 	
 	func reset() {
 		memory = Array<UInt8>(repeating: 0x0, count: MemoryMap.MEM_SIZE)
-        self.biosActive = true
-//		setInitial()
+//        self.biosActive = true
+        self.interruptsAvailable = false
+		setInitial()
 	}
 	
 	func toState() -> MemoryState {

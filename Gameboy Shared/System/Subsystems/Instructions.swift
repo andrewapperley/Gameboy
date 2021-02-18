@@ -1501,7 +1501,7 @@ struct Instructions {
 						}) as Operation),
 			//			MARK: -
 			//			MARK: JR n
-						(0x18 as UInt8, (cycles: 2, pc: 0, { (cpu, code) in
+						(0x18 as UInt8, (cycles: 2, pc: 2, { (cpu, code) in
 							cpu.opCodePrint(code: code, func: "JR_n")
 							let param = cpu.memory.readHalf(address: cpu.registers.PC+1)
 							cpu.JR_n(n: param)

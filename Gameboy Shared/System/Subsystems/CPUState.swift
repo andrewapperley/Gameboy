@@ -8,14 +8,14 @@
 
 import Foundation
 
-struct StateFlags {
+struct StateFlags: Equatable {
 	let Z: Int
 	let N: Int
 	let H: Int
 	let C: Int
 }
 
-struct StateRegisters {
+struct StateRegisters: Equatable {
 	let A: UInt8
 	let F: UInt8
 	let B: UInt8
@@ -29,12 +29,12 @@ struct StateRegisters {
 	let flags: StateFlags
 }
 
-struct MemoryState {
+struct MemoryState: Equatable {
 	let memory: [UInt8]
 	let rom: [UInt8]?
 }
 
-struct CPUState {
+struct CPUState: Equatable {
 	let registers: StateRegisters
 	let memory: MemoryState
 //	Add cartridge state here
